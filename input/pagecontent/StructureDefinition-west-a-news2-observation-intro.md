@@ -22,7 +22,7 @@ When all seven parameter scores are sent, the total must be their sum.
 
 ### Building the JSON, step by step
 
-The complete reference instance is the [NEWS2 of 5](Observation-example-news2.html). The displays are the Swedish terms of the Swedish edition of SNOMED CT, to match `language`.
+The complete reference instance is the [NEWS2 of 5](Observation-example-news2.html). The displays are the Swedish terms of the Swedish edition of SNOMED CT, to match `language`, and `version` names that edition, so that a validator checks each display against the Swedish terms.
 
 #### The smallest NEWS2 you can send
 
@@ -53,6 +53,7 @@ Only the total score is mandatory:
     "coding": [
       {
         "system": "http://snomed.info/sct",
+        "version": "http://snomed.info/sct/45991000052106",
         "code": "1104051000000101",
         "display": "poäng enligt Royal College of Physicians NEWS2 (National Early Warning Score 2), totalpoäng"
       }
@@ -95,6 +96,7 @@ Only the total score is mandatory:
     "coding": [
       {
         "system": "http://snomed.info/sct",
+        "version": "http://snomed.info/sct/45991000052106",
         "code": "1104051000000101",
         "display": "poäng enligt Royal College of Physicians NEWS2 (National Early Warning Score 2), totalpoäng"
       }
@@ -142,6 +144,7 @@ Only the total score is mandatory:
         "coding": [
           {
             "system": "http://snomed.info/sct",
+            "version": "http://snomed.info/sct/45991000052106",
             "code": "1104301000000104",
             "display": "poäng enligt Royal College of Physicians NEWS2 (National Early Warning Score 2), andningsfrekvens"
           }
@@ -154,6 +157,7 @@ Only the total score is mandatory:
         "coding": [
           {
             "system": "http://snomed.info/sct",
+            "version": "http://snomed.info/sct/45991000052106",
             "code": "1104311000000102",
             "display": "poäng enligt Royal College of Physicians NEWS2 (National Early Warning Score 2), syremättnad 1"
           }
@@ -166,6 +170,7 @@ Only the total score is mandatory:
         "coding": [
           {
             "system": "http://snomed.info/sct",
+            "version": "http://snomed.info/sct/45991000052106",
             "code": "1104331000000105",
             "display": "poäng enligt Royal College of Physicians NEWS2 (National Early Warning Score 2), tillförd syrgas"
           }
@@ -178,6 +183,7 @@ Only the total score is mandatory:
         "coding": [
           {
             "system": "http://snomed.info/sct",
+            "version": "http://snomed.info/sct/45991000052106",
             "code": "1104341000000101",
             "display": "poäng enligt Royal College of Physicians NEWS2 (National Early Warning Score 2), systoliskt blodtryck"
           }
@@ -190,6 +196,7 @@ Only the total score is mandatory:
         "coding": [
           {
             "system": "http://snomed.info/sct",
+            "version": "http://snomed.info/sct/45991000052106",
             "code": "1104351000000103",
             "display": "poäng enligt Royal College of Physicians NEWS2 (National Early Warning Score 2), pulsfrekvens"
           }
@@ -202,6 +209,7 @@ Only the total score is mandatory:
         "coding": [
           {
             "system": "http://snomed.info/sct",
+            "version": "http://snomed.info/sct/45991000052106",
             "code": "1104361000000100",
             "display": "poäng enligt Royal College of Physicians NEWS2 (National Early Warning Score 2), medvetandegrad"
           }
@@ -214,6 +222,7 @@ Only the total score is mandatory:
         "coding": [
           {
             "system": "http://snomed.info/sct",
+            "version": "http://snomed.info/sct/45991000052106",
             "code": "1104371000000107",
             "display": "poäng enligt Royal College of Physicians NEWS2 (National Early Warning Score 2), temperatur"
           }

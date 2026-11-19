@@ -41,6 +41,7 @@ The complete reference instance is [room air, 0 points in NEWS2](Observation-exa
     "coding": [
       {
         "system": "http://snomed.info/sct",
+        "version": "http://snomed.info/sct/45991000052106",
         "code": "427081008",
         "display": "flöde för tillförd syrgas"
       }

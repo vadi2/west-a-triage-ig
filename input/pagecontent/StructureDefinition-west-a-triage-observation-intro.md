@@ -20,7 +20,7 @@ The examples go from the smallest valid instance to a complete one. The complete
 
 #### The smallest triage you can send
 
-The priority goes in `valueCodeableConcept` and the chief complaint in a component whose code is SNOMED CT `1269489004` *sökorsak* (chief complaint). Both values are codes from this guide's code systems, with Swedish displays to match `language`:
+The priority goes in `valueCodeableConcept` and the chief complaint in a component whose code is SNOMED CT `1269489004` *sökorsak* (chief complaint). Both values are codes from this guide's code systems, with Swedish displays to match `language`. The SNOMED CT codings name the Swedish edition in `version`, since their displays are its Swedish terms:
 
 ```json
 {
@@ -47,6 +47,7 @@ The priority goes in `valueCodeableConcept` and the chief complaint in a compone
     "coding": [
       {
         "system": "http://snomed.info/sct",
+        "version": "http://snomed.info/sct/45991000052106",
         "code": "425705009",
         "display": "triagering"
       }
@@ -71,6 +72,7 @@ The priority goes in `valueCodeableConcept` and the chief complaint in a compone
         "coding": [
           {
             "system": "http://snomed.info/sct",
+            "version": "http://snomed.info/sct/45991000052106",
             "code": "1269489004",
             "display": "sökorsak"
           }
@@ -119,6 +121,7 @@ The priority goes in `valueCodeableConcept` and the chief complaint in a compone
     "coding": [
       {
         "system": "http://snomed.info/sct",
+        "version": "http://snomed.info/sct/45991000052106",
         "code": "425705009",
         "display": "triagering"
       }
@@ -161,6 +164,7 @@ The priority goes in `valueCodeableConcept` and the chief complaint in a compone
         "coding": [
           {
             "system": "http://snomed.info/sct",
+            "version": "http://snomed.info/sct/45991000052106",
             "code": "1269489004",
             "display": "sökorsak"
           }

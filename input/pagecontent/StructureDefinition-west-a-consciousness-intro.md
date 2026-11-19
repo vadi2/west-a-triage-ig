@@ -11,7 +11,7 @@ A status, the exam category, the SNOMED CT code `1104441000000107` for the ACVPU
 | ACVPU | SNOMED CT | Swedish display | NEWS2 |
 |---|---|---|---|
 | A - Alert | `248234008` | psykiskt klar | 0 |
-| C - new Confusion | `130987000` | akut förvirring | 3 |
+| C - new Confusion | `130987000` | akut konfusion | 3 |
 | V - Voice | `300202002` | reagerar på röst | 3 |
 | P - Pain | `450847001` | reagerar på smärta | 3 |
 | U - Unresponsive | `422768004` | reagerar inte | 3 |
@@ -50,6 +50,7 @@ The complete reference instance is [alert patient, 0 points in NEWS2](Observatio
     "coding": [
       {
         "system": "http://snomed.info/sct",
+        "version": "http://snomed.info/sct/45991000052106",
         "code": "1104441000000107",
         "display": "poäng enligt ACVPU-skalan (Alert Confusion Voice Pain Unresponsive)"
       }
@@ -71,6 +72,7 @@ The complete reference instance is [alert patient, 0 points in NEWS2](Observatio
     "coding": [
       {
         "system": "http://snomed.info/sct",
+        "version": "http://snomed.info/sct/45991000052106",
         "code": "248234008",
         "display": "psykiskt klar"
       }

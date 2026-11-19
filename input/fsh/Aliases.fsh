@@ -11,6 +11,8 @@ Alias: $personnummer = http://electronichealth.se/identifier/personnummer
 Alias: $resprate = http://hl7.org/fhir/StructureDefinition/resprate
 Alias: $samordningsnummer = http://electronichealth.se/identifier/samordningsnummer
 Alias: $sct = http://snomed.info/sct
+// The Swedish edition of SNOMED CT, for example codings with Swedish displays
+Alias: $sct-se = http://snomed.info/sct|http://snomed.info/sct/45991000052106
 Alias: $ucum = http://unitsofmeasure.org
 Alias: $v3-ActCode = http://terminology.hl7.org/CodeSystem/v3-ActCode
 // VGR Base profiles (se.vgregion.fhir.base)

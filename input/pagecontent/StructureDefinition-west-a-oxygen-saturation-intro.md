@@ -47,6 +47,7 @@ The complete reference instance is [95%, 1 point on NEWS2 scale 1](Observation-e
       },
       {
         "system": "http://snomed.info/sct",
+        "version": "http://snomed.info/sct/45991000052106",
         "code": "431314004",
         "display": "perifer syremättnad"
       }

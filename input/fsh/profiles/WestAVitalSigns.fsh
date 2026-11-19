@@ -35,7 +35,7 @@ Profile: WestAHeartRate
 Parent: $heartrate
 Id: west-a-heart-rate
 Title: "WEST-A Heart Rate"
-Description: "WEST-A Heart Rate profile, used to record the pulse (pulsfrekvens) measured at triage, from which the NEWS2 pulse score is calculated"
+Description: "WEST-A Heart Rate profile, used to record the heart rate (hjärtfrekvens) or pulse (pulsfrekvens) measured at triage, from which the NEWS2 pulse score is calculated; WEST-A uses the heart rate instead of the pulse when it is measured"
 * insert WestAVitalSign(364075005)
 * valueQuantity MS
 * valueQuantity ^short = "Beats per minute"

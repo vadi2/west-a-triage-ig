@@ -8,7 +8,7 @@ Common API interactions for this profile. `[base]` is the base URL of your FHIR 
 GET [base]/Observation?code=http://loinc.org|2708-6&encounter=Encounter/[id]
 ```
 
-**Record a oxygen saturation measurement**
+**Record an oxygen saturation measurement**
 
 ```
 POST [base]/Observation

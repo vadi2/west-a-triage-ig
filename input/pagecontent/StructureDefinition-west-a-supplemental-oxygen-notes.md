@@ -8,7 +8,7 @@ Common API interactions for this profile. `[base]` is the base URL of your FHIR 
 GET [base]/Observation?code=http://snomed.info/sct|427081008&encounter=Encounter/[id]
 ```
 
-**Record a oxygen flow recording**
+**Record an oxygen flow measurement**
 
 ```
 POST [base]/Observation

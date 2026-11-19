@@ -8,7 +8,7 @@ Common API interactions for this profile. `[base]` is the base URL of your FHIR 
 GET [base]/Observation?code=http://snomed.info/sct|1104441000000107&encounter=Encounter/[id]
 ```
 
-**Record a ACVPU assessment**
+**Record an ACVPU assessment**
 
 ```
 POST [base]/Observation

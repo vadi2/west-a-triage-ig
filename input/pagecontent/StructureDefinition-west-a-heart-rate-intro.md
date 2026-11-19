@@ -1,4 +1,4 @@
-WEST-A Heart Rate records the pulse (*pulsfrekvens*) measured at triage. It derives from the FHIR core [Heart Rate](http://hl7.org/fhir/R4/heartrate.html) vital signs profile, so a system that already sends FHIR vital signs only adds the patient and the visit. The [WEST-A NEWS2 Observation](StructureDefinition-west-a-news2-observation.html) scores its pulse from it and references it in `derivedFrom`.
+WEST-A Heart Rate records the heart rate (*hjärtfrekvens*) or pulse (*pulsfrekvens*) measured at triage. WEST-A scores the pulse, but uses the heart rate instead when it is measured (p. 6), so the code is SNOMED CT `364075005` *hjärtfrekvens*, which pulse rate is a kind of, next to the LOINC code `8867-4` the core profile requires. It derives from the FHIR core [Heart Rate](http://hl7.org/fhir/R4/heartrate.html) vital signs profile, so a system that already sends FHIR vital signs only adds the patient and the visit. The [WEST-A NEWS2 Observation](StructureDefinition-west-a-news2-observation.html) scores its pulse from it and references it in `derivedFrom`.
 
 ### Mandatory and Must Support data elements
 
@@ -47,6 +47,7 @@ The complete reference instance is [95 beats per minute, 1 point in NEWS2](Obser
       },
       {
         "system": "http://snomed.info/sct",
+        "version": "http://snomed.info/sct/45991000052106",
         "code": "364075005",
         "display": "hjärtfrekvens"
       }

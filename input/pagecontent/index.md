@@ -28,7 +28,7 @@ The guide follows the [UZ Core modelling guidelines](https://github.com/uzinfoco
 - invariants are named `westa-[resource-abbreviation]-[number]`;
 - profiles derive from the [VGR Base profiles](https://fhir.vgregion.se/ig/base/) where VGR Base has one (Patient, Encounter), and so from the HL7 Sweden [SE Base profiles](http://hl7.se/fhir/ig/base/); the Swedish and VGR identifier systems come from there;
 - vital signs derive from the FHIR core vital signs profiles;
-- SNOMED CT comes first, then LOINC where a FHIR profile requires it, then local codes; SNOMED CT is the Swedish edition (`http://snomed.info/sct/45991000052106`), which value set expansion and validation use; local code systems use Swedish (`sv`) as their default language, with English designations;
+- SNOMED CT comes first, then LOINC where a FHIR profile requires it, then local codes; SNOMED CT is the Swedish edition (`http://snomed.info/sct/45991000052106`), which value set expansion and validation use, and a coding with a Swedish display names that edition in `Coding.version`; local code systems use Swedish (`sv`) as their default language, with English designations;
 - examples use `language = sv`.
 
 VGR Base and SE Base are FHIR R4, so this guide is FHIR R4 too, rather than the R5 that the modelling guidelines ask for: a profile can only derive from a profile of the same FHIR version.

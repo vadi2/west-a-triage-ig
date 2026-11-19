@@ -106,7 +106,7 @@ A patient who is not registered in Sweden has a samordningsnummer instead. It lo
 
 #### An unidentified patient
 
-An unconscious patient without identity documents gets a VGR local reserve number (LRID): an estimated date of birth, `K` for woman, `M` for man or `X` for unknown, and three digits. With no known birth date, send the estimated birth year only:
+An unconscious patient without identity documents gets a VGR local reserve number (LRID): an estimated date of birth, `K` for woman, `M` for man or `X` for unknown, and a three-digit number from 060 to 899. With no known birth date, send the estimated birth year only:
 
 ```json
 {

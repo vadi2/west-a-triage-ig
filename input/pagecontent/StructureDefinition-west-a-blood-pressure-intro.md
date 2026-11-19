@@ -47,6 +47,7 @@ The complete reference instance is [105/70 mmHg; the systolic pressure gives 1 p
       },
       {
         "system": "http://snomed.info/sct",
+        "version": "http://snomed.info/sct/45991000052106",
         "code": "75367002",
         "display": "blodtryck"
       }
@@ -75,6 +76,7 @@ The complete reference instance is [105/70 mmHg; the systolic pressure gives 1 p
           },
           {
             "system": "http://snomed.info/sct",
+            "version": "http://snomed.info/sct/45991000052106",
             "code": "271649006",
             "display": "systoliskt blodtryck"
           }
@@ -97,6 +99,7 @@ The complete reference instance is [105/70 mmHg; the systolic pressure gives 1 p
           },
           {
             "system": "http://snomed.info/sct",
+            "version": "http://snomed.info/sct/45991000052106",
             "code": "271650006",
             "display": "diastoliskt blodtryck"
           }

@@ -47,6 +47,7 @@ The complete reference instance is [37.5 °C, 0 points in NEWS2](Observation-exa
       },
       {
         "system": "http://snomed.info/sct",
+        "version": "http://snomed.info/sct/45991000052106",
         "code": "386725007",
         "display": "kroppstemperatur"
       }

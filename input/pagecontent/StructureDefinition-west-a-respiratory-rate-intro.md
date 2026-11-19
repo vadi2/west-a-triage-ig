@@ -47,6 +47,7 @@ The complete reference instance is [22 breaths per minute, 2 points in NEWS2](Ob
       },
       {
         "system": "http://snomed.info/sct",
+        "version": "http://snomed.info/sct/45991000052106",
         "code": "86290005",
         "display": "andningsfrekvens"
       }
