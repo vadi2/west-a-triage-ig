@@ -1,6 +1,6 @@
 ValueSet: ChiefComplaintVS
 Id: west-a-chief-complaint-vs
-Title: "WEST-A chief complaint"
+Title: "WEST-A chief complaint value set"
 Description: "WEST-A chief complaints"
 * ^status = #draft
 * ^experimental = true
