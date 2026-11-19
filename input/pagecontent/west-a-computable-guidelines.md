@@ -13,13 +13,13 @@ The guideline proposes; the triage nurse decides. WEST-A gives the clinical asse
 <tr><td><a href="PlanDefinition-west-a-news2-calculation.html">WEST-A NEWS2 Calculation</a> (PlanDefinition)</td><td>When any vital sign is recorded and all seven NEWS2 parameters are measured, propose to record NEWS2</td></tr>
 <tr><td><a href="ActivityDefinition-west-a-record-news2.html">WEST-A Record NEWS2</a> (ActivityDefinition)</td><td>A task to record a <a href="StructureDefinition-west-a-news2-observation.html">WEST-A NEWS2 Observation</a>, described with the total and the clinical risk</td></tr>
 <tr><td><a href="ActivityDefinition-west-a-record-triage-priority.html">WEST-A Record Triage Priority</a> (ActivityDefinition)</td><td>A task to record a <a href="StructureDefinition-west-a-triage-observation.html">WEST-A Triage Observation</a>, described with the proposed priority</td></tr>
-<tr><td><a href="Library-WestANEWS2.html">WEST-A NEWS2 Logic</a> (Library, <a href="Library-WestANEWS2.cql">CQL</a>)</td><td>The NEWS2 chart: parameter scores, total and clinical risk</td></tr>
-<tr><td><a href="Library-WestATriage.html">WEST-A Triage Logic</a> (Library, <a href="Library-WestATriage.cql">CQL</a>)</td><td>The priority from the vital parameters, and the proposed priority</td></tr>
-<tr><td><a href="Library-FHIRHelpers.html">FHIRHelpers</a> (Library, <a href="Library-FHIRHelpers.cql">CQL</a>)</td><td>The standard library that converts FHIR R4 types to CQL types</td></tr>
+<tr><td><a href="Library-WestANEWS2.html">WEST-A NEWS2 Logic</a> (Library, CQL)</td><td>The NEWS2 chart: parameter scores, total and clinical risk</td></tr>
+<tr><td><a href="Library-WestATriage.html">WEST-A Triage Logic</a> (Library, CQL)</td><td>The priority from the vital parameters, and the proposed priority</td></tr>
+<tr><td><a href="Library-FHIRHelpers.html">FHIRHelpers</a> (Library, CQL)</td><td>The standard library that converts FHIR R4 types to CQL types</td></tr>
 </tbody>
 </table>
 
-Each Library page shows its CQL source, and the CQL links above give it as a text file.
+Each Library page shows its CQL source.
 
 The [WEST-A NEWS2 Observation](StructureDefinition-west-a-news2-observation.html) profile is also a CPG case feature: its `cpg-inferenceExpression` extension names the CQL expression that calculates its value.
 
