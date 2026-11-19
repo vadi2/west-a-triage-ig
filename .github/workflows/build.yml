@@ -1,7 +1,7 @@
 name: Build IG
 
 # All IG builds run here, not locally: SUSHI, the IG Publisher (which also translates
-# the CQL in input/includes), its QA report, validation of the hand-written JSON on the
+# the CQL in input/cql), its QA report, validation of the hand-written JSON on the
 # profile pages, the negative tests, and the CQL test cases.
 
 on:

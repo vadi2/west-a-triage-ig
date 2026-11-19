@@ -3,15 +3,7 @@
 // that propose what to record. The Library ids are the CQL library names, because
 // CQL tooling resolves an included library at [canonical]/Library/[CQL name].
 
-// The Library pages show the CQL source from input/includes, through their intro fragments.
-// The narrative is given here because the one the IG Publisher generates embeds the CQL
-// unescaped, and fails on generic types such as List<Observation>.
-RuleSet: WestALibraryNarrative(name)
-* text.status = #additional
-* text.div = "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p>A CQL logic library. Its CQL source is <a href=\"Library-{name}.cql\">Library-{name}.cql</a>.</p></div>"
-
 RuleSet: WestALogicLibrary(name)
-* insert WestALibraryNarrative({name})
 * name = "{name}"
 * version = "0.1.0"
 * status = #draft
@@ -50,7 +42,6 @@ InstanceOf: Library
 Usage: #definition
 Title: "FHIRHelpers"
 Description: "The FHIRHelpers 4.0.1 library of the CQL project, which converts FHIR R4 data types to CQL types; the WEST-A logic includes it"
-* insert WestALibraryNarrative(FHIRHelpers)
 * name = "FHIRHelpers"
 * title = "FHIRHelpers"
 * version = "4.0.1"
