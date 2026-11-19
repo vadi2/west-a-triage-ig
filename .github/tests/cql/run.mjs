@@ -1,5 +1,5 @@
 // Runs the WEST-A CQL logic against test cases, using the ELM that the IG Publisher
-// translated from input/cql and embedded in the Library resources of the built IG.
+// translated from input/includes and embedded in the Library resources of the built IG.
 //
 //   node run.mjs <IG output directory>
 //
@@ -41,7 +41,7 @@ function loadElm() {
   }
   for (const name of ['FHIRHelpers', 'WestANEWS2', 'WestATriage']) {
     if (!elm[name]) {
-      console.error(`::error::No ELM for library ${name} in ${outputDir}: did the IG Publisher translate input/cql/${name}.cql?`);
+      console.error(`::error::No ELM for library ${name} in ${outputDir}: did the IG Publisher translate input/includes/${name}.cql?`);
       process.exit(1);
     }
   }

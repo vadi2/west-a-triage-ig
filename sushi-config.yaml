@@ -43,4 +43,4 @@ menu:
   Changelog: changelog.html
 parameters:
   path-expansion-params: '../../expansion-params.json'  # SNOMED CT Swedish edition
-  path-binary: input/cql  # the CQL sources of the Library resources
+  path-binary: input/includes  # the CQL sources of the Library resources; Jekyll includes them on the Library pages
