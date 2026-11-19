@@ -1,4 +1,4 @@
-WEST-A Patient identifies the adult patient who is triaged with WEST-A at the emergency department. It holds the patient administrative data that WEST-A uses: name, identifier, date of birth (for the age rules) and gender (for the sex-specific complaint pages). The [mapping page](west-a-patient-mapping.html) shows where each element comes from in WEST-A. A patient is usually already known to the hospital's patient administration system, so search for an existing Patient by identifier before you create a new one.
+WEST-A Patient identifies the adult patient who is triaged with WEST-A at the emergency department. It derives from the [VGR Base Patient](https://fhir.vgregion.se/ig/base/StructureDefinition-VGRBasePatient.html), so every WEST-A Patient is also a valid VGR Base and SE Base patient. It holds the patient administrative data that WEST-A uses: name, identifier, date of birth (for the age rules) and gender (for the sex-specific complaint pages). The [mapping page](west-a-patient-mapping.html) shows where each element comes from in WEST-A. A patient is usually already known to the hospital's patient administration system, so search for an existing Patient by identifier before you create a new one.
 
 ### Mandatory and Must Support data elements
 
@@ -10,7 +10,7 @@ At least one identifier, with both its system and its value. Every patient at th
 
 #### Each WEST-A Patient Must Support
 
-- an identifier - the personnummer, samordningsnummer and national reserve number slices (see [the table below](#identifier-slices));
+- an identifier - the personnummer, samordningsnummer, national reserve number and VGR reserve number slices (see [the table below](#identifier-slices));
 - the name (family name and given names);
 - the gender (female / male / other / unknown);
 - the date of birth.
@@ -22,11 +22,12 @@ Search by identifier, with the system and value separated by `|`:
 ```
 GET [base]/Patient?identifier=http://electronichealth.se/identifier/personnummer|196101182803
 GET [base]/Patient?identifier=http://electronichealth.se/identifier/samordningsnummer|198503723135
+GET [base]/Patient?identifier=https://fhir.vgregion.se/NamingSystem/LRID|19700101M081
 ```
 
 ### Building the JSON, step by step
 
-The examples go from the smallest valid instance to a complete one. The complete reference instances are the [patient with a personnummer](Patient-example-patient-personnummer.html) and the [patient with a samordningsnummer](Patient-example-patient-samordningsnummer.html).
+The examples go from the smallest valid instance to a complete one. The complete reference instances are the [patient with a personnummer](Patient-example-patient-personnummer.html), the [patient with a samordningsnummer](Patient-example-patient-samordningsnummer.html) and the [unidentified patient](Patient-example-patient-lrid.html).
 
 #### The smallest Patient you can send
 
@@ -91,6 +92,7 @@ A patient who is not registered in Sweden has a samordningsnummer instead. It lo
   "meta": {
     "profile": ["https://vadi2.github.io/west-a-triage-ig/StructureDefinition/west-a-patient"]
   },
+  "language": "sv",
   "identifier": [
     {
       "system": "http://electronichealth.se/identifier/samordningsnummer",
@@ -102,6 +104,28 @@ A patient who is not registered in Sweden has a samordningsnummer instead. It lo
 }
 ```
 
+#### An unidentified patient
+
+An unconscious patient without identity documents gets a VGR local reserve number (LRID): an estimated date of birth, `K` for woman, `M` for man or `X` for unknown, and three digits. With no known birth date, send the estimated birth year only:
+
+```json
+{
+  "resourceType": "Patient",
+  "meta": {
+    "profile": ["https://vadi2.github.io/west-a-triage-ig/StructureDefinition/west-a-patient"]
+  },
+  "language": "sv",
+  "identifier": [
+    {
+      "system": "https://fhir.vgregion.se/NamingSystem/LRID",
+      "value": "19700101M081"
+    }
+  ],
+  "gender": "male",
+  "birthDate": "1970"
+}
+```
+
 #### Identifier slices {#identifier-slices}
 
 | Slice | Identifier | `system` | Format rule |
@@ -109,8 +133,10 @@ A patient who is not registered in Sweden has a samordningsnummer instead. It lo
 | `personnummer` | Personal identity number | `http://electronichealth.se/identifier/personnummer` | `westa-pat-1`: YYYYMMDDNNNC |
 | `samordningsnummer` | Coordination number | `http://electronichealth.se/identifier/samordningsnummer` | `westa-pat-2`: day of birth + 60 |
 | `nationelltReservnummer` | National reserve number | `http://electronichealth.se/identifier/nationelltReservnummer` | none yet |
+| `LRID` | VGR local reserve number | `https://fhir.vgregion.se/NamingSystem/LRID` | `LRID-invariant` (VGR Base) |
+| `GRID` | Superseded VGR reserve number | `https://fhir.vgregion.se/NamingSystem/GRID` | `GRID-invariant` (VGR Base) |
 {:.grid}
 
-The system URIs are the ones the HL7 Sweden SE Base profiles define. The slicing is open, so a regional reserve number can be sent with its own system.
+The first three slices and their system URIs come from the HL7 Sweden SE Base profiles, the VGR reserve numbers from VGR Base.
 
 See the [Quick Start](#quick-start) below for the common API calls.

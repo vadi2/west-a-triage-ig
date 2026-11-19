@@ -27,7 +27,9 @@ Description: "WEST-A Blood Pressure profile, used to record the blood pressure m
 * insert WestAVitalSign(75367002)
 * component[SystolicBP] MS
 * component[SystolicBP] ^short = "Systolic blood pressure, which NEWS2 scores"
+* component[SystolicBP].code.coding 1..* // the inherited SBPCode slice is 1..1
 * component[DiastolicBP] MS
+* component[DiastolicBP].code.coding 1..* // the inherited DBPCode slice is 1..1
 
 Profile: WestAHeartRate
 Parent: $heartrate

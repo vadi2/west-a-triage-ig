@@ -38,9 +38,10 @@ If-Match: W/"3"   # the ETag from your last read; 412 if it changed since
 }
 ```
 
-Patient is not yet listed in a CapabilityStatement; the searches above use standard FHIR R5 search parameters.
+Patient is not yet listed in a CapabilityStatement; the searches above use standard FHIR R4 search parameters.
 
 ### Related
 
 - [WEST-A Patient Mapping](west-a-patient-mapping.html) - where each element comes from in WEST-A
+- [VGR Base Patient](https://fhir.vgregion.se/ig/base/StructureDefinition-VGRBasePatient.html) - the profile this one derives from
 - [Home](index.html) - scope of this guide

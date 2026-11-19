@@ -6,14 +6,17 @@
 
 ### Overview
 
-This page maps the result of a WEST-A triage to FHIR R5: the priority (colour), the chief complaint, and the NEWS2 score that WEST-A uses for the vital parameters. The source is the WEST-A triage manual for adults, VGR version 2025:02:01. Page numbers refer to the WEST-A PDF.
+This page maps a WEST-A triage to FHIR R4: the vital parameters measured at triage, the NEWS2 score calculated from them, and the result of the triage, which is the priority (colour) and the chief complaint. The source is the WEST-A triage manual for adults, VGR version 2025:02:01. Page numbers refer to the WEST-A PDF.
 
-A triage is recorded as:
+A triage is recorded in three layers, each referencing the one below it in `derivedFrom`:
 
-- one [WEST-A Triage Observation](StructureDefinition-west-a-triage-observation.html), whose value is the priority and whose `chiefComplaint` component is the complaint algorithm used;
-- one [WEST-A NEWS2 Observation](StructureDefinition-west-a-news2-observation.html), which the triage observation references in `derivedFrom`.
+1. **Measured:** seven vital sign observations, one per NEWS2 parameter (see [vital signs](#vital-signs)). Five derive from the FHIR core vital signs profiles.
+2. **Calculated:** one [WEST-A NEWS2 Observation](StructureDefinition-west-a-news2-observation.html), with the total and the parameter scores.
+3. **Assessed:** one [WEST-A Triage Observation](StructureDefinition-west-a-triage-observation.html), whose value is the priority and whose `chiefComplaint` component is the complaint algorithm used.
 
-Both refer to the [WEST-A Patient](StructureDefinition-west-a-patient.html) and the emergency department Encounter. Examples: [triage of chest pain](Observation-example-triage-chest-pain.html) and [NEWS2 of 5](Observation-example-news2.html).
+Keeping the measurements apart from the scores means that a system that already records vital signs reuses them as they are, and that a receiver can recalculate NEWS2 from the measurements. FHIR R4 has no element for "triggered by", and `derivedFrom` is the element FHIR defines for a value calculated from other observations.
+
+All of them refer to the [WEST-A Patient](StructureDefinition-west-a-patient.html) and the emergency department Encounter. Examples: [triage of chest pain](Observation-example-triage-chest-pain.html) and [NEWS2 of 5](Observation-example-news2.html).
 
 ### How WEST-A sets the priority
 
@@ -23,7 +26,7 @@ FHIR records the outcome, not the rules: the priority in `Observation.value`, th
 
 ### Triage priority
 
-`Observation.code` is LOINC `11283-9` "Acuity assessment [Function] at First encounter". The value comes from [WEST-A triage priority](CodeSystem-west-a-triage-priority-cs.html).
+`Observation.code` is SNOMED CT `425705009` *triagering* (Determination of acuity level). SNOMED CT has no observable entity for a triage priority, so the code is this procedure, which the Swedish edition names "triagering". The value comes from [WEST-A triage priority](CodeSystem-west-a-triage-priority-cs.html).
 
 <table class="grid mapping">
 <thead>
@@ -86,6 +89,25 @@ The complaints are WEST-A's algorithms, not clinical findings: "Bröstsmärta" m
 
 The trauma pages (43-44) and the gynecology pages (21-22) are one complaint each. NEWS2, ONEWS2 and mNIHSS (pp. 6, 20, 34) are scores, not complaints. The three "behov/process" pages (46-48) are needs, not complaints (see [open questions](#open-questions)).
 
+### Vital signs {#vital-signs}
+
+Each NEWS2 parameter is measured as its own Observation. The five that FHIR has core vital signs profiles for keep the LOINC code those profiles require and add the SNOMED CT code as a second coding. Consciousness and supplemental oxygen have no core profile and use SNOMED CT only.
+
+<table class="grid">
+<thead>
+<tr><th>WEST-A (sv)</th><th>English</th><th>Profile</th><th>Code</th><th>Value</th></tr>
+</thead>
+<tbody>
+<tr><td>Andningsfrekvens</td><td>Respiration rate</td><td><a href="StructureDefinition-west-a-respiratory-rate.html">WEST-A Respiratory Rate</a> (core <code>resprate</code>)</td><td>LOINC <code>9279-1</code>, SNOMED CT <code>86290005</code></td><td>/min</td></tr>
+<tr><td>Syremättnad</td><td>Oxygen saturation</td><td><a href="StructureDefinition-west-a-oxygen-saturation.html">WEST-A Oxygen Saturation</a> (core <code>oxygensat</code>)</td><td>LOINC <code>2708-6</code>, SNOMED CT <code>431314004</code></td><td>%</td></tr>
+<tr><td>Tillförd syrgas</td><td>Supplemental oxygen</td><td><a href="StructureDefinition-west-a-supplemental-oxygen.html">WEST-A Supplemental Oxygen</a></td><td>SNOMED CT <code>427081008</code></td><td>L/min, 0 for room air</td></tr>
+<tr><td>Systoliskt blodtryck</td><td>Systolic blood pressure</td><td><a href="StructureDefinition-west-a-blood-pressure.html">WEST-A Blood Pressure</a> (core <code>bp</code>)</td><td>LOINC <code>85354-9</code>, SNOMED CT <code>75367002</code>; systolic component LOINC <code>8480-6</code>, SNOMED CT <code>271649006</code></td><td>mmHg</td></tr>
+<tr><td>Pulsfrekvens</td><td>Pulse</td><td><a href="StructureDefinition-west-a-heart-rate.html">WEST-A Heart Rate</a> (core <code>heartrate</code>)</td><td>LOINC <code>8867-4</code>, SNOMED CT <code>364075005</code></td><td>/min</td></tr>
+<tr><td>Medvetandegrad (ACVPU)</td><td>Consciousness (ACVPU)</td><td><a href="StructureDefinition-west-a-consciousness.html">WEST-A Consciousness</a></td><td>SNOMED CT <code>1104441000000107</code></td><td>coded: <a href="ValueSet-west-a-acvpu-vs.html">WEST-A ACVPU</a></td></tr>
+<tr><td>Temperatur</td><td>Temperature</td><td><a href="StructureDefinition-west-a-body-temperature.html">WEST-A Body Temperature</a> (core <code>bodytemp</code>)</td><td>LOINC <code>8310-5</code>, SNOMED CT <code>386725007</code></td><td>°C</td></tr>
+</tbody>
+</table>
+
 ### NEWS2 {#news2}
 
 `Observation.code` is SNOMED CT `1104051000000101` "Royal College of Physicians NEWS2 (National Early Warning Score 2) total score". The total is `valueInteger` (0-20). Each parameter score is a component with its own SNOMED CT code. The NEWS2 codes are in the Swedish edition of SNOMED CT, which this guide uses, and in the International edition from the August 2026 release.
@@ -107,7 +129,7 @@ The trauma pages (43-44) and the gynecology pages (21-22) are one complaint each
 </tbody>
 </table>
 
-Two rules are invariants: only one oxygen saturation scale is used (`westa-obs-1`), and when all seven parameter scores are present the total is their sum (`westa-obs-2`). The measured values (for example a respiration rate of 22/min) are vital sign observations that the NEWS2 Observation references in `derivedFrom`.
+Two rules are invariants: only one oxygen saturation scale is used (`westa-obs-1`), and when all seven parameter scores are present the total is their sum (`westa-obs-2`). The measured values (for example a respiration rate of 22/min) are the [vital sign observations](#vital-signs), which the NEWS2 Observation references in `derivedFrom`.
 
 WEST-A groups the total into clinical risk (p. 6): 0-4 low, a single parameter scoring 3 low-medium, 5-6 medium, 7 or more high. The risk follows from the scores, so it is not stored.
 

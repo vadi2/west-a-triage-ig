@@ -1,6 +1,6 @@
 ### About this guide
 
-This is an unofficial, draft FHIR R5 implementation guide for the data used in **WEST-A** (West coast System for Triage - Adult), the emergency department triage system of Västra Götalandsregionen (VGR). It is not published, endorsed or maintained by VGR.
+This is an unofficial, draft FHIR R4 implementation guide for the data used in **WEST-A** (West coast System for Triage - Adult), the emergency department triage system of Västra Götalandsregionen (VGR). It is not published, endorsed or maintained by VGR.
 
 The source is the WEST-A triage manual without referral support, VGR version 2025:02:01. WEST-A and its content belong to VGR; this guide only refers to it.
 
@@ -11,10 +11,11 @@ The guide covers the **patient administrative data** that WEST-A uses:
 - [WEST-A Patient](StructureDefinition-west-a-patient.html) - the patient being triaged;
 - [WEST-A Patient Mapping](west-a-patient-mapping.html) - where each element comes from in WEST-A, what is out of scope, and the open questions.
 
-and the **result of a triage**:
+and a **triage**, in three layers:
 
-- [WEST-A Triage Observation](StructureDefinition-west-a-triage-observation.html) - the priority (Röd, Orange, Gul, Grön) and the chief complaint;
-- [WEST-A NEWS2 Observation](StructureDefinition-west-a-news2-observation.html) - the NEWS2 total and parameter scores the priority is based on;
+- the **vital signs** measured at triage, one Observation per NEWS2 parameter: [respiratory rate](StructureDefinition-west-a-respiratory-rate.html), [oxygen saturation](StructureDefinition-west-a-oxygen-saturation.html), [supplemental oxygen](StructureDefinition-west-a-supplemental-oxygen.html), [blood pressure](StructureDefinition-west-a-blood-pressure.html), [heart rate](StructureDefinition-west-a-heart-rate.html), [consciousness (ACVPU)](StructureDefinition-west-a-consciousness.html) and [body temperature](StructureDefinition-west-a-body-temperature.html), based on the FHIR core vital signs profiles;
+- the **NEWS2 score** calculated from them: [WEST-A NEWS2 Observation](StructureDefinition-west-a-news2-observation.html);
+- the **triage result**, the priority (Röd, Orange, Gul, Grön) and the chief complaint, based on NEWS2: [WEST-A Triage Observation](StructureDefinition-west-a-triage-observation.html);
 - [WEST-A Triage Mapping](west-a-triage-mapping.html) - how WEST-A sets the priority, every code, and the open questions.
 
 The rest of the clinical part of WEST-A - coded warning symptoms, ONEWS2, pain, GCS, mNIHSS and FRESH - is not modelled yet.
@@ -25,8 +26,9 @@ The guide follows the [UZ Core modelling guidelines](https://github.com/uzinfoco
 
 - profiles are named `WestA[Resource]`, with ids `west-a-[resource]` and titles "WEST-A [Resource]";
 - invariants are named `westa-[resource-abbreviation]-[number]`;
-- Swedish identifier systems are reused from the HL7 Sweden [SE Base profiles](http://hl7.se/fhir/ig/base/) rather than created here;
-- standard codes (SNOMED CT, LOINC, HL7) come before local ones; SNOMED CT is the Swedish edition (`http://snomed.info/sct/45991000052106`), which value set expansion and validation use; local code systems use Swedish (`sv`) as their default language, with English designations;
+- profiles derive from the [VGR Base profiles](https://fhir.vgregion.se/ig/base/) where VGR Base has one (Patient, Encounter), and so from the HL7 Sweden [SE Base profiles](http://hl7.se/fhir/ig/base/); the Swedish and VGR identifier systems come from there;
+- vital signs derive from the FHIR core vital signs profiles;
+- SNOMED CT comes first, then LOINC where a FHIR profile requires it, then local codes; SNOMED CT is the Swedish edition (`http://snomed.info/sct/45991000052106`), which value set expansion and validation use; local code systems use Swedish (`sv`) as their default language, with English designations;
 - examples use `language = sv`.
 
-SE Base is FHIR R4. This guide is FHIR R5, as the modelling guidelines require, so its profiles cannot derive from the SE Base profiles; they reuse SE Base's identifier systems and follow its modelling where possible.
+VGR Base and SE Base are FHIR R4, so this guide is FHIR R4 too, rather than the R5 that the modelling guidelines ask for: a profile can only derive from a profile of the same FHIR version.

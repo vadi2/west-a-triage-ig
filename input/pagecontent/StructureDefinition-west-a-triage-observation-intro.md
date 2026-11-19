@@ -6,7 +6,7 @@ The elements below must always be present (mandatory) or must be supported when 
 
 #### Each WEST-A Triage Observation Must Have
 
-A status, the survey category, the code for an acuity assessment, the patient, the time of triage, the priority, and the chief complaint.
+A status, the survey category, the SNOMED CT code for triage (`425705009` *triagering*), the patient, the time of triage, the priority, and the chief complaint.
 
 #### Each WEST-A Triage Observation Must Support
 
@@ -20,27 +20,41 @@ The examples go from the smallest valid instance to a complete one. The complete
 
 #### The smallest triage you can send
 
-The priority goes in `valueCodeableConcept` and the chief complaint in a component whose code is SNOMED CT `1269489004` "Chief complaint". Both values are codes from this guide's code systems, with Swedish displays to match `language`:
+The priority goes in `valueCodeableConcept` and the chief complaint in a component whose code is SNOMED CT `1269489004` *sökorsak* (chief complaint). Both values are codes from this guide's code systems, with Swedish displays to match `language`:
 
 ```json
 {
   "resourceType": "Observation",
   "meta": {
-    "profile": ["https://vadi2.github.io/west-a-triage-ig/StructureDefinition/west-a-triage-observation"]
+    "profile": [
+      "https://vadi2.github.io/west-a-triage-ig/StructureDefinition/west-a-triage-observation"
+    ]
   },
   "language": "sv",
   "status": "final",
   "category": [
     {
       "coding": [
-        { "system": "http://terminology.hl7.org/CodeSystem/observation-category", "code": "survey" }
+        {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "survey",
+          "display": "Survey"
+        }
       ]
     }
   ],
   "code": {
-    "coding": [{ "system": "http://loinc.org", "code": "11283-9" }]
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "425705009",
+        "display": "triagering"
+      }
+    ]
   },
-  "subject": { "reference": "Patient/example-patient-personnummer" },
+  "subject": {
+    "reference": "Patient/example-patient-personnummer"
+  },
   "effectiveDateTime": "2026-11-19T08:42:00+01:00",
   "valueCodeableConcept": {
     "coding": [
@@ -54,7 +68,13 @@ The priority goes in `valueCodeableConcept` and the chief complaint in a compone
   "component": [
     {
       "code": {
-        "coding": [{ "system": "http://snomed.info/sct", "code": "1269489004" }]
+        "coding": [
+          {
+            "system": "http://snomed.info/sct",
+            "code": "1269489004",
+            "display": "sökorsak"
+          }
+        ]
       },
       "valueCodeableConcept": {
         "coding": [
@@ -78,24 +98,44 @@ The priority goes in `valueCodeableConcept` and the chief complaint in a compone
 {
   "resourceType": "Observation",
   "meta": {
-    "profile": ["https://vadi2.github.io/west-a-triage-ig/StructureDefinition/west-a-triage-observation"]
+    "profile": [
+      "https://vadi2.github.io/west-a-triage-ig/StructureDefinition/west-a-triage-observation"
+    ]
   },
   "language": "sv",
   "status": "final",
   "category": [
     {
       "coding": [
-        { "system": "http://terminology.hl7.org/CodeSystem/observation-category", "code": "survey" }
+        {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "survey",
+          "display": "Survey"
+        }
       ]
     }
   ],
   "code": {
-    "coding": [{ "system": "http://loinc.org", "code": "11283-9" }]
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "425705009",
+        "display": "triagering"
+      }
+    ]
   },
-  "subject": { "reference": "Patient/example-patient-personnummer" },
-  "encounter": { "reference": "Encounter/example-encounter-emergency" },
+  "subject": {
+    "reference": "Patient/example-patient-personnummer"
+  },
+  "encounter": {
+    "reference": "Encounter/example-encounter-emergency"
+  },
   "effectiveDateTime": "2026-11-19T08:42:00+01:00",
-  "performer": [{ "reference": "Practitioner/example-practitioner-triage-nurse" }],
+  "performer": [
+    {
+      "reference": "Practitioner/example-practitioner-triage-nurse"
+    }
+  ],
   "valueCodeableConcept": {
     "coding": [
       {
@@ -105,12 +145,26 @@ The priority goes in `valueCodeableConcept` and the chief complaint in a compone
       }
     ]
   },
-  "derivedFrom": [{ "reference": "Observation/example-news2" }],
-  "note": [{ "text": "Bröstsmärta, pågående med misstanke om AKS." }],
+  "derivedFrom": [
+    {
+      "reference": "Observation/example-news2"
+    }
+  ],
+  "note": [
+    {
+      "text": "Bröstsmärta, pågående med misstanke om AKS."
+    }
+  ],
   "component": [
     {
       "code": {
-        "coding": [{ "system": "http://snomed.info/sct", "code": "1269489004" }]
+        "coding": [
+          {
+            "system": "http://snomed.info/sct",
+            "code": "1269489004",
+            "display": "sökorsak"
+          }
+        ]
       },
       "valueCodeableConcept": {
         "coding": [

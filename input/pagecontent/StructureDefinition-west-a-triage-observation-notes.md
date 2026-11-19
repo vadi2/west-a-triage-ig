@@ -11,13 +11,13 @@ GET [base]/Observation/[id]
 **Find the triages of a patient, newest first**
 
 ```
-GET [base]/Observation?code=http://loinc.org|11283-9&subject=Patient/[id]&_sort=-date
+GET [base]/Observation?code=http://snomed.info/sct|425705009&subject=Patient/[id]&_sort=-date
 ```
 
 **Find the triages of an emergency department visit**
 
 ```
-GET [base]/Observation?code=http://loinc.org|11283-9&encounter=Encounter/[id]
+GET [base]/Observation?code=http://snomed.info/sct|425705009&encounter=Encounter/[id]
 ```
 
 **Record a triage**
@@ -44,7 +44,7 @@ If-Match: W/"1"   # the ETag from your last read; 412 if it changed since
 }
 ```
 
-Observation is not yet listed in a CapabilityStatement; the searches above use standard FHIR R5 search parameters.
+Observation is not yet listed in a CapabilityStatement; the searches above use standard FHIR R4 search parameters.
 
 ### Related
 

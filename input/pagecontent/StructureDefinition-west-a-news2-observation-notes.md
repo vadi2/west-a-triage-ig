@@ -33,7 +33,7 @@ POST [base]/Observation
 }
 ```
 
-Observation is not yet listed in a CapabilityStatement; the searches above use standard FHIR R5 search parameters.
+Observation is not yet listed in a CapabilityStatement; the searches above use standard FHIR R4 search parameters.
 
 ### Related
 

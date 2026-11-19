@@ -8,12 +8,12 @@
 
 ### Overview
 
-This page maps the patient administrative data that WEST-A uses to FHIR R5. The source is the WEST-A triage manual for adults, VGR version 2025:02:01. WEST-A has no registration form of its own. The administrative data comes from two places:
+This page maps the patient administrative data that WEST-A uses to FHIR R4. The source is the WEST-A triage manual for adults, VGR version 2025:02:01. WEST-A has no registration form of its own. The administrative data comes from two places:
 
 - the SBAR handover (page 49), which asks for the patient's name, age and, if available, personnummer;
 - the triage rules, which depend on the patient's age (pages 4, 43, 44 and 46) and sex (pages 3, 21-22 and 41).
 
-All of it maps to one resource: [WEST-A Patient](StructureDefinition-west-a-patient.html). Examples: [patient with a personnummer](Patient-example-patient-personnummer.html) and [patient with a samordningsnummer](Patient-example-patient-samordningsnummer.html).
+All of it maps to one resource: [WEST-A Patient](StructureDefinition-west-a-patient.html), which derives from the [VGR Base Patient](https://fhir.vgregion.se/ig/base/StructureDefinition-VGRBasePatient.html) and through it from the HL7 Sweden [SE Base Patient](http://hl7.se/fhir/ig/base/StructureDefinition-SEBasePatient.html). Examples: [patient with a personnummer](Patient-example-patient-personnummer.html), [patient with a samordningsnummer](Patient-example-patient-samordningsnummer.html) and [unidentified patient with a VGR reserve number](Patient-example-patient-lrid.html).
 
 Page numbers refer to the WEST-A PDF.
 
@@ -52,10 +52,24 @@ Page numbers refer to the WEST-A PDF.
   <td><code>Patient.identifier[nationelltReservnummer]</code><br/>system <code>http://electronichealth.se/identifier/nationelltReservnummer</code></td>
   <td>-</td>
 </tr>
+<tr>
+  <td>(not in WEST-A)</td>
+  <td>VGR local reserve number</td>
+  <td>VGR Base</td>
+  <td><code>Patient.identifier[LRID]</code><br/>system <code>https://fhir.vgregion.se/NamingSystem/LRID</code></td>
+  <td><code>19700101M081</code></td>
+</tr>
+<tr>
+  <td>(not in WEST-A)</td>
+  <td>superseded VGR reserve number</td>
+  <td>VGR Base</td>
+  <td><code>Patient.identifier[GRID]</code><br/>system <code>https://fhir.vgregion.se/NamingSystem/GRID</code></td>
+  <td>-</td>
+</tr>
 </tbody>
 </table>
 
-WEST-A says "eventuellt personnummer" because not every patient has one. Swedish care then uses a samordningsnummer, or a reserve number when the patient has neither or cannot be identified. These two slices come from Swedish practice and the HL7 Sweden SE Base profiles, not from WEST-A. The identifier system URIs are the ones SE Base defines.
+WEST-A says "eventuellt personnummer" because not every patient has one. Swedish care then uses a samordningsnummer, or a reserve number when the patient has neither or cannot be identified. These slices come from Swedish practice, not from WEST-A: the personnummer, samordningsnummer and national reserve number from SE Base, and the VGR reserve numbers LRID and GRID from VGR Base, which also checks their format. This guide adds format rules for the personnummer and the samordningsnummer.
 
 ### Age and sex
 
@@ -108,7 +122,7 @@ Age is not stored. WEST-A applies its age rules at the moment of triage, so a sy
 
 ### Data in WEST-A that is not patient administrative data
 
-These items appear near the administrative data in WEST-A but belong to other resources. They are not modelled yet.
+These items appear near the administrative data in WEST-A but belong to other resources. Apart from the triage colour, they are not modelled yet.
 
 <table class="grid">
 <thead>
@@ -121,14 +135,13 @@ These items appear near the administrative data in WEST-A but belong to other re
 <tr><td>frihetsberövad</td><td>deprived of liberty</td><td>p. 5</td><td>to decide: Flag or Observation</td></tr>
 <tr><td>eventuell allergi</td><td>allergy, if any</td><td>SBAR, p. 49</td><td>AllergyIntolerance</td></tr>
 <tr><td>eventuell smittorisk</td><td>infection risk, if any</td><td>SBAR, p. 49</td><td>Flag or Condition</td></tr>
-<tr><td>Röd / Orange / Gul</td><td>triage colour</td><td>pp. 3-5</td><td>Encounter.priority or Observation (triage result)</td></tr>
+<tr><td>Röd / Orange / Gul / Grön</td><td>triage colour</td><td>pp. 3-5</td><td>Observation: <a href="StructureDefinition-west-a-triage-observation.html">WEST-A Triage Observation</a></td></tr>
 </tbody>
 </table>
 
 ### Open questions
 
-1. **Reserve numbers.** The profile has a slice for the national reserve number from SE Base. Regions also issue their own reserve numbers, and their formats differ between regions. The system URI and format of the VGR reserve number are not known yet. Until they are, the national slice has no format rule and there is no reserve number example. A regional number can still be sent, because the slicing is open.
-2. **Unidentified patients.** An unconscious, unidentified patient has no known date of birth, but WEST-A still needs an estimated age. R5 `Patient` has no element for an estimated age. Options: leave `birthDate` out and record the estimated age as an Observation, or send an approximate year only.
-3. **Protected identity.** SE Base marks protected identity (*sekretessmarkering*, *skyddad folkbokföring*) in `meta.security`. WEST-A does not mention it. Should this profile carry it?
-4. **Check digit.** The format rules check the digits and the date, not the last (Luhn) check digit.
-5. **FHIR version.** SE Base is FHIR R4, so this R5 profile cannot derive from `SEBasePatient`. It reuses SE Base's identifier systems instead.
+1. **Unidentified patients.** An unconscious, unidentified patient has no known date of birth, but WEST-A still needs an estimated age. R4 `Patient` has no element for an estimated age. The [LRID example](Patient-example-patient-lrid.html) sends an estimated birth year only; the alternative is to leave `birthDate` out and record the estimated age as an Observation.
+2. **Protected identity.** SE Base marks protected identity (*sekretessmarkering*, *skyddad folkbokföring*) in `meta.security`. WEST-A does not mention it. Should this profile carry it?
+3. **Check digit.** The format rules check the digits and the date, not the last (Luhn) check digit.
+4. **National or regional reserve number.** VGR Base has both the national reserve number and VGR's own LRID. Which one does the VGR emergency department assign to an unidentified patient today?
