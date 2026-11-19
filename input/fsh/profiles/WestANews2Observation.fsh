@@ -6,20 +6,16 @@ Description: "WEST-A NEWS2 Observation profile, used to record the National Earl
 
 * obeys westa-obs-1 and westa-obs-2
 
-* category ^slicing.discriminator.type = #pattern
+* category ^slicing.discriminator.type = #value
 * category ^slicing.discriminator.path = "$this"
 * category ^slicing.rules = #open
 * category contains survey 1..1 MS
 * category[survey] = $observation-category#survey
 
 * code = $sct#1104051000000101 // Royal College of Physicians NEWS2 (National Early Warning Score 2) total score
-* subject 1..1 MS
-* subject only Reference(WestAPatient)
-* encounter MS
-* effective[x] 1..1 MS
+* insert WestAObservationContext
 * effective[x] only dateTime
-* performer MS
-* performer only Reference(Practitioner or PractitionerRole)
+* effective[x] ^short = "Time the score was calculated"
 
 * value[x] 1..1 MS
 * value[x] only integer
@@ -27,9 +23,11 @@ Description: "WEST-A NEWS2 Observation profile, used to record the National Earl
 * valueInteger ^maxValueInteger = 20
 * valueInteger ^short = "NEWS2 total score (0-20)"
 
+* derivedFrom MS
+* derivedFrom only Reference(WestARespiratoryRate or WestAOxygenSaturation or WestASupplementalOxygen or WestABloodPressure or WestAHeartRate or WestAConsciousness or WestABodyTemperature)
 * derivedFrom ^short = "The vital sign observations the scores are calculated from"
 
-* component ^slicing.discriminator.type = #pattern
+* component ^slicing.discriminator.type = #value
 * component ^slicing.discriminator.path = "code"
 * component ^slicing.rules = #open
 * component ^slicing.description = "One score per NEWS2 parameter"

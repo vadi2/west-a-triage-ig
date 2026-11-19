@@ -2,10 +2,13 @@ id: west-a.triage
 canonical: https://vadi2.github.io/west-a-triage-ig
 name: WestATriageIG
 title: WEST-A Triage FHIR Implementation Guide
-description: Unofficial FHIR R5 model of the data used in WEST-A, the adult emergency department triage system of Västra Götalandsregionen (VGR).
+description: Unofficial FHIR R4 model of the data used in WEST-A, the adult emergency department triage system of Västra Götalandsregionen (VGR).
 status: draft
 version: 0.1.0
-fhirVersion: 5.0.0
+fhirVersion: 4.0.1
+dependencies:
+  hl7se.fhir.base: 1.1.0
+  se.vgregion.fhir.base: 1.0.0
 copyrightYear: 2026+
 releaseLabel: ci-build
 license: CC0-1.0

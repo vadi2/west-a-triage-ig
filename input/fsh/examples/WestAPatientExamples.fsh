@@ -28,3 +28,14 @@ Description: "Adult patient who is not registered in Sweden and is identified by
 * name.text = "Karim Haddad"
 * gender = #male
 * birthDate = "1985-03-12"
+
+Instance: example-patient-lrid
+InstanceOf: WestAPatient
+Usage: #example
+Title: "Example WEST-A Patient - Unidentified, VGR reserve number"
+Description: "Unconscious man brought in without identity documents. The emergency department gives him a VGR local reserve number (LRID), built from an estimated birth date, M for man and a sequence number; the estimated birth year is the only birth date known."
+* language = #sv
+* identifier[LRID].system = "https://fhir.vgregion.se/NamingSystem/LRID"
+* identifier[LRID].value = "19700101M081"
+* gender = #male
+* birthDate = "1970"

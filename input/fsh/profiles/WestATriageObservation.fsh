@@ -4,22 +4,16 @@ Id: west-a-triage-observation
 Title: "WEST-A Triage Observation"
 Description: "WEST-A Triage Observation profile, used to record the triage priority (colour) and chief complaint that the triage nurse assigns with WEST-A at the emergency department"
 
-* category ^slicing.discriminator.type = #pattern
+* category ^slicing.discriminator.type = #value
 * category ^slicing.discriminator.path = "$this"
 * category ^slicing.rules = #open
 * category contains survey 1..1 MS
 * category[survey] = $observation-category#survey
 
-* code = $loinc#11283-9 // Acuity assessment [Function] at First encounter
-* subject 1..1 MS
-* subject only Reference(WestAPatient)
-* encounter MS
-  * ^short = "The emergency department visit"
-* effective[x] 1..1 MS
+* code = $sct#425705009 // Determination of acuity level (procedure), Swedish "triagering"
+* insert WestAObservationContext
 * effective[x] only dateTime
 * effective[x] ^short = "Time of triage; WEST-A's age rules use the patient's age at this time"
-* performer MS
-* performer only Reference(Practitioner or PractitionerRole)
 * performer ^short = "The triage nurse"
 
 * value[x] 1..1 MS
@@ -28,9 +22,9 @@ Description: "WEST-A Triage Observation profile, used to record the triage prior
 * value[x] ^short = "Triage priority: Röd | Orange | Gul | Grön"
 
 * derivedFrom MS
-* derivedFrom ^short = "The observations the priority is based on, such as NEWS2"
+* derivedFrom ^short = "The observations the priority is based on: the NEWS2 score, and any vital sign that sets the priority on its own"
 
-* component ^slicing.discriminator.type = #pattern
+* component ^slicing.discriminator.type = #value
 * component ^slicing.discriminator.path = "code"
 * component ^slicing.rules = #open
 * component contains chiefComplaint 1..1 MS

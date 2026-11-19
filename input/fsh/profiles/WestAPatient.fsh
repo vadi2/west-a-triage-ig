@@ -1,42 +1,40 @@
 Profile: WestAPatient
-Parent: Patient
+Parent: $VGRBasePatient
 Id: west-a-patient
 Title: "WEST-A Patient"
 Description: "WEST-A Patient profile, used to identify the adult patient who is triaged with WEST-A in the emergency department"
 
-// Every patient at the emergency department gets an identifier, a reserve number when the identity is unknown
+// The identifier slices come from SE Base (personnummer, samordningsnummer, nationelltReservnummer)
+// and VGR Base (LRID, GRID). Every patient at the emergency department gets an identifier,
+// a reserve number when the identity is unknown.
 * identifier 1..* MS
-* identifier ^slicing.discriminator.type = #value
-* identifier ^slicing.discriminator.path = "system"
-* identifier ^slicing.rules = #open
-* identifier ^slicing.description = "Ways a patient can be identified in Sweden"
-* identifier ^slicing.ordered = false
-* identifier contains
-    personnummer 0..1 MS and
-    samordningsnummer 0..1 MS and
-    nationelltReservnummer 0..1 MS
 
 * identifier[personnummer]
   * ^short = "Personal identity number (personnummer)"
   * ^definition = "Personal identity number assigned by the Swedish Tax Agency (Skatteverket) to people registered in Sweden. Corresponds to \"eventuellt personnummer\" in the WEST-A SBAR handover."
-  * system 1..1 MS
-  * system = $personnummer
+  * system MS
   * value 1..1 MS
   * value obeys westa-pat-1
 
 * identifier[samordningsnummer]
   * ^short = "Coordination number (samordningsnummer)"
   * ^definition = "Coordination number assigned by the Swedish Tax Agency to people who are not, or have not been, registered in Sweden."
-  * system 1..1 MS
-  * system = $samordningsnummer
+  * system MS
   * value 1..1 MS
   * value obeys westa-pat-2
 
 * identifier[nationelltReservnummer]
   * ^short = "National reserve number (nationellt reservnummer)"
-  * ^definition = "Temporary national reserve number, used when the patient has neither a personnummer nor a samordningsnummer, or the identity is not known (for example an unconscious patient)."
-  * system 1..1 MS
-  * system = $nationellt-reservnummer
+  * system MS
+  * value 1..1 MS
+
+* identifier[LRID]
+  * ^short = "VGR local reserve number (lokalt reservnummer, LRID)"
+  * ^definition = "Reserve number that VGR assigns when the patient has neither a personnummer nor a samordningsnummer, or the identity is not known (for example an unconscious patient)."
+  * value 1..1 MS
+
+* identifier[GRID]
+  * ^short = "Superseded VGR reserve number (gammalt reservnummer, GRID)"
   * value 1..1 MS
 
 * name MS
