@@ -27,7 +27,7 @@ Description: "NEWS2 at triage: respiration rate 22 (2), oxygen saturation 95% on
 * language = #sv
 * status = #final
 * category[survey] = $observation-category#survey
-* code = $sct#1104051000000101 "Royal College of Physicians NEWS2 (National Early Warning Score 2) total score"
+* code = $sct#1104051000000101 "poäng enligt NEWS2, totalpoäng"
 * subject = Reference(Patient/example-patient-personnummer)
 * encounter = Reference(Encounter/example-encounter-emergency)
 * effectiveDateTime = "2026-11-19T08:40:00+01:00"
