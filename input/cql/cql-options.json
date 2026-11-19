@@ -1,0 +1,20 @@
+{
+  "options": [
+    "EnableAnnotations",
+    "EnableLocators",
+    "DisableListDemotion",
+    "DisableListPromotion"
+  ],
+  "formats": [
+    "XML",
+    "JSON"
+  ],
+  "validateUnits": true,
+  "verifyOnly": false,
+  "enableCqlOnly": false,
+  "compatibilityLevel": "1.5",
+  "errorLevel": "Info",
+  "signatureLevel": "Overloads",
+  "analyzeDataRequirements": false,
+  "collapseDataRequirements": false
+}
