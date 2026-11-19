@@ -21,7 +21,7 @@ code "Blood pressure panel": '85354-9' from "LOINC" display 'Blood pressure pane
 code "Heart rate": '8867-4' from "LOINC" display 'Heart rate'
 code "Body temperature": '8310-5' from "LOINC" display 'Body temperature'
 code "Delivered oxygen flow rate": '427081008' from "SNOMED CT" display 'Delivered oxygen flow rate'
-code "ACVPU scale score": '1104441000000107' from "SNOMED CT" display 'Alert Confusion Voice Pain Unresponsive scale score'
+code "ACVPU scale score": '1104441000000107' from "SNOMED CT"
 
 // Scale 2 is for a patient with known respiratory failure (for example severe COPD),
 // on a physician's order; the default is scale 1

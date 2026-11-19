@@ -18,14 +18,14 @@ RuleSet: WestAGuidelineHeader
 * experimental = true
 * subjectCodeableConcept = $resource-types#Patient
 * relatedArtifact[+].type = #citation
-* relatedArtifact[=].display = "WEST-A triage manual for adults without referral support (WEST A utan hänvisningsstöd), Västra Götalandsregionen, version 2025:02:01"
+* relatedArtifact[=].citation = "WEST-A triage manual for adults without referral support (WEST A utan hänvisningsstöd), Västra Götalandsregionen, version 2025:02:01"
 
 RuleSet: WestATriggerVitalSign(profile)
 * action[0].trigger[0].data[+].type = #Observation
 * action[0].trigger[0].data[=].profile = Canonical({profile})
 
-RuleSet: WestAPriorityAction(index, code, display, description, condition)
-* action[1].action[{index}].title = "{display}"
+RuleSet: WestAPriorityAction(index, code, title, display, description, condition)
+* action[1].action[{index}].title = "{title}"
 * action[1].action[{index}].description = "{description}"
 * action[1].action[{index}].code = TriagePriorityCS#{code} "{display}"
 * action[1].action[{index}].condition.kind = #applicability
@@ -133,10 +133,10 @@ Description: "WEST-A triage of an adult at the emergency department: calculate N
 * action[1].condition.expression.language = #text/cql-identifier
 * action[1].condition.expression.expression = "Has Proposed Priority"
 * action[1].selectionBehavior = #exactly-one
-* insert WestAPriorityAction(0, 1, Röd, NEWS2 7 or more (high clinical risk\)\, or a red warning symptom, Proposed Priority Is Red)
-* insert WestAPriorityAction(1, 2, Orange, NEWS2 5-6 (medium clinical risk\)\, or an orange warning symptom, Proposed Priority Is Orange)
-* insert WestAPriorityAction(2, 3, Gul, A single NEWS2 parameter scoring 3 (low-medium clinical risk\)\, a yellow warning symptom\, or a need that gives yellow as the lowest priority, Proposed Priority Is Yellow)
-* insert WestAPriorityAction(3, 4, Grön, NEWS2 0-4 (low clinical risk\) and nothing more urgent, Proposed Priority Is Green)
+* insert WestAPriorityAction(0, 1, Röd, Red, NEWS2 7 or more (high clinical risk\)\, or a red warning symptom, Proposed Priority Is Red)
+* insert WestAPriorityAction(1, 2, Orange, Orange, NEWS2 5-6 (medium clinical risk\)\, or an orange warning symptom, Proposed Priority Is Orange)
+* insert WestAPriorityAction(2, 3, Gul, Yellow, A single NEWS2 parameter scoring 3 (low-medium clinical risk\)\, a yellow warning symptom\, or a need that gives yellow as the lowest priority, Proposed Priority Is Yellow)
+* insert WestAPriorityAction(3, 4, Grön, Green, NEWS2 0-4 (low clinical risk\) and nothing more urgent, Proposed Priority Is Green)
 
 Instance: west-a-record-triage-priority
 InstanceOf: $cpg-recordinferenceactivity

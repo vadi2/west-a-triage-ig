@@ -16,10 +16,10 @@ include WestANEWS2 version '0.1.0' called NEWS2
 
 codesystem "WEST-A Triage Priority": 'https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs'
 
-code "Red": '1' from "WEST-A Triage Priority" display 'Röd'
+code "Red": '1' from "WEST-A Triage Priority" display 'Red'
 code "Orange": '2' from "WEST-A Triage Priority" display 'Orange'
-code "Yellow": '3' from "WEST-A Triage Priority" display 'Gul'
-code "Green": '4' from "WEST-A Triage Priority" display 'Grön'
+code "Yellow": '3' from "WEST-A Triage Priority" display 'Yellow'
+code "Green": '4' from "WEST-A Triage Priority" display 'Green'
 
 // The priority of the most urgent warning symptom the nurse found in the chief complaint
 // algorithm, a code from the WEST-A triage priority code system; null when not yet assessed
