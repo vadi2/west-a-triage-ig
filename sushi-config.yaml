@@ -20,11 +20,15 @@ pages:
     title: Home
   west-a-patient-mapping.md:
     title: WEST-A Patient Mapping
+  west-a-triage-mapping.md:
+    title: WEST-A Triage Mapping
   changelog.md:
     title: Changelog
 
 menu:
   Home: index.html
-  Mapping: west-a-patient-mapping.html
+  Mapping:
+    Patient: west-a-patient-mapping.html
+    Triage: west-a-triage-mapping.html
   Artifacts: artifacts.html
   Changelog: changelog.html
