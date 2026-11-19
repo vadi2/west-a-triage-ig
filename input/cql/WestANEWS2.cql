@@ -272,7 +272,7 @@ define function "Clinical Risk For"(scale2 Boolean):
     when "Total Score For"(scale2) is null then null
     when "Total Score For"(scale2) >= 7 then 'high'
     when "Total Score For"(scale2) >= 5 then 'medium'
-    when exists ("Parameter Scores For"(scale2) S where S = 3) then 'low-medium'
+    when exists (("Parameter Scores For"(scale2)) S where S = 3) then 'low-medium'
     else 'low'
   end
 
