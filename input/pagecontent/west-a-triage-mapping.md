@@ -22,7 +22,7 @@ All of them refer to the [WEST-A Patient](StructureDefinition-west-a-patient.htm
 
 The triage nurse chooses the chief complaint (*sökorsak*) and checks its warning symptoms (*varningssymtom*, red, orange or yellow) together with the vital parameters (NEWS2, whose clinical risk gives a [colour](#news2)). The clinical assessment (*klinisk bedömning*) has the same weight as these, but a red or orange patient is never given a lower priority because of it (p. 8). Some needs and processes give yellow as the lowest priority: frail elderly (p. 46), likely admission (p. 47), and violence or sexual assault (p. 48).
 
-FHIR records the outcome, and the [computable guidelines](west-a-computable-guidelines.html) calculate the parts of the rules that can be calculated: the priority in `Observation.value`, the complaint in `component[chiefComplaint]`, and the NEWS2 in `derivedFrom`. The warning symptom that decided the priority is not coded yet (see [open questions](#open-questions)).
+FHIR records the outcome: the priority in `Observation.value`, the complaint in `component[chiefComplaint]`, and the NEWS2 in `derivedFrom`. The [computable guidelines](west-a-computable-guidelines.html) calculate the parts of the rules that can be calculated. The warning symptom that decided the priority is not coded yet (see [open questions](#open-questions)).
 
 ### Triage priority
 

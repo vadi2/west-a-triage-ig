@@ -24,7 +24,8 @@ code "Delivered oxygen flow rate": '427081008' from "SNOMED CT" display 'Deliver
 code "ACVPU scale score": '1104441000000107' from "SNOMED CT"
 
 // Scale 2 is for a patient with known respiratory failure (for example severe COPD),
-// on a physician's order; the default is scale 1
+// on a physician's order; the default is scale 1. A library that includes this one cannot
+// set this parameter, so it passes its own to the "... For" functions below.
 parameter "Use Oxygen Saturation Scale 2" Boolean default false
 
 context Patient
@@ -33,15 +34,31 @@ context Patient
  * The latest final observation of each vital parameter
  */
 
+// The time of an observation: effectiveDateTime or effectiveInstant, or the end (else the
+// start) of effectivePeriod
+define function "Effective Time"(observation Observation):
+  Coalesce(
+    (observation.effective as FHIR.dateTime).value,
+    (observation.effective as FHIR.instant).value,
+    (observation.effective as FHIR.Period)."end".value,
+    (observation.effective as FHIR.Period).start.value
+  )
+
 define function "Latest"(observations List<Observation>):
   Last(
     observations O
       where O.status.value in { 'final', 'amended', 'corrected' }
-      sort by (effective as FHIR.dateTime).value
-  )
+      return all Tuple { observation: O, time: "Effective Time"(O) }
+      sort by time
+  ).observation
 
-define function "Quantity Value"(observation Observation):
-  (observation.value as FHIR.Quantity).value.value
+// The value of a quantity in the given UCUM unit; null in any other unit, so that a value
+// in the wrong unit counts as not measured rather than being scored on the wrong scale
+define function "Value In"(quantity FHIR.Quantity, unit String):
+  if quantity.code.value = unit then quantity.value.value else null
+
+define function "Quantity Value"(observation Observation, unit String):
+  "Value In"(observation.value as FHIR.Quantity, unit)
 
 define "Respiration Rate Observation":
   "Latest"([Observation: "Respiratory rate"])
@@ -70,15 +87,15 @@ define "Body Temperature Observation":
 
 // breaths per minute
 define "Respiration Rate":
-  "Quantity Value"("Respiration Rate Observation")
+  "Quantity Value"("Respiration Rate Observation", '/min')
 
 // percent
 define "Oxygen Saturation":
-  "Quantity Value"("Oxygen Saturation Observation")
+  "Quantity Value"("Oxygen Saturation Observation", '%')
 
 // litres per minute, 0 for room air
 define "Oxygen Flow Rate":
-  "Quantity Value"("Supplemental Oxygen Observation")
+  "Quantity Value"("Supplemental Oxygen Observation", 'L/min')
 
 define "On Supplemental Oxygen":
   "Oxygen Flow Rate" > 0
@@ -92,12 +109,12 @@ define "Systolic Blood Pressure":
           where K.system.value = 'http://loinc.org'
             and K.code.value = '8480-6'
       )
-      return (C.value as FHIR.Quantity).value.value
+      return "Value In"(C.value as FHIR.Quantity, 'mm[Hg]')
   )
 
 // beats per minute
 define "Pulse":
-  "Quantity Value"("Heart Rate Observation")
+  "Quantity Value"("Heart Rate Observation", '/min')
 
 // true for A (SNOMED CT 248234008 Mentally alert), false for C, V, P or U
 define "Alert":
@@ -110,11 +127,13 @@ define "Alert":
 
 // degrees Celsius
 define "Temperature":
-  "Quantity Value"("Body Temperature Observation")
+  "Quantity Value"("Body Temperature Observation", 'Cel')
 
 /*
  * The NEWS2 chart (WEST-A p. 6): one function per parameter, from a measured value to a score.
- * Each returns null when the value is missing.
+ * Each returns null when the value is missing. The chart gives whole numbers, and tenths of a
+ * degree for temperature, so a value is rounded to that precision before it is scored
+ * (half up): pulse 40.3 scores as 40, temperature 35.04 as 35.0.
  */
 
 define function "Score Respiration Rate"(rate Decimal):
@@ -201,39 +220,41 @@ define function "Score Temperature"(temperature Decimal):
  */
 
 define "Respiration Rate Score":
-  "Score Respiration Rate"("Respiration Rate")
+  "Score Respiration Rate"(Round("Respiration Rate"))
 
 define "Oxygen Saturation Scale 1 Score":
-  if "Use Oxygen Saturation Scale 2" then null
-  else "Score Oxygen Saturation Scale 1"("Oxygen Saturation")
+  "Score Oxygen Saturation Scale 1"(Round("Oxygen Saturation"))
 
 define "Oxygen Saturation Scale 2 Score":
-  if "Use Oxygen Saturation Scale 2"
-    then "Score Oxygen Saturation Scale 2"("Oxygen Saturation", "On Supplemental Oxygen")
-  else null
-
-define "Oxygen Saturation Score":
-  Coalesce("Oxygen Saturation Scale 1 Score", "Oxygen Saturation Scale 2 Score")
+  "Score Oxygen Saturation Scale 2"(Round("Oxygen Saturation"), "On Supplemental Oxygen")
 
 define "Supplemental Oxygen Score":
   "Score Supplemental Oxygen"("On Supplemental Oxygen")
 
 define "Systolic Blood Pressure Score":
-  "Score Systolic Blood Pressure"("Systolic Blood Pressure")
+  "Score Systolic Blood Pressure"(Round("Systolic Blood Pressure"))
 
 define "Pulse Score":
-  "Score Pulse"("Pulse")
+  "Score Pulse"(Round("Pulse"))
 
 define "Consciousness Score":
   "Score Consciousness"("Alert")
 
 define "Temperature Score":
-  "Score Temperature"("Temperature")
+  "Score Temperature"(Round("Temperature", 1))
 
-define "Parameter Scores":
+/*
+ * The total and the clinical risk, as functions of the oxygen saturation scale, so that a
+ * library that includes this one can choose the scale
+ */
+
+define function "Oxygen Saturation Score For"(scale2 Boolean):
+  if scale2 then "Oxygen Saturation Scale 2 Score" else "Oxygen Saturation Scale 1 Score"
+
+define function "Parameter Scores For"(scale2 Boolean):
   {
     "Respiration Rate Score",
-    "Oxygen Saturation Score",
+    "Oxygen Saturation Score For"(scale2),
     "Supplemental Oxygen Score",
     "Systolic Blood Pressure Score",
     "Pulse Score",
@@ -241,29 +262,42 @@ define "Parameter Scores":
     "Temperature Score"
   }
 
+// NEWS2 is only calculated when all seven parameters are measured
+define function "Total Score For"(scale2 Boolean):
+  if Count("Parameter Scores For"(scale2)) = 7 then Sum("Parameter Scores For"(scale2)) else null
+
+// WEST-A p. 6: 7 or more high, 5-6 medium, a single parameter scoring 3 low-medium, 0-4 low
+define function "Clinical Risk For"(scale2 Boolean):
+  case
+    when "Total Score For"(scale2) is null then null
+    when "Total Score For"(scale2) >= 7 then 'high'
+    when "Total Score For"(scale2) >= 5 then 'medium'
+    when exists ("Parameter Scores For"(scale2) S where S = 3) then 'low-medium'
+    else 'low'
+  end
+
 /*
- * The total and the clinical risk
+ * The scores on the scale that the parameter selects: the components of the WEST-A NEWS2
+ * Observation, the total and the clinical risk
  */
 
-// NEWS2 is only calculated when all seven parameters are measured
+define "Oxygen Saturation Score":
+  "Oxygen Saturation Score For"("Use Oxygen Saturation Scale 2")
+
+define "Parameter Scores":
+  "Parameter Scores For"("Use Oxygen Saturation Scale 2")
+
 define "Has All Parameters":
   Count("Parameter Scores") = 7
 
 define "NEWS2 Total Score":
-  if "Has All Parameters" then Sum("Parameter Scores") else null
+  "Total Score For"("Use Oxygen Saturation Scale 2")
 
 define "Any Parameter Scores 3":
   exists ("Parameter Scores" S where S = 3)
 
-// WEST-A p. 6: 7 or more high, 5-6 medium, a single parameter scoring 3 low-medium, 0-4 low
 define "NEWS2 Clinical Risk":
-  case
-    when "NEWS2 Total Score" is null then null
-    when "NEWS2 Total Score" >= 7 then 'high'
-    when "NEWS2 Total Score" >= 5 then 'medium'
-    when "Any Parameter Scores 3" then 'low-medium'
-    else 'low'
-  end
+  "Clinical Risk For"("Use Oxygen Saturation Scale 2")
 
 // The description of the task that proposes to record the NEWS2 Observation
 define "NEWS2 Summary":

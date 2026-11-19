@@ -22,9 +22,11 @@ RuleSet: WestAGuidelineHeader
 // a relatedArtifact citation without a url renders as an empty link.
 * purpose = "Source: the WEST-A triage manual for adults without referral support (WEST A utan hänvisningsstöd), Västra Götalandsregionen, version 2025:02:01"
 
+// One trigger per vital sign: the data requirements of one trigger must all be met together
 RuleSet: WestATriggerVitalSign(profile)
-* action[0].trigger[0].data[+].type = #Observation
-* action[0].trigger[0].data[=].profile = Canonical({profile})
+* action[0].trigger[+].type = #data-added
+* action[0].trigger[=].data[0].type = #Observation
+* action[0].trigger[=].data[0].profile = Canonical({profile})
 
 RuleSet: WestAPriorityAction(index, code, title, display, description, condition)
 * action[1].action[{index}].title = "{title}"
@@ -76,11 +78,10 @@ Description: "Event-condition-action rule that calculates NEWS2 when a vital sig
 * name = "WestANEWS2Calculation"
 * title = "WEST-A NEWS2 Calculation"
 * type = $plan-definition-type#eca-rule
-* description = "When a WEST-A vital sign observation is recorded and all seven NEWS2 parameters have been measured, proposes to record a WEST-A NEWS2 Observation with the scores calculated by the WEST-A NEWS2 logic. The NEWS2 Observation references the vital sign observations in derivedFrom."
+* description = "When a WEST-A vital sign observation is recorded and all seven NEWS2 parameters have been measured, proposes to record a WEST-A NEWS2 Observation with the scores that the WEST-A NEWS2 logic calculates."
 * library = Canonical(WestANEWS2)
 * action[0].title = "Calculate NEWS2"
 * action[0].description = "Calculate the NEWS2 parameter scores, the total and the clinical risk from the latest vital signs, and record them as a WEST-A NEWS2 Observation"
-* action[0].trigger[0].type = #data-added
 * insert WestATriggerVitalSign(WestARespiratoryRate)
 * insert WestATriggerVitalSign(WestAOxygenSaturation)
 * insert WestATriggerVitalSign(WestASupplementalOxygen)
@@ -101,7 +102,7 @@ Description: "Proposes to record the calculated NEWS2 as a WEST-A NEWS2 Observat
 * insert WestAGuidelineHeader
 * name = "WestARecordNEWS2"
 * title = "WEST-A Record NEWS2"
-* description = "Proposes a task to record a WEST-A NEWS2 Observation with the parameter scores and the total that the WEST-A NEWS2 logic calculates, derived from the vital sign observations they come from."
+* description = "Proposes a task to record a WEST-A NEWS2 Observation. The description of the task gives the total and the clinical risk; the CDS service records the Observation from the parameter scores and the total that the WEST-A NEWS2 logic calculates, with the vital sign observations in derivedFrom."
 * library = Canonical(WestANEWS2)
 * kind = #Task
 * profile = $cpg-recordinferencetask
@@ -121,13 +122,17 @@ Description: "WEST-A triage of an adult at the emergency department: calculate N
 * name = "WestATriage"
 * title = "WEST-A Triage"
 * type = $plan-definition-type#clinical-protocol
-* description = "The calculable part of a WEST-A triage. First NEWS2 is calculated from the vital signs; then a triage priority is proposed, which is the most urgent of the colour of the NEWS2 clinical risk, the priority of the warning symptoms of the chief complaint, and yellow for the needs and processes that give yellow as the lowest priority. The triage nurse records the final priority as a WEST-A Triage Observation."
+* description = "The calculable part of a WEST-A triage. First NEWS2 is calculated from the vital signs; then, once the nurse has assessed the warning symptoms of the chief complaint, a triage priority is proposed, which is the most urgent of the colour of the NEWS2 clinical risk, the priority of the warning symptoms, and yellow for the needs and processes that give yellow as the lowest priority. The triage nurse records the final priority as a WEST-A Triage Observation."
 * library = Canonical(WestATriage)
+* action[0].id = "calculate-news2"
 * action[0].title = "Calculate NEWS2"
 * action[0].description = "Calculate NEWS2 from the vital signs measured at triage"
 * action[0].definitionCanonical = Canonical(west-a-news2-calculation)
 * action[1].title = "Propose the triage priority"
-* action[1].description = "When NEWS2 has been calculated, propose the most urgent of the priority from the vital parameters, the priority of the warning symptoms of the chief complaint, and yellow for frail elderly, likely admission, or violence or sexual assault"
+* action[1].id = "propose-priority"
+* action[1].description = "When NEWS2 has been calculated and the warning symptoms of the chief complaint have been assessed, propose the most urgent of the priority from the vital parameters, the priority of the warning symptoms, and yellow for frail elderly, likely admission, or violence or sexual assault"
+* action[1].relatedAction[0].actionId = "calculate-news2"
+* action[1].relatedAction[0].relationship = #after-end
 * action[1].trigger[0].type = #data-added
 * action[1].trigger[0].data[0].type = #Observation
 * action[1].trigger[0].data[0].profile = Canonical(WestANews2Observation)
@@ -148,7 +153,7 @@ Description: "Proposes to record the proposed WEST-A triage priority as a WEST-A
 * insert WestAGuidelineHeader
 * name = "WestARecordTriagePriority"
 * title = "WEST-A Record Triage Priority"
-* description = "Proposes a task to record a WEST-A Triage Observation with the proposed priority, derived from the WEST-A NEWS2 Observation. The triage nurse confirms or raises the priority and adds the chief complaint."
+* description = "Proposes a task to record a WEST-A Triage Observation. The description of the task gives the proposed priority, which the WEST-A triage logic calculates; the triage nurse confirms or raises it, and records it with the chief complaint and the WEST-A NEWS2 Observation in derivedFrom."
 * library = Canonical(WestATriage)
 * kind = #Task
 * profile = $cpg-recordinferencetask

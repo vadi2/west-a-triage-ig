@@ -70,36 +70,43 @@ const BASELINE = {
 const quantity = (value, unit) => ({ value, unit, system: UCUM, code: unit });
 const codeable = (...codings) => ({ coding: codings.map(([system, code]) => ({ system, code })) });
 
-function observation(patientId, id, parameter, value, minutesEarlier = 0, status = 'final') {
+// One vital sign observation. options: minutesEarlier (negative for later than NOW), status,
+// unit (instead of the profile's unit), period (timed with effectivePeriod, ending then)
+function observation(patientId, id, parameter, value, options = {}) {
+  const { minutesEarlier = 0, status = 'final', unit, period = false } = options;
+  const time = new Date(NOW - minutesEarlier * 60000);
   const obs = {
     resourceType: 'Observation',
     id,
     status,
     subject: { reference: `Patient/${patientId}` },
-    effectiveDateTime: new Date(NOW - minutesEarlier * 60000).toISOString(),
+    ...(period
+      ? { effectivePeriod: { start: new Date(time - 5 * 60000).toISOString(), end: time.toISOString() } }
+      : { effectiveDateTime: time.toISOString() }),
   };
+  const q = (defaultUnit) => quantity(value, unit ?? defaultUnit);
   switch (parameter) {
     case 'respirationRate':
-      return { ...obs, code: codeable([LOINC, '9279-1'], [SCT, '86290005']), valueQuantity: quantity(value, '/min') };
+      return { ...obs, code: codeable([LOINC, '9279-1'], [SCT, '86290005']), valueQuantity: q('/min') };
     case 'oxygenSaturation':
-      return { ...obs, code: codeable([LOINC, '2708-6'], [SCT, '431314004']), valueQuantity: quantity(value, '%') };
+      return { ...obs, code: codeable([LOINC, '2708-6'], [SCT, '431314004']), valueQuantity: q('%') };
     case 'oxygenFlow':
-      return { ...obs, code: codeable([SCT, '427081008']), valueQuantity: quantity(value, 'L/min') };
+      return { ...obs, code: codeable([SCT, '427081008']), valueQuantity: q('L/min') };
     case 'systolic':
       return {
         ...obs,
         code: codeable([LOINC, '85354-9'], [SCT, '75367002']),
         component: [
-          { code: codeable([LOINC, '8480-6'], [SCT, '271649006']), valueQuantity: quantity(value, 'mm[Hg]') },
+          { code: codeable([LOINC, '8480-6'], [SCT, '271649006']), valueQuantity: q('mm[Hg]') },
           { code: codeable([LOINC, '8462-4'], [SCT, '271650006']), valueQuantity: quantity(80, 'mm[Hg]') },
         ],
       };
     case 'pulse':
-      return { ...obs, code: codeable([LOINC, '8867-4'], [SCT, '364075005']), valueQuantity: quantity(value, '/min') };
+      return { ...obs, code: codeable([LOINC, '8867-4'], [SCT, '364075005']), valueQuantity: q('/min') };
     case 'consciousness':
       return { ...obs, code: codeable([SCT, '1104441000000107']), valueCodeableConcept: codeable([SCT, value]) };
     case 'temperature':
-      return { ...obs, code: codeable([LOINC, '8310-5'], [SCT, '386725007']), valueQuantity: quantity(value, 'Cel') };
+      return { ...obs, code: codeable([LOINC, '8310-5'], [SCT, '386725007']), valueQuantity: q('Cel') };
     default:
       throw new Error(`Unknown parameter ${parameter}`);
   }
@@ -112,15 +119,20 @@ function bundleFor(patientId, vitals, extra = []) {
     if (value !== null) entries.push(observation(patientId, `${patientId}-${++n}`, parameter, value));
   }
   for (const e of extra) {
-    entries.push(observation(patientId, `${patientId}-${++n}`, e.parameter, e.value, e.minutesEarlier, e.status));
+    const { parameter, value, ...options } = e;
+    entries.push(observation(patientId, `${patientId}-${++n}`, parameter, value, options));
   }
   return { resourceType: 'Bundle', type: 'collection', entry: entries.map((resource) => ({ resource })) };
 }
 
 // ---------------------------------------------------------------- the reference chart
 
+// The chart gives whole numbers, and tenths of a degree for temperature: a value between
+// two steps is rounded to the step, half up, as the CQL does
 function lookup(table, value) {
   if (value === null || value === undefined) return null;
+  const decimals = table.step < 1 ? 1 : 0;
+  value = Math.round(Number((value * 10 ** decimals).toFixed(6))) / 10 ** decimals;
   const band = table.bands.find(
     (b) => (b.min === undefined || value >= b.min - 1e-9) && (b.max === undefined || value <= b.max + 1e-9)
   );
@@ -132,11 +144,17 @@ function lookup(table, value) {
 function expectedNews2(vitals, scale2) {
   const p = chart.parameters;
   const onOxygen = vitals.oxygenFlow === null ? null : vitals.oxygenFlow > 0;
-  const scale2Table = onOxygen ? p.oxygenSaturationScale2OnOxygen : p.oxygenSaturationScale2OnAir;
+  // on scale 2, 93% or more scores differently on air and on oxygen, so it cannot be scored
+  // when the oxygen is not recorded; below 93% both tables agree
+  const scale2Score = () => {
+    if (onOxygen !== null) return lookup(onOxygen ? p.oxygenSaturationScale2OnOxygen : p.oxygenSaturationScale2OnAir, vitals.oxygenSaturation);
+    const air = lookup(p.oxygenSaturationScale2OnAir, vitals.oxygenSaturation);
+    return air === lookup(p.oxygenSaturationScale2OnOxygen, vitals.oxygenSaturation) ? air : null;
+  };
   const scores = {
     'Respiration Rate Score': lookup(p.respirationRate, vitals.respirationRate),
-    'Oxygen Saturation Scale 1 Score': scale2 ? null : lookup(p.oxygenSaturationScale1, vitals.oxygenSaturation),
-    'Oxygen Saturation Scale 2 Score': scale2 ? lookup(scale2Table, vitals.oxygenSaturation) : null,
+    'Oxygen Saturation Scale 1 Score': lookup(p.oxygenSaturationScale1, vitals.oxygenSaturation),
+    'Oxygen Saturation Scale 2 Score': scale2Score(),
     'Supplemental Oxygen Score': onOxygen === null ? null : onOxygen ? chart.supplementalOxygen.onOxygen : chart.supplementalOxygen.onAir,
     'Systolic Blood Pressure Score': lookup(p.systolicBloodPressure, vitals.systolic),
     'Pulse Score': lookup(p.pulse, vitals.pulse),
@@ -154,6 +172,7 @@ function expectedNews2(vitals, scale2) {
   ];
   const complete = seven.every((s) => s !== null);
   const total = complete ? seven.reduce((a, b) => a + b, 0) : null;
+  scores['Oxygen Saturation Score'] = seven[1];
   scores['NEWS2 Total Score'] = total;
   scores['NEWS2 Clinical Risk'] =
     total === null ? null : total >= 7 ? 'high' : total >= 5 ? 'medium' : seven.includes(3) ? 'low-medium' : 'low';
@@ -248,20 +267,39 @@ function exampleCase() {
 
 // ---------------------------------------------------------------- running
 
+// A triage priority code is compared by its code alone; a code from any other system
+// keeps its system, so that it cannot match an expected priority
 const normalize = (v) =>
   v === undefined || v === null ? null
   : Array.isArray(v) ? v.map(normalize)
-  : typeof v === 'object' && 'code' in v && 'system' in v ? v.code
+  : typeof v === 'object' && 'code' in v && 'system' in v ? (v.system === PRIORITY_CS ? v.code : `${v.system}|${v.code}`)
   : v;
 
 const same = (a, b) => (typeof a === 'number' && typeof b === 'number' ? Math.abs(a - b) < 1e-9 : a === b);
 
+// The parameters each library declares. Every one is passed, as null (false for a Boolean)
+// when the case does not set it: cql-execution 3.3.2 returns the parameter definition
+// itself for a parameter that is not passed, and ignores the default.
+const declared = (name) =>
+  Object.fromEntries((elm[name].library.parameters?.def ?? []).map((d) => [d.name, d.parameterTypeSpecifier?.name]));
+const BOOLEAN = '{urn:hl7-org:elm-types:r1}Boolean';
+
 function cqlParameters(name, parameters) {
+  const known = new Set(['WestANEWS2', 'WestATriage'].flatMap((n) => Object.keys(declared(n))));
+  for (const key of Object.keys(parameters ?? {})) {
+    if (!known.has(key)) throw new Error(`unknown CQL parameter "${key}"`);
+  }
   const out = {};
-  for (const [key, value] of Object.entries(parameters ?? {})) {
-    if (key === 'Use Oxygen Saturation Scale 2' && name === 'WestANEWS2') out[key] = value;
-    if (key === 'Complaint Priority' && name === 'WestATriage') out[key] = new cql.Code(value, PRIORITY_CS);
-    if (key === 'Yellow As Lowest Priority' && name === 'WestATriage') out[key] = value;
+  for (const [key, type] of Object.entries(declared(name))) {
+    const value = (parameters ?? {})[key];
+    if (value === undefined || value === null) {
+      out[key] = type === BOOLEAN ? false : null;
+    } else if (key === 'Complaint Priority') {
+      const [system, code] = value.includes('|') ? value.split('|') : [PRIORITY_CS, value];
+      out[key] = new cql.Code(code, system);
+    } else {
+      out[key] = value;
+    }
   }
   return out;
 }
@@ -280,9 +318,6 @@ async function run(testCase, index) {
   const patientId = testCase.patientId ?? `case-${index}`;
   const vitals = { ...BASELINE, ...(testCase.vitals ?? {}) };
   const bundle = testCase.bundle ?? bundleFor(patientId, vitals, testCase.extra);
-  if ((testCase.parameters ?? {})['Use Oxygen Saturation Scale 2'] && testCase.expect.WestATriage) {
-    throw new Error(`${testCase.name}: WestATriage cases cannot set the scale 2 parameter of the included NEWS2 library`);
-  }
   const results = {};
   const failures = [];
   for (const name of ['WestANEWS2', 'WestATriage']) {
@@ -300,7 +335,12 @@ async function run(testCase, index) {
   return failures;
 }
 
-const all = [...boundaryCases(), ...scenarios, exampleCase()];
+const boundaries = boundaryCases();
+if (boundaries.length < 50 || scenarios.length < 20) {
+  console.log(`::error::too few CQL test cases: ${boundaries.length} chart cases and ${scenarios.length} scenarios`);
+  process.exit(1);
+}
+const all = [...boundaries, ...scenarios, exampleCase()];
 let failed = 0;
 for (const [index, testCase] of all.entries()) {
   let failures;
