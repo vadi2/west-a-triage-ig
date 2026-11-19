@@ -16,13 +16,13 @@ jobs:
       JAVA_TOOL_OPTIONS: "-Xmx6g"
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: "20"
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "17"
@@ -58,11 +58,36 @@ jobs:
         if: ${{ !cancelled() && hashFiles('output/package.tgz') != '' }}
         run: |
           python3 .github/scripts/extract_page_json.py input/pagecontent page-json
-          if ls page-json/*.json >/dev/null 2>&1; then
-            java -jar input-cache/validator_cli.jar page-json/*.json \
-              -version 5.0.0 -ig output/package.tgz | tee page-json/validation.txt
-            ! grep -q "\*FAILURE\*" page-json/validation.txt
-          fi
+          # Validate each file against the profile in its meta.profile, so a
+          # missing or unresolvable profile fails instead of falling back to base FHIR.
+          status=0
+          for f in page-json/*.json; do
+            [ -e "$f" ] || continue
+            profile=$(jq -r '.meta.profile[0] // empty' "$f")
+            [ -n "$profile" ] || { echo "::error file=$f::no meta.profile"; status=1; continue; }
+            java -jar input-cache/validator_cli.jar "$f" -version 5.0.0 \
+              -ig output/package.tgz -profile "$profile" > "$f.txt" 2>&1 || true
+            sed -n '/^Validat\|Success\|\*FAILURE\*\|Error @\|Warning @/p' "$f.txt"
+            if ! grep -q "^Success" "$f.txt"; then
+              echo "::error file=$f::failed validation against $profile"; status=1
+            fi
+          done
+          exit $status
+
+      - name: Check that invalid test instances are rejected
+        if: ${{ !cancelled() && hashFiles('output/package.tgz') != '' }}
+        run: |
+          status=0
+          for f in .github/tests/invalid/*.json; do
+            profile=$(jq -r '.meta.profile[0]' "$f")
+            java -jar input-cache/validator_cli.jar "$f" -version 5.0.0 \
+              -ig output/package.tgz -profile "$profile" > "$f.txt" 2>&1 || true
+            sed -n '/Success\|\*FAILURE\*\|Error @/p' "$f.txt"
+            if grep -q "^Success" "$f.txt"; then
+              echo "::error file=$f::expected validation to fail, but it passed"; status=1
+            fi
+          done
+          exit $status
 
       - name: Job summary
         if: ${{ !cancelled() }}
@@ -76,7 +101,7 @@ jobs:
 
       - name: Upload built IG
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ig-output
           path: |

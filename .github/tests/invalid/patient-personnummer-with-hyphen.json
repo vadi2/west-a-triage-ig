@@ -1,0 +1,12 @@
+{
+  "resourceType": "Patient",
+  "meta": {
+    "profile": ["https://vadi2.github.io/west-a-triage-ig/StructureDefinition/west-a-patient"]
+  },
+  "identifier": [
+    {
+      "system": "http://electronichealth.se/identifier/personnummer",
+      "value": "19610118-2803"
+    }
+  ]
+}

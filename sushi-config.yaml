@@ -9,6 +9,7 @@ fhirVersion: 5.0.0
 copyrightYear: 2026+
 releaseLabel: ci-build
 license: CC0-1.0
+language: en
 jurisdiction: urn:iso:std:iso:3166#SE "Sweden"
 publisher:
   name: WEST-A FHIR modelling (unofficial draft)
