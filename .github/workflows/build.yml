@@ -1,0 +1,85 @@
+name: Build IG
+
+# All IG builds run here, not locally: SUSHI, the IG Publisher, its QA report,
+# and validation of the hand-written JSON on the profile pages.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      JAVA_TOOL_OPTIONS: "-Xmx6g"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+
+      - name: Install SUSHI and Jekyll
+        run: |
+          npm install -g fsh-sushi
+          gem install jekyll
+
+      - name: Run SUSHI
+        run: sushi .
+
+      - name: Download IG Publisher and validator
+        run: |
+          mkdir -p input-cache
+          curl -fsSL -o input-cache/publisher.jar \
+            https://github.com/HL7/fhir-ig-publisher/releases/latest/download/publisher.jar
+          curl -fsSL -o input-cache/validator_cli.jar \
+            https://github.com/hapifhir/org.hl7.fhir.core/releases/latest/download/validator_cli.jar
+
+      - name: Build IG
+        run: java -jar input-cache/publisher.jar -ig .
+
+      - name: Check QA report
+        id: qa
+        run: python3 .github/scripts/check_qa.py output/qa.json
+
+      - name: Validate JSON examples on profile pages
+        if: ${{ !cancelled() && hashFiles('output/package.tgz') != '' }}
+        run: |
+          python3 .github/scripts/extract_page_json.py input/pagecontent page-json
+          if ls page-json/*.json >/dev/null 2>&1; then
+            java -jar input-cache/validator_cli.jar page-json/*.json \
+              -version 5.0.0 -ig output/package.tgz | tee page-json/validation.txt
+            ! grep -q "\*FAILURE\*" page-json/validation.txt
+          fi
+
+      - name: Job summary
+        if: ${{ !cancelled() }}
+        run: |
+          {
+            echo "### IG build"
+            cat qa-summary.txt 2>/dev/null || echo "No QA summary"
+            echo
+            echo "Download the **ig-output** artifact and open \`qa.html\` for details."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload built IG
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ig-output
+          path: |
+            output/
+            page-json/
+          retention-days: 14

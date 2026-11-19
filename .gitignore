@@ -1,0 +1,8 @@
+fsh-generated/
+input-cache/
+output/
+temp/
+template/
+translations/
+*.log
+.DS_Store
