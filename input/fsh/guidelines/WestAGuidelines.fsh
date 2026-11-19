@@ -17,8 +17,10 @@ RuleSet: WestAGuidelineHeader
 * status = #draft
 * experimental = true
 * subjectCodeableConcept = $resource-types#Patient
-* relatedArtifact[+].type = #citation
-* relatedArtifact[=].citation = "WEST-A triage manual for adults without referral support (WEST A utan hänvisningsstöd), Västra Götalandsregionen, version 2025:02:01"
+// The source, WEST-A triage manual for adults without referral support (WEST A utan
+// hänvisningsstöd), VGR version 2025:02:01, is in the description and the guideline page:
+// a relatedArtifact citation without a url renders as an empty link.
+* purpose = "Source: the WEST-A triage manual for adults without referral support (WEST A utan hänvisningsstöd), Västra Götalandsregionen, version 2025:02:01"
 
 RuleSet: WestATriggerVitalSign(profile)
 * action[0].trigger[0].data[+].type = #Observation

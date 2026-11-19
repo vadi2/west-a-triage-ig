@@ -103,7 +103,7 @@ define "Pulse":
 define "Alert":
   if ("Consciousness Observation".value as FHIR.CodeableConcept) is null then null
   else exists (
-    ("Consciousness Observation".value as FHIR.CodeableConcept).coding K
+    (("Consciousness Observation".value as FHIR.CodeableConcept).coding) K
       where K.system.value = 'http://snomed.info/sct'
         and K.code.value = '248234008'
   )
