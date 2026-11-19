@@ -10,7 +10,7 @@ Description: "WEST-A Triage Observation profile, used to record the triage prior
 * category contains survey 1..1 MS
 * category[survey] = $observation-category#survey
 
-* code = $loinc#11283-9 "Acuity assessment [Function] at First encounter"
+* code = $loinc#11283-9 // Acuity assessment [Function] at First encounter
 * subject 1..1 MS
 * subject only Reference(WestAPatient)
 * encounter MS
@@ -36,7 +36,7 @@ Description: "WEST-A Triage Observation profile, used to record the triage prior
 * component contains chiefComplaint 1..1 MS
 * component[chiefComplaint]
   * ^short = "Chief complaint (sökorsak): the WEST-A complaint algorithm used"
-  * code = $sct#1269489004 "Chief complaint"
+  * code = $sct#1269489004 // Chief complaint
   * value[x] 1..1 MS
   * value[x] only CodeableConcept
   * value[x] from ChiefComplaintVS (required)

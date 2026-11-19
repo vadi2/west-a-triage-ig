@@ -32,3 +32,5 @@ menu:
     Triage: west-a-triage-mapping.html
   Artifacts: artifacts.html
   Changelog: changelog.html
+parameters:
+  path-expansion-params: '../../expansion-params.json'  # SNOMED CT Swedish edition

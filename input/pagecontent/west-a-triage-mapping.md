@@ -88,7 +88,7 @@ The trauma pages (43-44) and the gynecology pages (21-22) are one complaint each
 
 ### NEWS2 {#news2}
 
-`Observation.code` is SNOMED CT `1104051000000101` "Royal College of Physicians NEWS2 (National Early Warning Score 2) total score". The total is `valueInteger` (0-20). Each parameter score is a component with its own SNOMED CT code.
+`Observation.code` is SNOMED CT `1104051000000101` "Royal College of Physicians NEWS2 (National Early Warning Score 2) total score". The total is `valueInteger` (0-20). Each parameter score is a component with its own SNOMED CT code. The NEWS2 codes are in the Swedish edition of SNOMED CT, which this guide uses, and in the International edition from the August 2026 release.
 
 <table class="grid mapping">
 <thead>

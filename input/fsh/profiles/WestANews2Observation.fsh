@@ -12,7 +12,7 @@ Description: "WEST-A NEWS2 Observation profile, used to record the National Earl
 * category contains survey 1..1 MS
 * category[survey] = $observation-category#survey
 
-* code = $sct#1104051000000101 "Royal College of Physicians NEWS2 (National Early Warning Score 2) total score"
+* code = $sct#1104051000000101 // Royal College of Physicians NEWS2 (National Early Warning Score 2) total score
 * subject 1..1 MS
 * subject only Reference(WestAPatient)
 * encounter MS
@@ -45,56 +45,56 @@ Description: "WEST-A NEWS2 Observation profile, used to record the National Earl
 
 * component[respirationRate]
   * ^short = "Respiration rate score (andningsfrekvens)"
-  * code = $sct#1104301000000104 "Royal College of Physicians NEWS2 (National Early Warning Score 2) - respiration rate score"
+  * code = $sct#1104301000000104 // Royal College of Physicians NEWS2 (National Early Warning Score 2) - respiration rate score
   * value[x] 1..1 MS
   * value[x] only integer
   * valueInteger ^minValueInteger = 0
   * valueInteger ^maxValueInteger = 3
 * component[oxygenSaturationScale1]
   * ^short = "Oxygen saturation score, scale 1 (syremättnad 1)"
-  * code = $sct#1104311000000102 "Royal College of Physicians NEWS2 (National Early Warning Score 2) - oxygen saturation scale 1 score"
+  * code = $sct#1104311000000102 // Royal College of Physicians NEWS2 (National Early Warning Score 2) - oxygen saturation scale 1 score
   * value[x] 1..1 MS
   * value[x] only integer
   * valueInteger ^minValueInteger = 0
   * valueInteger ^maxValueInteger = 3
 * component[oxygenSaturationScale2]
   * ^short = "Oxygen saturation score, scale 2 (syremättnad 2), for known respiratory failure on a physician's order"
-  * code = $sct#1104321000000108 "Royal College of Physicians NEWS2 (National Early Warning Score 2) - oxygen saturation scale 2 score"
+  * code = $sct#1104321000000108 // Royal College of Physicians NEWS2 (National Early Warning Score 2) - oxygen saturation scale 2 score
   * value[x] 1..1 MS
   * value[x] only integer
   * valueInteger ^minValueInteger = 0
   * valueInteger ^maxValueInteger = 3
 * component[airOrOxygen]
   * ^short = "Air or supplemental oxygen score (tillförd syrgas)"
-  * code = $sct#1104331000000105 "Royal College of Physicians NEWS2 (National Early Warning Score 2) - air or oxygen score"
+  * code = $sct#1104331000000105 // Royal College of Physicians NEWS2 (National Early Warning Score 2) - air or oxygen score
   * value[x] 1..1 MS
   * value[x] only integer
   * valueInteger ^minValueInteger = 0
   * valueInteger ^maxValueInteger = 2
 * component[systolicBloodPressure]
   * ^short = "Systolic blood pressure score (systoliskt blodtryck)"
-  * code = $sct#1104341000000101 "Royal College of Physicians NEWS2 (National Early Warning Score 2) - systolic blood pressure score"
+  * code = $sct#1104341000000101 // Royal College of Physicians NEWS2 (National Early Warning Score 2) - systolic blood pressure score
   * value[x] 1..1 MS
   * value[x] only integer
   * valueInteger ^minValueInteger = 0
   * valueInteger ^maxValueInteger = 3
 * component[pulse]
   * ^short = "Pulse score (pulsfrekvens)"
-  * code = $sct#1104351000000103 "Royal College of Physicians NEWS2 (National Early Warning Score 2) - pulse score"
+  * code = $sct#1104351000000103 // Royal College of Physicians NEWS2 (National Early Warning Score 2) - pulse score
   * value[x] 1..1 MS
   * value[x] only integer
   * valueInteger ^minValueInteger = 0
   * valueInteger ^maxValueInteger = 3
 * component[consciousness]
   * ^short = "Consciousness score, ACVPU (medvetandegrad)"
-  * code = $sct#1104361000000100 "Royal College of Physicians NEWS2 (National Early Warning Score 2) - consciousness score"
+  * code = $sct#1104361000000100 // Royal College of Physicians NEWS2 (National Early Warning Score 2) - consciousness score
   * value[x] 1..1 MS
   * value[x] only integer
   * valueInteger ^minValueInteger = 0
   * valueInteger ^maxValueInteger = 3
 * component[temperature]
   * ^short = "Temperature score (temperatur)"
-  * code = $sct#1104371000000107 "Royal College of Physicians NEWS2 (National Early Warning Score 2) - temperature score"
+  * code = $sct#1104371000000107 // Royal College of Physicians NEWS2 (National Early Warning Score 2) - temperature score
   * value[x] 1..1 MS
   * value[x] only integer
   * valueInteger ^minValueInteger = 0

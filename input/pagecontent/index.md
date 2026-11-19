@@ -26,7 +26,7 @@ The guide follows the [UZ Core modelling guidelines](https://github.com/uzinfoco
 - profiles are named `WestA[Resource]`, with ids `west-a-[resource]` and titles "WEST-A [Resource]";
 - invariants are named `westa-[resource-abbreviation]-[number]`;
 - Swedish identifier systems are reused from the HL7 Sweden [SE Base profiles](http://hl7.se/fhir/ig/base/) rather than created here;
-- standard codes (SNOMED CT, LOINC, HL7) come before local ones; local code systems use Swedish (`sv`) as their default language, with English designations;
+- standard codes (SNOMED CT, LOINC, HL7) come before local ones; SNOMED CT is the Swedish edition (`http://snomed.info/sct/45991000052106`), which value set expansion and validation use; local code systems use Swedish (`sv`) as their default language, with English designations;
 - examples use `language = sv`.
 
 SE Base is FHIR R4. This guide is FHIR R5, as the modelling guidelines require, so its profiles cannot derive from the SE Base profiles; they reuse SE Base's identifier systems and follow its modelling where possible.

@@ -15,6 +15,7 @@ Before creating or changing any profile, extension, value set, code system, nami
 | Identifier systems `https://dhp.uz/fhir/core/sid/...` | Reuse the HL7 Sweden SE Base systems (`http://electronichealth.se/identifier/...`, Swedish OIDs). Create a NamingSystem only for a system this guide defines itself. |
 | Original code systems in Uzbek with ru/en designations | Swedish (`sv`) default, with `en` designations |
 | Examples `language = uz` | `language = sv` |
+| SNOMED CT International | Swedish edition, pinned in `expansion-params.json` (served by tx-nordics.fhir.org); CI validates page JSON with `-sct se` |
 | ru/uz page translations | Not required yet |
 
 SE Base is FHIR R4, so profiles here cannot derive from it; follow its modelling where possible.

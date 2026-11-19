@@ -65,7 +65,7 @@ jobs:
             [ -e "$f" ] || continue
             profile=$(jq -r '.meta.profile[0] // empty' "$f")
             [ -n "$profile" ] || { echo "::error file=$f::no meta.profile"; status=1; continue; }
-            java -jar input-cache/validator_cli.jar "$f" -version 5.0.0 \
+            java -jar input-cache/validator_cli.jar "$f" -version 5.0.0 -sct se \
               -ig output/package.tgz -profile "$profile" > "$f.txt" 2>&1 || true
             sed -n '/^Validat\|Success\|\*FAILURE\*\|Error @\|Warning @/p' "$f.txt"
             if ! grep -q "^Success" "$f.txt"; then
@@ -80,7 +80,7 @@ jobs:
           status=0
           for f in .github/tests/invalid/*.json; do
             profile=$(jq -r '.meta.profile[0]' "$f")
-            java -jar input-cache/validator_cli.jar "$f" -version 5.0.0 \
+            java -jar input-cache/validator_cli.jar "$f" -version 5.0.0 -sct se \
               -ig output/package.tgz -profile "$profile" > "$f.txt" 2>&1 || true
             sed -n '/Success\|\*FAILURE\*\|Error @/p' "$f.txt"
             if grep -q "^Success" "$f.txt"; then
