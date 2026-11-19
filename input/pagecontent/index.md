@@ -18,6 +18,8 @@ and a **triage**, in three layers:
 - the **triage result**, the priority (Röd, Orange, Gul, Grön) and the chief complaint, based on NEWS2: [WEST-A Triage Observation](StructureDefinition-west-a-triage-observation.html);
 - [WEST-A Triage Mapping](west-a-triage-mapping.html) - how WEST-A sets the priority, every code, and the open questions.
 
+The [computable guidelines](west-a-computable-guidelines.html) calculate NEWS2 and propose a triage priority in CQL, as HL7 Clinical Practice Guidelines (CPG on FHIR) PlanDefinitions, tested against the NEWS2 chart and this guide's examples in every build.
+
 The rest of the clinical part of WEST-A - coded warning symptoms, ONEWS2, pain, GCS, mNIHSS and FRESH - is not modelled yet.
 
 ### Conventions

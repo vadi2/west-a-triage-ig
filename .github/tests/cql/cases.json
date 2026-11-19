@@ -1,0 +1,131 @@
+{
+  "description": "Scenario tests for the WEST-A CQL logic. Each case starts from vital signs that all score 0 (respiration rate 16, oxygen saturation 97, room air, systolic 120, pulse 70, alert, temperature 37.0) and changes the values in vitals; null leaves a parameter unmeasured. Priority codes: 1 Röd, 2 Orange, 3 Gul, 4 Grön.",
+  "cases": [
+    {
+      "name": "All parameters normal: NEWS2 0, low risk, green",
+      "vitals": {},
+      "expect": {
+        "WestANEWS2": { "NEWS2 Total Score": 0, "NEWS2 Clinical Risk": "low", "Has All Parameters": true },
+        "WestATriage": { "Vital Parameter Priority": "4", "Proposed Priority": "4" }
+      }
+    },
+    {
+      "name": "A single parameter scoring 3: low-medium risk, yellow",
+      "vitals": { "respirationRate": 8 },
+      "expect": {
+        "WestANEWS2": { "Respiration Rate Score": 3, "NEWS2 Total Score": 3, "NEWS2 Clinical Risk": "low-medium" },
+        "WestATriage": { "Vital Parameter Priority": "3" }
+      }
+    },
+    {
+      "name": "Total 4 without a 3 stays low risk, green",
+      "vitals": { "respirationRate": 22, "pulse": 95, "temperature": 35.5 },
+      "expect": {
+        "WestANEWS2": { "NEWS2 Total Score": 4, "NEWS2 Clinical Risk": "low" },
+        "WestATriage": { "Vital Parameter Priority": "4" }
+      }
+    },
+    {
+      "name": "Total 5: medium risk, orange (the vital signs of the guide's examples)",
+      "vitals": { "respirationRate": 22, "oxygenSaturation": 95, "systolic": 105, "pulse": 95, "temperature": 37.5 },
+      "expect": {
+        "WestANEWS2": { "NEWS2 Total Score": 5, "NEWS2 Clinical Risk": "medium", "NEWS2 Summary": "NEWS2 5, clinical risk medium" },
+        "WestATriage": { "Vital Parameter Priority": "2", "Proposed Priority": "2", "Proposed Priority Is Orange": true, "Proposed Priority Summary": "Proposed WEST-A priority: Orange" }
+      }
+    },
+    {
+      "name": "Total 5 with a single 3: medium beats low-medium, orange",
+      "vitals": { "respirationRate": 25, "pulse": 105, "temperature": 38.5 },
+      "expect": {
+        "WestANEWS2": { "NEWS2 Total Score": 5, "NEWS2 Clinical Risk": "medium", "Any Parameter Scores 3": true },
+        "WestATriage": { "Vital Parameter Priority": "2" }
+      }
+    },
+    {
+      "name": "Total 7: high risk, red",
+      "vitals": { "respirationRate": 25, "oxygenSaturation": 93, "pulse": 115 },
+      "expect": {
+        "WestANEWS2": { "NEWS2 Total Score": 7, "NEWS2 Clinical Risk": "high" },
+        "WestATriage": { "Vital Parameter Priority": "1", "Proposed Priority Is Red": true }
+      }
+    },
+    {
+      "name": "Supplemental oxygen scores 2",
+      "vitals": { "oxygenFlow": 2 },
+      "expect": {
+        "WestANEWS2": { "On Supplemental Oxygen": true, "Supplemental Oxygen Score": 2, "NEWS2 Total Score": 2 }
+      }
+    },
+    {
+      "name": "New confusion (C) scores 3: yellow",
+      "vitals": { "consciousness": "130987000" },
+      "expect": {
+        "WestANEWS2": { "Alert": false, "Consciousness Score": 3, "NEWS2 Clinical Risk": "low-medium" },
+        "WestATriage": { "Vital Parameter Priority": "3" }
+      }
+    },
+    {
+      "name": "Unresponsive (U) scores 3",
+      "vitals": { "consciousness": "422768004" },
+      "expect": { "WestANEWS2": { "Consciousness Score": 3 } }
+    },
+    {
+      "name": "Temperature not measured: no NEWS2 and no vital parameter priority",
+      "vitals": { "temperature": null },
+      "expect": {
+        "WestANEWS2": { "Has All Parameters": false, "Temperature Score": null, "NEWS2 Total Score": null, "NEWS2 Clinical Risk": null, "NEWS2 Summary": null },
+        "WestATriage": { "Vital Parameter Priority": null, "Proposed Priority": null, "Has Proposed Priority": false }
+      }
+    },
+    {
+      "name": "Red warning symptom with NEWS2 0: red",
+      "vitals": {},
+      "parameters": { "Complaint Priority": "1" },
+      "expect": { "WestATriage": { "Vital Parameter Priority": "4", "Proposed Priority": "1" } }
+    },
+    {
+      "name": "Yellow warning symptom does not lower an orange NEWS2",
+      "vitals": { "respirationRate": 22, "oxygenSaturation": 95, "systolic": 105, "pulse": 95 },
+      "parameters": { "Complaint Priority": "3" },
+      "expect": { "WestATriage": { "Proposed Priority": "2" } }
+    },
+    {
+      "name": "Warning symptom without NEWS2: the warning symptom decides",
+      "vitals": { "temperature": null },
+      "parameters": { "Complaint Priority": "2" },
+      "expect": { "WestATriage": { "Vital Parameter Priority": null, "Proposed Priority": "2", "Has Proposed Priority": true } }
+    },
+    {
+      "name": "Yellow as lowest priority raises green to yellow",
+      "vitals": {},
+      "parameters": { "Yellow As Lowest Priority": true },
+      "expect": { "WestATriage": { "Proposed Priority": "3", "Proposed Priority Is Yellow": true } }
+    },
+    {
+      "name": "Yellow as lowest priority does not lower red",
+      "vitals": { "respirationRate": 25, "oxygenSaturation": 93, "pulse": 115 },
+      "parameters": { "Yellow As Lowest Priority": true },
+      "expect": { "WestATriage": { "Proposed Priority": "1" } }
+    },
+    {
+      "name": "Scale 2 on room air: 90% scores 0, and scale 1 is not used",
+      "vitals": { "oxygenSaturation": 90 },
+      "parameters": { "Use Oxygen Saturation Scale 2": true },
+      "expect": {
+        "WestANEWS2": { "Oxygen Saturation Scale 1 Score": null, "Oxygen Saturation Scale 2 Score": 0, "Oxygen Saturation Score": 0, "NEWS2 Total Score": 0 }
+      }
+    },
+    {
+      "name": "The latest measurement counts",
+      "vitals": { "respirationRate": 16 },
+      "extra": [ { "parameter": "respirationRate", "value": 30, "minutesEarlier": 20 } ],
+      "expect": { "WestANEWS2": { "Respiration Rate": 16, "Respiration Rate Score": 0 } }
+    },
+    {
+      "name": "An observation entered in error is ignored",
+      "vitals": { "respirationRate": 16 },
+      "extra": [ { "parameter": "respirationRate", "value": 30, "minutesEarlier": -5, "status": "entered-in-error" } ],
+      "expect": { "WestANEWS2": { "Respiration Rate Score": 0, "NEWS2 Total Score": 0 } }
+    }
+  ]
+}

@@ -1,3 +1,12 @@
+// Clinical Practice Guidelines (hl7.fhir.uv.cpg)
+Alias: $cpg-activity-type = http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-activity-type-cs
+Alias: $cpg-computableplandefinition = http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-computableplandefinition
+Alias: $cpg-inferenceExpression = http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-inferenceExpression
+Alias: $cpg-recordinferenceactivity = http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-recordinferenceactivity
+Alias: $cpg-recordinferencetask = http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-recordinferencetask
+Alias: $library-type = http://terminology.hl7.org/CodeSystem/library-type
+Alias: $plan-definition-type = http://terminology.hl7.org/CodeSystem/plan-definition-type
+Alias: $resource-types = http://hl7.org/fhir/resource-types
 // FHIR R4 core vital signs profiles
 Alias: $bodytemp = http://hl7.org/fhir/StructureDefinition/bodytemp
 Alias: $bp = http://hl7.org/fhir/StructureDefinition/bp

@@ -6,6 +6,12 @@ Description: "WEST-A NEWS2 Observation profile, used to record the National Earl
 
 * obeys westa-obs-1 and westa-obs-2
 
+// CPG case feature: the WEST-A NEWS2 logic calculates the total from the vital signs
+* ^extension[+].url = $cpg-inferenceExpression
+* ^extension[=].valueExpression.language = #text/cql-identifier
+* ^extension[=].valueExpression.expression = "NEWS2 Total Score"
+* ^extension[=].valueExpression.reference = "https://vadi2.github.io/west-a-triage-ig/Library/WestANEWS2"
+
 * category ^slicing.discriminator.type = #value
 * category ^slicing.discriminator.path = "$this"
 * category ^slicing.rules = #open

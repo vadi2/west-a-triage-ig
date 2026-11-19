@@ -20,9 +20,9 @@ All of them refer to the [WEST-A Patient](StructureDefinition-west-a-patient.htm
 
 ### How WEST-A sets the priority
 
-The triage nurse chooses the chief complaint (*sökorsak*) and checks its warning symptoms (*varningssymtom*, red, orange or yellow) together with the vital parameters (NEWS2). The clinical assessment (*klinisk bedömning*) has the same weight as these, but a red or orange patient is never given a lower priority because of it (p. 8). Some needs and processes give yellow as the lowest priority: frail elderly (p. 46), likely admission (p. 47), and violence or sexual assault (p. 48).
+The triage nurse chooses the chief complaint (*sökorsak*) and checks its warning symptoms (*varningssymtom*, red, orange or yellow) together with the vital parameters (NEWS2, whose clinical risk gives a [colour](#news2)). The clinical assessment (*klinisk bedömning*) has the same weight as these, but a red or orange patient is never given a lower priority because of it (p. 8). Some needs and processes give yellow as the lowest priority: frail elderly (p. 46), likely admission (p. 47), and violence or sexual assault (p. 48).
 
-FHIR records the outcome, not the rules: the priority in `Observation.value`, the complaint in `component[chiefComplaint]`, and the NEWS2 in `derivedFrom`. The warning symptom that decided the priority is not coded yet (see [open questions](#open-questions)).
+FHIR records the outcome, and the [computable guidelines](west-a-computable-guidelines.html) calculate the parts of the rules that can be calculated: the priority in `Observation.value`, the complaint in `component[chiefComplaint]`, and the NEWS2 in `derivedFrom`. The warning symptom that decided the priority is not coded yet (see [open questions](#open-questions)).
 
 ### Triage priority
 
@@ -131,16 +131,15 @@ Each NEWS2 parameter is measured as its own Observation. The five that FHIR has 
 
 Two rules are invariants: only one oxygen saturation scale is used (`westa-obs-1`), and when all seven parameter scores are present the total is their sum (`westa-obs-2`). The measured values (for example a respiration rate of 22/min) are the [vital sign observations](#vital-signs), which the NEWS2 Observation references in `derivedFrom`.
 
-WEST-A groups the total into clinical risk (p. 6): 0-4 low, a single parameter scoring 3 low-medium, 5-6 medium, 7 or more high. The risk follows from the scores, so it is not stored.
+WEST-A groups the total into clinical risk, and gives each risk a priority colour (p. 6): 7 or more high (red), 5-6 medium (orange), a single parameter scoring 3 low-medium (yellow), 0-4 low (green). The risk follows from the scores, so it is not stored. The [computable guidelines](west-a-computable-guidelines.html) calculate it.
 
 ### Open questions {#open-questions}
 
-1. **NEWS2 and the priority colour.** Page 6 gives a colour for each NEWS2 risk band, but the colours are in the table cells, which the text of the PDF does not keep. Which colour does each band give?
-2. **Blue and referral.** This edition of WEST-A is "utan hänvisningsstöd" (without referral support) and has four colours. Does the referral edition add a level, such as blue, or referral to primary care?
-3. **Warning symptoms.** The warning symptom that set the priority (for example "Bröstsmärta, pågående med misstanke om AKS", orange, p. 13) is only free text in `note` for now. Coding them would need a code system for every warning symptom on pages 3-48.
-4. **Needs and processes.** Frail elderly, likely admission, and violence or sexual assault (pp. 46-48) set yellow as the lowest priority. Should they be a coded component of the triage observation?
-5. **ONEWS2.** Pregnant patients from week 18+0 up to 12 weeks postpartum use ONEWS2 instead of NEWS2 (p. 20). SNOMED CT has no ONEWS2 codes, so it would need local codes.
-6. **Time-dependent routing.** On the gynecology pages, green complaints are marked "GRÖN 07-16" (p. 22), which reads as a time window for routing green patients. This is not modelled.
+1. **Blue and referral.** This edition of WEST-A is "utan hänvisningsstöd" (without referral support) and has four colours. Does the referral edition add a level, such as blue, or referral to primary care?
+2. **Warning symptoms.** The warning symptom that set the priority (for example "Bröstsmärta, pågående med misstanke om AKS", orange, p. 13) is only free text in `note` for now. Coding them would need a code system for every warning symptom on pages 3-48.
+3. **Needs and processes.** Frail elderly, likely admission, and violence or sexual assault (pp. 46-48) set yellow as the lowest priority. Should they be a coded component of the triage observation?
+4. **ONEWS2.** Pregnant patients from week 18+0 up to 12 weeks postpartum use ONEWS2 instead of NEWS2 (p. 20). SNOMED CT has no ONEWS2 codes, so it would need local codes.
+5. **Time-dependent routing.** On the gynecology pages, green complaints are marked "GRÖN 07-16" (p. 22), which reads as a time window for routing green patients. This is not modelled.
 
 ### Terminology checklist
 

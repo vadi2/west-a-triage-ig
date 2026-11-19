@@ -1,0 +1,10 @@
+{
+  "name": "west-a-cql-tests",
+  "private": true,
+  "description": "Runs the WEST-A CQL logic, as translated by the IG Publisher, against test cases",
+  "type": "module",
+  "dependencies": {
+    "cql-exec-fhir": "2.2.0",
+    "cql-execution": "3.3.2"
+  }
+}

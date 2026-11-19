@@ -1,0 +1,87 @@
+{
+  "source": "NEWS2 chart, WEST-A VGR 2025:02:01 p. 6 (the Royal College of Physicians NEWS2 chart). Each band is inclusive; a band without min or max is open-ended.",
+  "parameters": {
+    "respirationRate": {
+      "define": "Respiration Rate Score",
+      "step": 1,
+      "bands": [
+        { "max": 8, "score": 3 },
+        { "min": 9, "max": 11, "score": 1 },
+        { "min": 12, "max": 20, "score": 0 },
+        { "min": 21, "max": 24, "score": 2 },
+        { "min": 25, "score": 3 }
+      ]
+    },
+    "oxygenSaturationScale1": {
+      "define": "Oxygen Saturation Scale 1 Score",
+      "step": 1,
+      "bands": [
+        { "max": 91, "score": 3 },
+        { "min": 92, "max": 93, "score": 2 },
+        { "min": 94, "max": 95, "score": 1 },
+        { "min": 96, "score": 0 }
+      ]
+    },
+    "oxygenSaturationScale2OnAir": {
+      "define": "Oxygen Saturation Scale 2 Score",
+      "step": 1,
+      "bands": [
+        { "max": 83, "score": 3 },
+        { "min": 84, "max": 85, "score": 2 },
+        { "min": 86, "max": 87, "score": 1 },
+        { "min": 88, "max": 92, "score": 0 },
+        { "min": 93, "score": 0 }
+      ]
+    },
+    "oxygenSaturationScale2OnOxygen": {
+      "define": "Oxygen Saturation Scale 2 Score",
+      "step": 1,
+      "bands": [
+        { "max": 83, "score": 3 },
+        { "min": 84, "max": 85, "score": 2 },
+        { "min": 86, "max": 87, "score": 1 },
+        { "min": 88, "max": 92, "score": 0 },
+        { "min": 93, "max": 94, "score": 1 },
+        { "min": 95, "max": 96, "score": 2 },
+        { "min": 97, "score": 3 }
+      ]
+    },
+    "systolicBloodPressure": {
+      "define": "Systolic Blood Pressure Score",
+      "step": 1,
+      "bands": [
+        { "max": 90, "score": 3 },
+        { "min": 91, "max": 100, "score": 2 },
+        { "min": 101, "max": 110, "score": 1 },
+        { "min": 111, "max": 219, "score": 0 },
+        { "min": 220, "score": 3 }
+      ]
+    },
+    "pulse": {
+      "define": "Pulse Score",
+      "step": 1,
+      "bands": [
+        { "max": 40, "score": 3 },
+        { "min": 41, "max": 50, "score": 1 },
+        { "min": 51, "max": 90, "score": 0 },
+        { "min": 91, "max": 110, "score": 1 },
+        { "min": 111, "max": 130, "score": 2 },
+        { "min": 131, "score": 3 }
+      ]
+    },
+    "temperature": {
+      "define": "Temperature Score",
+      "step": 0.1,
+      "bands": [
+        { "max": 35.0, "score": 3 },
+        { "min": 35.1, "max": 36.0, "score": 1 },
+        { "min": 36.1, "max": 38.0, "score": 0 },
+        { "min": 38.1, "max": 39.0, "score": 1 },
+        { "min": 39.1, "score": 2 }
+      ]
+    }
+  },
+  "supplementalOxygen": { "define": "Supplemental Oxygen Score", "onAir": 0, "onOxygen": 2 },
+  "consciousness": { "define": "Consciousness Score", "alert": 0, "other": 3 },
+  "clinicalRisk": "7 or more high; 5-6 medium; a single parameter scoring 3 low-medium; 0-4 low"
+}
