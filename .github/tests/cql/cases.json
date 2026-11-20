@@ -1,5 +1,5 @@
 {
-  "description": "Scenario tests for the WEST-A CQL logic. Each case starts from vital signs that all score 0 (respiration rate 16, oxygen saturation 97, room air, systolic 120, pulse 70, alert, temperature 37.0) and changes the values in vitals; null leaves a parameter unmeasured. extra adds observations, with minutesEarlier (negative for later), status, unit (instead of the profile's unit) and period (timed with effectivePeriod). parameters are passed to both libraries; a parameter not given is passed as null, except the Booleans, which are false. Priority codes: 1 Röd, 2 Orange, 3 Gul, 4 Grön; a complaint priority with a system is given as system|code.",
+  "description": "Scenario tests for the WEST-A CQL logic. Each case starts from vital signs that all score 0 (respiration rate 16, oxygen saturation 97, room air, systolic 120, pulse 70, alert, temperature 37.0) and changes the values in vitals; null leaves a parameter unmeasured. extra adds observations, with minutesEarlier (negative for later), status, unit (instead of the profile's unit) and period (timed with effectivePeriod). parameters are passed to both libraries; a parameter not given is passed as null, except the Booleans, which are false. Priority codes: 1 Röd, 2 Orange, 3 Gul, 4 Grön; a complaint priority with a system is given as system|code. Triage Criteria is a list of codes from the WEST-A triage criterion code system (163 is no warning symptoms, 159-162 are the needs), each optionally given as system|code.",
   "cases": [
     {
       "name": "All parameters normal: NEWS2 0, low risk, green",
@@ -456,6 +456,214 @@
         "WestANEWS2": {
           "Pulse": 120,
           "Pulse Score": 2
+        }
+      }
+    },
+    {
+      "name": "Criteria: a red warning symptom with NEWS2 0 gives red, without a complaint priority",
+      "vitals": {},
+      "parameters": {
+        "Triage Criteria": [
+          "23"
+        ]
+      },
+      "expect": {
+        "WestATriage": {
+          "Warning Symptom Priority": "1",
+          "Assessed Complaint Priority": "1",
+          "Proposed Priority": "1",
+          "Proposed Priority Summary": "Proposed WEST-A priority: Red"
+        }
+      }
+    },
+    {
+      "name": "Criteria: the most urgent of several warning symptoms counts",
+      "vitals": {},
+      "parameters": {
+        "Triage Criteria": [
+          "17",
+          "15",
+          "16"
+        ]
+      },
+      "expect": {
+        "WestATriage": {
+          "Warning Symptom Priority": "2",
+          "Proposed Priority": "2"
+        }
+      }
+    },
+    {
+      "name": "Criteria: a yellow warning symptom does not lower an orange NEWS2",
+      "vitals": {
+        "respirationRate": 22,
+        "oxygenSaturation": 95,
+        "systolic": 105,
+        "pulse": 95
+      },
+      "parameters": {
+        "Triage Criteria": [
+          "16"
+        ]
+      },
+      "expect": {
+        "WestATriage": {
+          "Vital Parameter Priority": "2",
+          "Warning Symptom Priority": "3",
+          "Proposed Priority": "2"
+        }
+      }
+    },
+    {
+      "name": "Criteria: no warning symptoms with NEWS2 0 gives green",
+      "vitals": {},
+      "parameters": {
+        "Triage Criteria": [
+          "163"
+        ]
+      },
+      "expect": {
+        "WestATriage": {
+          "Warning Symptom Priority": "4",
+          "Assessed Complaint Priority": "4",
+          "Proposed Priority": "4",
+          "Proposed Priority Is Green": true
+        }
+      }
+    },
+    {
+      "name": "Criteria: a green gynecology criterion (GRÖN 07-16) with NEWS2 0 gives green",
+      "vitals": {},
+      "parameters": {
+        "Triage Criteria": [
+          "47"
+        ]
+      },
+      "expect": {
+        "WestATriage": {
+          "Warning Symptom Priority": "4",
+          "Proposed Priority": "4"
+        }
+      }
+    },
+    {
+      "name": "Criteria: a trauma alert level 2 criterion gives red over an orange NEWS2",
+      "vitals": {
+        "respirationRate": 22,
+        "oxygenSaturation": 95,
+        "systolic": 105,
+        "pulse": 95
+      },
+      "parameters": {
+        "Triage Criteria": [
+          "133"
+        ]
+      },
+      "expect": {
+        "WestATriage": {
+          "Vital Parameter Priority": "2",
+          "Warning Symptom Priority": "1",
+          "Proposed Priority": "1"
+        }
+      }
+    },
+    {
+      "name": "Criteria: a need alone is not an assessment of the warning symptoms, so nothing is proposed",
+      "vitals": {},
+      "parameters": {
+        "Triage Criteria": [
+          "159"
+        ]
+      },
+      "expect": {
+        "WestATriage": {
+          "Lowest Priority From Needs": "3",
+          "Warning Symptom Priority": null,
+          "Assessed Complaint Priority": null,
+          "Proposed Priority": null,
+          "Has Proposed Priority": false
+        }
+      }
+    },
+    {
+      "name": "Criteria: a need with no warning symptoms raises green to yellow",
+      "vitals": {},
+      "parameters": {
+        "Triage Criteria": [
+          "163",
+          "161"
+        ]
+      },
+      "expect": {
+        "WestATriage": {
+          "Lowest Priority From Needs": "3",
+          "Warning Symptom Priority": "4",
+          "Proposed Priority": "3",
+          "Proposed Priority Is Yellow": true
+        }
+      }
+    },
+    {
+      "name": "Criteria: a group of criteria is not a criterion, so nothing is assessed",
+      "vitals": {},
+      "parameters": {
+        "Triage Criteria": [
+          "AAG"
+        ]
+      },
+      "expect": {
+        "WestATriage": {
+          "Warning Symptom Priority": null,
+          "Assessed Complaint Priority": null,
+          "Proposed Priority": null
+        }
+      }
+    },
+    {
+      "name": "Criteria: a code from another code system is not used",
+      "vitals": {},
+      "parameters": {
+        "Triage Criteria": [
+          "http://example.org/other-criteria|23"
+        ]
+      },
+      "expect": {
+        "WestATriage": {
+          "Warning Symptom Priority": null,
+          "Proposed Priority": null
+        }
+      }
+    },
+    {
+      "name": "Criteria: a complaint priority of green does not lower a red warning symptom",
+      "vitals": {},
+      "parameters": {
+        "Triage Criteria": [
+          "23"
+        ],
+        "Complaint Priority": "4"
+      },
+      "expect": {
+        "WestATriage": {
+          "Assessed Complaint Priority": "1",
+          "Proposed Priority": "1"
+        }
+      }
+    },
+    {
+      "name": "Criteria: a complaint priority for an uncoded warning symptom raises a coded yellow one",
+      "vitals": {},
+      "parameters": {
+        "Triage Criteria": [
+          "16"
+        ],
+        "Complaint Priority": "2"
+      },
+      "expect": {
+        "WestATriage": {
+          "Warning Symptom Priority": "3",
+          "Assessed Complaint Priority": "2",
+          "Proposed Priority": "2"
         }
       }
     }

@@ -27,3 +27,5 @@ Alias: $v3-ActCode = http://terminology.hl7.org/CodeSystem/v3-ActCode
 // VGR Base profiles (se.vgregion.fhir.base)
 Alias: $VGRBaseEncounter = https://fhir.vgregion.se/ig/base/StructureDefinition/VGRBaseEncounter
 Alias: $VGRBasePatient = https://fhir.vgregion.se/ig/base/StructureDefinition/VGRBasePatient
+// This guide's triage criterion code system, which is pre-generated JSON rather than FSH
+Alias: $west-a-triage-criterion = https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-criterion-cs

@@ -67,7 +67,7 @@ Title: "WEST-A Triage Logic"
 Description: "CQL logic that proposes a WEST-A triage priority from NEWS2, the warning symptoms of the chief complaint and the needs that give yellow as the lowest priority"
 * insert WestALogicLibrary(WestATriage)
 * title = "WEST-A Triage Logic"
-* description = "Proposes a WEST-A triage priority. The priority from the vital parameters is the colour of the NEWS2 clinical risk (p. 6): high red, medium orange, low-medium yellow, low green. The proposed priority is the most urgent of that, the priority of the warning symptoms of the chief complaint algorithm (parameter `Complaint Priority`), and yellow for frail elderly, likely admission, or violence or sexual assault (parameter `Yellow As Lowest Priority`, pp. 46-48). The triage nurse assesses the warning symptoms and the needs, and decides the final priority: the clinical assessment can raise it, but never lowers a red or orange patient (p. 8)."
+* description = "Proposes a WEST-A triage priority. The priority from the vital parameters is the colour of the NEWS2 clinical risk (p. 6): high red, medium orange, low-medium yellow, low green. The proposed priority is the most urgent of that, the colour of the warning symptoms found (parameter `Triage Criteria`, codes from the WEST-A triage criterion code system; or their colour alone, parameter `Complaint Priority`), and yellow for frail elderly, likely admission, or violence or sexual assault (pp. 46-48: a need in `Triage Criteria`, or parameter `Yellow As Lowest Priority`). The triage nurse assesses the warning symptoms and the needs, and decides the final priority: the clinical assessment can raise it, but never lowers a red or orange patient (p. 8)."
 
 Instance: west-a-news2-calculation
 InstanceOf: $cpg-computableplandefinition
@@ -153,7 +153,7 @@ Description: "Proposes to record the proposed WEST-A triage priority as a WEST-A
 * insert WestAGuidelineHeader
 * name = "WestARecordTriagePriority"
 * title = "WEST-A Record Triage Priority"
-* description = "Proposes a task to record a WEST-A Triage Observation. The description of the task gives the proposed priority, which the WEST-A triage logic calculates; the triage nurse confirms or raises it, and records it with the chief complaint and the WEST-A NEWS2 Observation in derivedFrom."
+* description = "Proposes a task to record a WEST-A Triage Observation. The description of the task gives the proposed priority, which the WEST-A triage logic calculates; the triage nurse confirms or raises it, and records it with the chief complaint, the triage criteria found and the WEST-A NEWS2 Observation in derivedFrom."
 * library = Canonical(WestATriage)
 * kind = #Task
 * profile = $cpg-recordinferencetask
