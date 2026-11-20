@@ -147,7 +147,7 @@ Instance: example-triage-chest-pain
 InstanceOf: WestATriageObservation
 Usage: #example
 Title: "Example WEST-A Triage Observation - Chest pain, orange"
-Description: "Triage of ongoing chest pain with suspected acute coronary syndrome, an orange warning symptom in WEST-A (page 13). NEWS2 is 5."
+Description: "Triage of ongoing chest pain with suspected acute coronary syndrome, an orange warning symptom in WEST-A (page 13). NEWS2 is 5, which is also orange."
 * insert ExampleTriageContext
 * category[survey] = $observation-category#survey "Survey"
 * code = $sct-se#425705009 "triagering"
@@ -156,4 +156,5 @@ Description: "Triage of ongoing chest pain with suspected acute coronary syndrom
 * derivedFrom = Reference(Observation/example-news2)
 * component[chiefComplaint].code = $sct-se#1269489004 "sökorsak"
 * component[chiefComplaint].valueCodeableConcept = ChiefComplaintCS#4 "Bröstsmärta"
-* note.text = "Bröstsmärta, pågående med misstanke om AKS."
+* component[criterion].code = ObservationCodeCS#1 "Triagekriterium"
+* component[criterion].valueCodeableConcept = $west-a-triage-criterion#15 "Bröstsmärta, pågående med misstanke om AKS eller annan allvarlig orsak"

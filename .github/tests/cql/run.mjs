@@ -3,11 +3,13 @@
 //
 //   node run.mjs <IG output directory>
 //
-// Three kinds of tests:
+// Four kinds of tests:
 //   1. NEWS2 chart boundaries: generated from news2-chart.json, a transcription of the
 //      chart on WEST-A p. 6. Every band's edges are tested for every parameter.
-//   2. Scenarios: cases.json, for the totals, the clinical risk and the triage priority.
-//   3. The guide's own examples: the example vital signs are run through the logic, and
+//   2. Triage criteria: generated from the WEST-A triage criterion code system of the built
+//      IG. Every concept must get the priority of its priority property from the CQL.
+//   3. Scenarios: cases.json, for the totals, the clinical risk and the triage priority.
+//   4. The guide's own examples: the example vital signs are run through the logic, and
 //      the result must match the example NEWS2 Observation and the example triage.
 
 import fs from 'node:fs';
@@ -24,6 +26,10 @@ const SCT = 'http://snomed.info/sct';
 const LOINC = 'http://loinc.org';
 const UCUM = 'http://unitsofmeasure.org';
 const PRIORITY_CS = 'https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs';
+const CRITERION_CS = 'https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-criterion-cs';
+const OBSERVATION_CODE_CS = 'https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-observation-code-cs';
+const NEEDS_GROUP = 'AAK';
+const NO_WARNING_SYMPTOMS = '163';
 const ALERT = '248234008';
 const NOW = Date.parse('2026-11-19T08:38:00Z');
 
@@ -224,6 +230,43 @@ function boundaryCases() {
   return cases;
 }
 
+// ---------------------------------------------------------------- the triage criteria
+
+// One case per concept of the triage criterion code system, with normal vital signs (green):
+// a warning symptom gives the priority of its priority property, a need gives yellow as the
+// lowest priority and no warning symptom priority, a group and "no warning symptoms" give none
+function criterionCases() {
+  const cs = JSON.parse(fs.readFileSync(path.join(outputDir, 'CodeSystem-west-a-triage-criterion-cs.json'), 'utf8'));
+  const cases = [];
+  const property = (concept, code) => (concept.property ?? []).filter((p) => p.code === code);
+  for (const concept of cs.concept) {
+    const priority = property(concept, 'priority')[0]?.valueCoding;
+    const group = property(concept, 'parent')[0]?.valueCode;
+    const notSelectable = property(concept, 'notSelectable')[0]?.valueBoolean === true;
+    if (priority && priority.system !== PRIORITY_CS) throw new Error(`criterion ${concept.code}: priority from ${priority.system}`);
+    let expect;
+    if (notSelectable) {
+      if (priority) throw new Error(`group ${concept.code} has a priority`);
+      expect = { 'Warning Symptom Priority': null, 'Lowest Priority From Needs': null, 'Proposed Priority': null };
+    } else if (concept.code === NO_WARNING_SYMPTOMS) {
+      expect = { 'Warning Symptom Priority': '4', 'Lowest Priority From Needs': null, 'Proposed Priority': '4' };
+    } else if (group === NEEDS_GROUP) {
+      if (priority?.code !== '3') throw new Error(`need ${concept.code} is not yellow`);
+      expect = { 'Warning Symptom Priority': null, 'Lowest Priority From Needs': '3', 'Proposed Priority': null };
+    } else {
+      if (!priority) throw new Error(`criterion ${concept.code} has no priority`);
+      expect = { 'Warning Symptom Priority': priority.code, 'Assessed Complaint Priority': priority.code, 'Proposed Priority': priority.code };
+    }
+    cases.push({
+      name: `Criterion ${concept.code} "${concept.display}"`,
+      vitals: {},
+      parameters: { 'Triage Criteria': [concept.code] },
+      expect: { WestATriage: expect },
+    });
+  }
+  return cases;
+}
+
 // ---------------------------------------------------------------- the guide's examples
 
 function exampleCase() {
@@ -250,18 +293,16 @@ function exampleCase() {
     expectNews2[componentDefines[code]] = component.valueInteger;
   }
   const recorded = triage.valueCodeableConcept.coding.find((c) => c.system === PRIORITY_CS).code;
+  const criteria = (triage.component ?? [])
+    .filter((c) => c.code.coding.some((k) => k.system === OBSERVATION_CODE_CS && k.code === '1'))
+    .map((c) => c.valueCodeableConcept.coding.find((k) => k.system === CRITERION_CS).code);
+  if (!criteria.length) throw new Error('example-triage-chest-pain: no triage criteria');
   return {
-    name: 'Examples: the example vital signs give the example NEWS2, and the example triage is at least as urgent as its vital parameters',
+    name: 'Examples: the example vital signs give the example NEWS2, and the example triage criteria and NEWS2 give the example priority',
     bundle: { resourceType: 'Bundle', type: 'collection', entry: [patient, ...vitals].map((resource) => ({ resource })) },
     patientId: patient.id,
-    parameters: {},
-    expect: { WestANEWS2: expectNews2 },
-    check: (results) => {
-      const vitalPriority = results.WestATriage['Vital Parameter Priority'];
-      return vitalPriority !== null && recorded <= vitalPriority
-        ? null
-        : `example triage priority ${recorded} is less urgent than the vital parameter priority ${vitalPriority}`;
-    },
+    parameters: { 'Triage Criteria': criteria },
+    expect: { WestANEWS2: expectNews2, WestATriage: { 'Proposed Priority': recorded } },
   };
 }
 
@@ -297,6 +338,11 @@ function cqlParameters(name, parameters) {
     } else if (key === 'Complaint Priority') {
       const [system, code] = value.includes('|') ? value.split('|') : [PRIORITY_CS, value];
       out[key] = new cql.Code(code, system);
+    } else if (key === 'Triage Criteria') {
+      out[key] = value.map((v) => {
+        const [system, code] = v.includes('|') ? v.split('|') : [CRITERION_CS, v];
+        return new cql.Code(code, system);
+      });
     } else {
       out[key] = value;
     }
@@ -340,7 +386,12 @@ if (boundaries.length < 50 || scenarios.length < 20) {
   console.log(`::error::too few CQL test cases: ${boundaries.length} chart cases and ${scenarios.length} scenarios`);
   process.exit(1);
 }
-const all = [...boundaries, ...scenarios, exampleCase()];
+const criteria = criterionCases();
+if (criteria.length < 150) {
+  console.log(`::error::too few triage criteria: ${criteria.length}`);
+  process.exit(1);
+}
+const all = [...boundaries, ...criteria, ...scenarios, exampleCase()];
 let failed = 0;
 for (const [index, testCase] of all.entries()) {
   let failures;

@@ -2,7 +2,7 @@
 
 This page describes the parts of WEST-A that a computer can calculate, written as a computable guideline in the format of the HL7 [Clinical Practice Guidelines](https://hl7.org/fhir/uv/cpg/) implementation guide (CPG on FHIR): NEWS2 from the vital signs, and a proposed triage priority. The logic is written in [CQL](https://cql.hl7.org) and tested automatically in every build (see [QA](#qa)). The source is the WEST-A triage manual for adults, VGR version 2025:02:01; page numbers refer to the WEST-A PDF.
 
-The guideline proposes; the triage nurse decides. WEST-A gives the clinical assessment the same weight as the warning symptoms and the vital parameters (p. 8), and the warning symptoms of the chief complaint need a nurse to assess them, so the logic takes them as input and does not replace the triage.
+The guideline proposes; the triage nurse decides. WEST-A gives the clinical assessment the same weight as the warning symptoms and the vital parameters (p. 8), and the warning symptoms of the chief complaint need a nurse to assess them, so the logic takes the warning symptoms found as input and does not replace the triage.
 
 <table class="grid">
 <thead>
@@ -76,11 +76,16 @@ The total is calculated only when all seven parameters are measured. Scale 2 is 
 </tbody>
 </table>
 
-A priority is proposed only when NEWS2 is calculated and the nurse has assessed the warning symptoms of the chief complaint, since until then the logic cannot know that nothing more urgent applies. The proposed priority is the most urgent of:
+The nurse assesses the warning symptoms of the chief complaint and passes those found in the CQL parameter `Triage Criteria`: a list of codes from [WEST-A triage criterion](CodeSystem-west-a-triage-criterion-cs.html), the same codes as the `criterion` components of the [WEST-A Triage Observation](StructureDefinition-west-a-triage-observation.html). Each warning symptom has its colour in its `priority` property, and *Inga varningssymtom* (`163`) says that none was found. A group code, which cannot be recorded, has no colour.
+
+A priority is proposed only when NEWS2 is calculated and the nurse has assessed the warning symptoms, since until then the logic cannot know that nothing more urgent applies. The warning symptoms are assessed when `Triage Criteria` holds a warning symptom or `163`, or when `Complaint Priority` is given. The proposed priority is the most urgent of:
 
 - the priority from the vital parameters;
-- the priority of the warning symptoms of the chief complaint algorithm, which the nurse assesses (CQL parameter `Complaint Priority`, a code from [WEST-A triage priority](CodeSystem-west-a-triage-priority-cs.html), `4` when the patient has none of the warning symptoms);
-- yellow, for frail elderly, likely admission, or violence or sexual assault (pp. 46-48; CQL parameter `Yellow As Lowest Priority`).
+- the most urgent colour of the warning symptoms in `Triage Criteria` (green, `4`, for `163`);
+- `Complaint Priority`, a code from [WEST-A triage priority](CodeSystem-west-a-triage-priority-cs.html), for a system that records the colour of the warning symptoms without coding them: `4` when the patient has none. It cannot lower the colour of a coded warning symptom;
+- yellow, for frail elderly, likely admission, or violence or sexual assault (pp. 46-48): one of the needs `159`-`162` in `Triage Criteria`, or the CQL parameter `Yellow As Lowest Priority`. A need alone does not mean that the warning symptoms are assessed.
+
+The CQL lists the warning symptoms of each colour, since a terminology server cannot be assumed to filter a code system by its properties; the tests check the lists against the code system.
 
 The nurse then records the priority in a [WEST-A Triage Observation](StructureDefinition-west-a-triage-observation.html). The clinical assessment can raise it, but a red or orange patient is never given a lower priority (p. 8).
 
@@ -123,9 +128,10 @@ Every build checks the guideline in four ways, and the [triage form](#questionna
 2. **Conformance.** The PlanDefinitions and ActivityDefinitions are validated against the CPG profiles: [computable PlanDefinition](https://hl7.org/fhir/uv/cpg/StructureDefinition-cpg-computableplandefinition.html) and [record-inference activity](https://hl7.org/fhir/uv/cpg/StructureDefinition-cpg-recordinferenceactivity.html).
 3. **Execution.** A test runner (`.github/tests/cql`) runs the ELM from the build with the [CQL execution engine](https://github.com/cqframework/cql-execution), and fails the build on any wrong result:
    - every edge of every band of the NEWS2 chart, generated from `news2-chart.json`, which transcribes the chart on page 6 independently of the CQL;
-   - scenarios in `cases.json`: the risk bands and their colours, an incomplete NEWS2, the warning symptoms and the needs that set the priority, no proposal before the warning symptoms are assessed, scale 2 through both libraries, rounding between the chart's steps, units, and which observation counts;
-   - this guide's examples: the [example vital signs](Observation-example-respiratory-rate.html) must give the [example NEWS2](Observation-example-news2.html), score by score, and the [example triage](Observation-example-triage-chest-pain.html) must be at least as urgent as its vital parameters.
-4. **Invariants.** The NEWS2 profile itself checks that the total is the sum of the parameter scores (`westa-obs-2`), and the CI checks that an instance breaking it is rejected.
+   - every concept of the [triage criterion code system](CodeSystem-west-a-triage-criterion-cs.html), generated from the code system the build produces: each warning symptom alone must give the colour of its `priority` property, each need yellow as the lowest priority, `163` green, and each group nothing;
+   - scenarios in `cases.json`: the risk bands and their colours, an incomplete NEWS2, the warning symptoms and the needs that set the priority, several warning symptoms, a warning symptom together with `Complaint Priority`, no proposal before the warning symptoms are assessed, scale 2 through both libraries, rounding between the chart's steps, units, and which observation counts;
+   - this guide's examples: the [example vital signs](Observation-example-respiratory-rate.html) must give the [example NEWS2](Observation-example-news2.html), score by score, and the triage criteria and NEWS2 of the [example triage](Observation-example-triage-chest-pain.html) must give its priority.
+4. **Invariants.** The NEWS2 profile itself checks that the total is the sum of the parameter scores (`westa-obs-2`), and the CI checks that an instance breaking it is rejected. It also checks that a triage criterion group cannot be recorded as a criterion.
 5. **Extraction.** The CI extracts the vital signs from the [example triage form](QuestionnaireResponse-example-triage-questionnaire-response.html) with `demo/lib/extract.js`, checks their codes, values and references (`demo/lib/extract.test.mjs`), and validates each extracted Observation against its WEST-A profile.
 
 To add a test, add a case to `cases.json`, giving the vital signs that differ from normal and the expected value of any CQL definition.
@@ -135,4 +141,5 @@ To add a test, add a case to `cases.json`, giving the vital signs that differ fr
 - The logic uses the latest observation of each parameter for the patient, not only those of the current visit. A CDS service that runs it should pass only the data of the emergency department visit.
 - The proposed tasks carry the result in their description only. The [record-inference task](https://hl7.org/fhir/uv/cpg/StructureDefinition-cpg-recordinferencetask.html) profile also asks for the inferred Observation in `Task.input`, which the CDS service has to add: building the Observation in CQL is left for a later version.
 - ONEWS2 for pregnant patients (p. 20) is not calculated: SNOMED CT has no ONEWS2 codes.
-- The warning symptoms of the complaint algorithms are not coded (see [open questions](west-a-triage-mapping.html#open-questions)), so the logic cannot find them in the record and takes their priority as a parameter.
+- The logic takes the triage criteria as a parameter rather than reading them from a recorded Triage Observation, which records the outcome of the triage the logic proposes.
+- The logic does not check that a warning symptom belongs to the chief complaint, nor the time window of the green gynecology criteria ("GRÖN 07-16", see [open questions](west-a-triage-mapping.html#open-questions)).

@@ -1,4 +1,4 @@
-WEST-A Triage Observation records the result of a WEST-A triage at the emergency department: the priority (Röd, Orange, Gul or Grön) and the chief complaint, that is, the WEST-A complaint algorithm the triage nurse used. It refers to the [WEST-A Patient](StructureDefinition-west-a-patient.html) and the emergency department Encounter, and it points to the [WEST-A NEWS2 Observation](StructureDefinition-west-a-news2-observation.html) the priority is based on. The [triage mapping page](west-a-triage-mapping.html) explains how WEST-A sets the priority and lists every code.
+WEST-A Triage Observation records the result of a WEST-A triage at the emergency department: the priority (Röd, Orange, Gul or Grön), the chief complaint, that is, the WEST-A complaint algorithm the triage nurse used, and the triage criteria found: the warning symptoms of that algorithm, which set the priority, and the needs that give yellow as the lowest priority. It refers to the [WEST-A Patient](StructureDefinition-west-a-patient.html) and the emergency department Encounter, and it points to the [WEST-A NEWS2 Observation](StructureDefinition-west-a-news2-observation.html) the priority is based on. The [triage mapping page](west-a-triage-mapping.html) explains how WEST-A sets the priority and lists every code.
 
 ### Mandatory and Must Support data elements
 
@@ -12,6 +12,7 @@ A status, the survey category, the SNOMED CT code for triage (`425705009` *triag
 
 - the encounter (the emergency department visit);
 - the performer (the triage nurse);
+- the triage criteria found, one `criterion` component each: a warning symptom, a need, or *Inga varningssymtom* (no warning symptoms);
 - the observations the priority is based on, such as NEWS2.
 
 ### Building the JSON, step by step
@@ -92,9 +93,9 @@ The priority goes in `valueCodeableConcept` and the chief complaint in a compone
 }
 ```
 
-#### Adding the visit, the nurse and NEWS2
+#### Adding the visit, the nurse, NEWS2 and the warning symptom
 
-`encounter` and `performer` say where and by whom the patient was triaged. `derivedFrom` points to the NEWS2 the priority is based on, and `note` can carry the warning symptom in words until warning symptoms are coded:
+`encounter` and `performer` say where and by whom the patient was triaged. `derivedFrom` points to the NEWS2 the priority is based on. Each triage criterion the nurse found is a `criterion` component, coded *Triagekriterium* (triage criterion) from this guide's [observation codes](CodeSystem-west-a-observation-code-cs.html), whose value is from [WEST-A triage criterion](CodeSystem-west-a-triage-criterion-cs.html). Here it is the orange warning symptom of the chest pain algorithm; with NEWS2 5, which is also orange, the priority is orange:
 
 ```json
 {
@@ -153,11 +154,6 @@ The priority goes in `valueCodeableConcept` and the chief complaint in a compone
       "reference": "Observation/example-news2"
     }
   ],
-  "note": [
-    {
-      "text": "Bröstsmärta, pågående med misstanke om AKS."
-    }
-  ],
   "component": [
     {
       "code": {
@@ -179,9 +175,31 @@ The priority goes in `valueCodeableConcept` and the chief complaint in a compone
           }
         ]
       }
+    },
+    {
+      "code": {
+        "coding": [
+          {
+            "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-observation-code-cs",
+            "code": "1",
+            "display": "Triagekriterium"
+          }
+        ]
+      },
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-criterion-cs",
+            "code": "15",
+            "display": "Bröstsmärta, pågående med misstanke om AKS eller annan allvarlig orsak"
+          }
+        ]
+      }
     }
   ]
 }
 ```
+
+A triage with several criteria has one `criterion` component for each. When the nurse has checked the warning symptoms of the chief complaint and none applies, the component holds *Inga varningssymtom* (`163`), so that a receiver can tell "none found" from "not recorded".
 
 See the [Quick Start](#quick-start) below for the common API calls.

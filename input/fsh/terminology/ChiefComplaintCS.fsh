@@ -1,7 +1,7 @@
 CodeSystem: ChiefComplaintCS
 Id: west-a-chief-complaint-cs
 Title: "WEST-A chief complaint"
-Description: "Chief complaints (sökorsaker) of WEST-A. Each concept is one WEST-A complaint algorithm with its own warning symptoms."
+Description: "Chief complaints (sökorsaker) of WEST-A. Each concept is one WEST-A complaint algorithm; its warning symptoms are in the WEST-A triage criterion code system."
 * insert OriginalCodeSystemDraft
 * ^copyright = "WEST-A is developed by Västra Götalandsregionen. This code system is an unofficial representation of its complaint algorithms."
 
@@ -41,14 +41,14 @@ Description: "Chief complaints (sökorsaker) of WEST-A. Each concept is one WEST
   * ^definition = "Pain, swelling or other problems of an arm or leg (WEST-A page 18)."
   * ^designation[0].language = #en
   * ^designation[=].value = "Limb problem"
-* #10 "Graviditet fr.o.m. 18+0/post partum"
+* #10 "Graviditet fr.o.m. 18+0/postpartum"
   * ^definition = "Complaints in pregnancy from week 18+0, or after delivery (WEST-A page 19)."
   * ^designation[0].language = #en
   * ^designation[=].value = "Pregnancy from week 18+0/postpartum"
-* #11 "Gynekologiska sökorsaker"
-  * ^definition = "Gynecological complaints, including pregnancy up to week 17+6 (WEST-A pages 21-22)."
+* #11 "Gynekologiska sökorsaker (från 16 år)"
+  * ^definition = "Gynecological complaints from the age of 16, including pregnancy up to week 17+6 (WEST-A pages 21-22)."
   * ^designation[0].language = #en
-  * ^designation[=].value = "Gynecological complaints"
+  * ^designation[=].value = "Gynecological complaints (from age 16)"
 * #12 "Hjärtrytm"
   * ^definition = "Abnormal heart rhythm or rate (WEST-A page 23)."
   * ^designation[0].language = #en
