@@ -257,9 +257,10 @@ function walkCarePlan(carePlan, plan = 'PlanDefinition/west-a-triage') {
  *   proposedPriority: object|null, vitalParameterPriority: object|null,
  *   provisional: { total: number|null, risk: string|null, missing: string[], priority: object|null },
  *   summaries: string[], carePlan: object }>}
- *   provisional.missing names the parameters not yet scored ('Respiration Rate', 'Oxygen
- *   Saturation', 'Supplemental Oxygen', 'Systolic Blood Pressure', 'Pulse', 'Consciousness',
- *   'Temperature'); it is empty when NEWS2 is complete.
+ *   provisional.missing names the parameters not yet scored by their component slices in the
+ *   WEST-A NEWS2 Observation profile ('respirationRate', 'oxygenSaturationScale1' or
+ *   'oxygenSaturationScale2', 'airOrOxygen', 'systolicBloodPressure', 'pulse', 'consciousness',
+ *   'temperature'); it is empty when NEWS2 is complete.
  */
 export async function runTriage(client, {
   patientId, encounterId, practitionerId, complaintPriority = null, yellowAsLowest = false, scale2 = false,

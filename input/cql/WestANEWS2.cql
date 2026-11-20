@@ -301,17 +301,18 @@ define function "Provisional Clinical Risk For"(scale2 Boolean):
 
 // The parameters that cannot be scored yet, in the order of the NEWS2 chart: not measured,
 // measured in another unit, or, on scale 2, an oxygen saturation of 93% or more while it is
-// not known whether the patient is on oxygen
+// not known whether the patient is on oxygen. Each is named by its component slice in the
+// WEST-A NEWS2 Observation profile, the oxygen saturation by the slice of its scale.
 define function "Missing Parameters For"(scale2 Boolean):
   (
     {
-      Tuple { name: 'Respiration Rate', score: "Respiration Rate Score" },
-      Tuple { name: 'Oxygen Saturation', score: "Oxygen Saturation Score For"(scale2) },
-      Tuple { name: 'Supplemental Oxygen', score: "Supplemental Oxygen Score" },
-      Tuple { name: 'Systolic Blood Pressure', score: "Systolic Blood Pressure Score" },
-      Tuple { name: 'Pulse', score: "Pulse Score" },
-      Tuple { name: 'Consciousness', score: "Consciousness Score" },
-      Tuple { name: 'Temperature', score: "Temperature Score" }
+      Tuple { name: 'respirationRate', score: "Respiration Rate Score" },
+      Tuple { name: if scale2 then 'oxygenSaturationScale2' else 'oxygenSaturationScale1', score: "Oxygen Saturation Score For"(scale2) },
+      Tuple { name: 'airOrOxygen', score: "Supplemental Oxygen Score" },
+      Tuple { name: 'systolicBloodPressure', score: "Systolic Blood Pressure Score" },
+      Tuple { name: 'pulse', score: "Pulse Score" },
+      Tuple { name: 'consciousness', score: "Consciousness Score" },
+      Tuple { name: 'temperature', score: "Temperature Score" }
     }
   ) P
     where P.score is null
@@ -348,7 +349,7 @@ define "Provisional NEWS2 Total Score":
 define "Provisional NEWS2 Clinical Risk":
   "Provisional Clinical Risk For"("Use Oxygen Saturation Scale 2")
 
-// The names of the parameters not yet scored; empty when NEWS2 is complete
+// The component slice names of the parameters not yet scored; empty when NEWS2 is complete
 define "NEWS2 Missing Parameters":
   "Missing Parameters For"("Use Oxygen Saturation Scale 2")
 

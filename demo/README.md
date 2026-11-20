@@ -92,9 +92,10 @@ Plain ES modules for the browser and Node 20. `extract.js` needs its dependency 
     - `provisional`: `{ total, risk, missing, priority }`, what is known so far, from the same
       two `$evaluate` calls. `total` (number or `null`) is the sum of the parameter scores
       measured so far, `risk` (`'low'`, `'low-medium'`, `'medium'`, `'high'` or `null`) its
-      clinical risk band, `missing` the names of the parameters not yet scored, in chart order
-      (`'Respiration Rate'`, `'Oxygen Saturation'`, `'Supplemental Oxygen'`,
-      `'Systolic Blood Pressure'`, `'Pulse'`, `'Consciousness'`, `'Temperature'`; `[]` when
+      clinical risk band, `missing` the parameters not yet scored, in chart order, named by
+      their component slices in the NEWS2 profile (`'respirationRate'`,
+      `'oxygenSaturationScale1'` or `'oxygenSaturationScale2'`, `'airOrOxygen'`,
+      `'systolicBloodPressure'`, `'pulse'`, `'consciousness'`, `'temperature'`; `[]` when
       NEWS2 is complete), and `priority` a Coding of the triage priority code system: the most
       urgent of the provisional NEWS2 colour, the warning symptoms, `complaintPriority` and the
       needs, `null` only when nothing is known. All are lower bounds: they can only rise as

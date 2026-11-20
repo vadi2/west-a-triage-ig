@@ -1,5 +1,5 @@
 {
-  "description": "Scenario tests for the WEST-A CQL logic. Each case starts from vital signs that all score 0 (respiration rate 16, oxygen saturation 97, room air, systolic 120, pulse 70, alert, temperature 37.0) and changes the values in vitals; null leaves a parameter unmeasured. extra adds observations, with minutesEarlier (negative for later), status, unit (instead of the profile's unit) and period (timed with effectivePeriod). parameters are passed to both libraries; a parameter not given is passed as null, except the Booleans, which are false. Priority codes: 1 Röd, 2 Orange, 3 Gul, 4 Grön; a complaint priority with a system is given as system|code. Triage Criteria is a list of codes from the WEST-A triage criterion code system (163 is no warning symptoms, 159-162 are the needs), each optionally given as system|code. The Provisional cases check NEWS2 and the priority while parameters are missing; NEWS2 Missing Parameters is the list of the names of the parameters not yet scored.",
+  "description": "Scenario tests for the WEST-A CQL logic. Each case starts from vital signs that all score 0 (respiration rate 16, oxygen saturation 97, room air, systolic 120, pulse 70, alert, temperature 37.0) and changes the values in vitals; null leaves a parameter unmeasured. extra adds observations, with minutesEarlier (negative for later), status, unit (instead of the profile's unit) and period (timed with effectivePeriod). parameters are passed to both libraries; a parameter not given is passed as null, except the Booleans, which are false. Priority codes: 1 Röd, 2 Orange, 3 Gul, 4 Grön; a complaint priority with a system is given as system|code. Triage Criteria is a list of codes from the WEST-A triage criterion code system (163 is no warning symptoms, 159-162 are the needs), each optionally given as system|code. The Provisional cases check NEWS2 and the priority while parameters are missing; NEWS2 Missing Parameters lists the parameters not yet scored by their component slice names in the WEST-A NEWS2 Observation profile.",
   "cases": [
     {
       "name": "All parameters normal: NEWS2 0, low risk, green",
@@ -683,13 +683,13 @@
           "Provisional NEWS2 Total Score": null,
           "Provisional NEWS2 Clinical Risk": null,
           "NEWS2 Missing Parameters": [
-            "Respiration Rate",
-            "Oxygen Saturation",
-            "Supplemental Oxygen",
-            "Systolic Blood Pressure",
-            "Pulse",
-            "Consciousness",
-            "Temperature"
+            "respirationRate",
+            "oxygenSaturationScale1",
+            "airOrOxygen",
+            "systolicBloodPressure",
+            "pulse",
+            "consciousness",
+            "temperature"
           ],
           "NEWS2 Total Score": null
         },
@@ -716,12 +716,12 @@
           "Provisional NEWS2 Total Score": 3,
           "Provisional NEWS2 Clinical Risk": "low-medium",
           "NEWS2 Missing Parameters": [
-            "Oxygen Saturation",
-            "Supplemental Oxygen",
-            "Systolic Blood Pressure",
-            "Pulse",
-            "Consciousness",
-            "Temperature"
+            "oxygenSaturationScale1",
+            "airOrOxygen",
+            "systolicBloodPressure",
+            "pulse",
+            "consciousness",
+            "temperature"
           ],
           "NEWS2 Total Score": null,
           "NEWS2 Clinical Risk": null
@@ -755,10 +755,10 @@
           "Provisional NEWS2 Total Score": 4,
           "Provisional NEWS2 Clinical Risk": "low",
           "NEWS2 Missing Parameters": [
-            "Supplemental Oxygen",
-            "Systolic Blood Pressure",
-            "Consciousness",
-            "Temperature"
+            "airOrOxygen",
+            "systolicBloodPressure",
+            "consciousness",
+            "temperature"
           ]
         },
         "WestATriage": {
@@ -785,9 +785,9 @@
           "Provisional NEWS2 Total Score": 5,
           "Provisional NEWS2 Clinical Risk": "medium",
           "NEWS2 Missing Parameters": [
-            "Supplemental Oxygen",
-            "Consciousness",
-            "Temperature"
+            "airOrOxygen",
+            "consciousness",
+            "temperature"
           ]
         },
         "WestATriage": {
@@ -810,7 +810,7 @@
           "Provisional NEWS2 Total Score": 3,
           "Provisional NEWS2 Clinical Risk": "low-medium",
           "NEWS2 Missing Parameters": [
-            "Temperature"
+            "temperature"
           ],
           "NEWS2 Total Score": null
         },
@@ -881,8 +881,8 @@
           "Provisional NEWS2 Total Score": 0,
           "Provisional NEWS2 Clinical Risk": "low",
           "NEWS2 Missing Parameters": [
-            "Oxygen Saturation",
-            "Supplemental Oxygen"
+            "oxygenSaturationScale2",
+            "airOrOxygen"
           ]
         },
         "WestATriage": {

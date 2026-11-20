@@ -239,7 +239,7 @@ async function main() {
   check('provisional: NEWS2 total so far (2+1+1)', partial.provisional.total, 4);
   check('provisional: clinical risk so far', partial.provisional.risk, 'low');
   check('provisional: missing parameters', partial.provisional.missing,
-    ['Supplemental Oxygen', 'Systolic Blood Pressure', 'Consciousness', 'Temperature']);
+    ['airOrOxygen', 'systolicBloodPressure', 'consciousness', 'temperature']);
   check('provisional: priority so far', partial.provisional.priority?.code, '4');
   check('provisional: nothing proposed', partial.proposedPriority, null);
   const partialOrange = await runTriage(client, { ...partialContext, triageCriteria: ['15'] });

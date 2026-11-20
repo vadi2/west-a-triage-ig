@@ -187,12 +187,13 @@ function expectedNews2(vitals, scale2) {
   scores['NEWS2 Clinical Risk'] = riskBand(total, seven);
   scores['Provisional NEWS2 Total Score'] = sum;
   scores['Provisional NEWS2 Clinical Risk'] = riskBand(sum, seven);
-  scores['NEWS2 Missing Parameters'] = PARAMETER_NAMES.filter((_, i) => seven[i] === null);
+  scores['NEWS2 Missing Parameters'] = parameterNames(scale2).filter((_, i) => seven[i] === null);
   return scores;
 }
 
-// The names of the seven parameters, in the order of the chart, as the CQL lists them
-const PARAMETER_NAMES = ['Respiration Rate', 'Oxygen Saturation', 'Supplemental Oxygen', 'Systolic Blood Pressure', 'Pulse', 'Consciousness', 'Temperature'];
+// The names of the seven parameters, in the order of the chart, as the CQL lists them: the
+// component slices of the WEST-A NEWS2 Observation profile
+const parameterNames = (scale2) => ['respirationRate', scale2 ? 'oxygenSaturationScale2' : 'oxygenSaturationScale1', 'airOrOxygen', 'systolicBloodPressure', 'pulse', 'consciousness', 'temperature'];
 
 function riskBand(total, scores) {
   return total === null ? null : total >= 7 ? 'high' : total >= 5 ? 'medium' : scores.includes(3) ? 'low-medium' : 'low';
@@ -410,7 +411,8 @@ function preliminaryExampleCase() {
     if (!names[code]) throw new Error(`example-news2-preliminary: unexpected component ${code}`);
     expect[names[code]] = component.valueInteger;
   }
-  expect['NEWS2 Missing Parameters'] = PARAMETER_NAMES.filter((n) => expect[`${n === 'Oxygen Saturation' ? 'Oxygen Saturation Scale 1' : n} Score`] === null);
+  const scoreOf = ['Respiration Rate Score', 'Oxygen Saturation Scale 1 Score', 'Supplemental Oxygen Score', 'Systolic Blood Pressure Score', 'Pulse Score', 'Consciousness Score', 'Temperature Score'];
+  expect['NEWS2 Missing Parameters'] = parameterNames(false).filter((_, i) => expect[scoreOf[i]] === null);
   return {
     name: 'Examples: the example vital signs measured so far give the example provisional NEWS2',
     bundle: { resourceType: 'Bundle', type: 'collection', entry: [patient, ...vitals].map((resource) => ({ resource })) },
