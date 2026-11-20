@@ -8,7 +8,9 @@
 //   2. run the guideline (demo/lib/cds.js runTriage) and check NEWS2 and the proposed
 //      priority for several assessments of the chief complaint;
 //   3. record the NEWS2 and triage Observations, and write them to the output folder for
-//      validation against their profiles.
+//      validation against their profiles;
+//   4. for a new patient, record only some of the vital signs, check the provisional NEWS2
+//      and priority, and record a preliminary NEWS2, also written for validation.
 //
 //   node demo/e2e/run.mjs [--base http://localhost:8080/fhir] [--out demo/e2e/output] [--load [package.tgz|url]]
 //
@@ -164,6 +166,8 @@ async function main() {
   check('priority from the vital parameters', green.vitalParameterPriority?.code, '2');
   check('complaint priority 4 (Grön): proposed', green.proposedPriority?.code, '2');
   check('task descriptions', green.summaries, ['NEWS2 5, clinical risk medium', 'Proposed WEST-A priority: Orange']);
+  check('all measured: the provisional result is the final one',
+    [green.provisional.total, green.provisional.risk, green.provisional.missing, green.provisional.priority?.code], [5, 'medium', [], '2']);
 
   const red = await runTriage(client, { ...context, complaintPriority: '1' });
   check('complaint priority 1 (Röd): proposed', red.proposedPriority?.code, '1');
@@ -209,13 +213,52 @@ async function main() {
   check('triage Observation recorded, derived from NEWS2', triage.derivedFrom?.[0]?.reference, `Observation/${news2.id}`);
   check('triage priority', triage.valueCodeableConcept?.coding?.[0]?.code, '2');
 
+  // Provisional: a new patient (the CQL reads every observation of the patient) with only the
+  // respiratory rate, oxygen saturation and pulse of the example vital signs recorded so far
+  const { id: _patientId, meta: _patientMeta, text: _patientText, ...examplePatient } = await client.read('Patient', PATIENT);
+  const partialPatient = await client.create({
+    ...examplePatient, ...(_patientMeta?.profile ? { meta: { profile: _patientMeta.profile } } : {}),
+  });
+  const partialEntries = [];
+  for (const id of ['example-respiratory-rate', 'example-oxygen-saturation', 'example-heart-rate']) {
+    const { id: _id, meta, text, encounter, ...observation } = await client.read('Observation', id);
+    partialEntries.push({
+      resource: {
+        ...observation, ...(meta?.profile ? { meta: { profile: meta.profile } } : {}),
+        subject: { reference: `Patient/${partialPatient.id}` }, effectiveDateTime: now,
+      },
+      request: { method: 'POST', url: 'Observation' },
+    });
+  }
+  const partialIds = (await client.transaction({ resourceType: 'Bundle', type: 'transaction', entry: partialEntries }))
+    .entry.map((e) => idOf(e.response?.location)).filter(Boolean);
+  check('provisional: 3 vital signs recorded for a new patient', partialIds.length, 3);
+  const partialContext = { patientId: partialPatient.id, practitionerId: PRACTITIONER };
+  const partial = await runTriage(client, partialContext);
+  check('provisional: NEWS2 not calculated', partial.news2.total, null);
+  check('provisional: NEWS2 total so far (2+1+1)', partial.provisional.total, 4);
+  check('provisional: clinical risk so far', partial.provisional.risk, 'low');
+  check('provisional: missing parameters', partial.provisional.missing,
+    ['Supplemental Oxygen', 'Systolic Blood Pressure', 'Consciousness', 'Temperature']);
+  check('provisional: priority so far', partial.provisional.priority?.code, '4');
+  check('provisional: nothing proposed', partial.proposedPriority, null);
+  const partialOrange = await runTriage(client, { ...partialContext, triageCriteria: ['15'] });
+  check('provisional: an orange warning symptom gives orange so far', partialOrange.provisional.priority?.code, '2');
+  check('provisional: still nothing proposed', partialOrange.proposedPriority, null);
+  const preliminary = await client.create(news2Observation({
+    news2: partial.news2, provisional: partial.provisional, patientId: partialPatient.id, performerId: PRACTITIONER, effectiveDateTime: now,
+  }));
+  check('preliminary NEWS2 recorded',
+    [preliminary.status, preliminary.valueInteger, preliminary.component?.length, preliminary.derivedFrom?.length], ['preliminary', 4, 3, 3]);
+
   const write = (name, resource) => writeFile(join(args.out, name), `${JSON.stringify(resource, null, 2)}\n`);
   await write('news2.json', news2);
+  await write('news2-preliminary.json', preliminary);
   await write('triage.json', triage);
   await write('careplan.json', green.carePlan);
-  await write('results.json', Object.fromEntries(Object.entries({ green, red, yellow, unassessed, scale2 })
+  await write('results.json', Object.fromEntries(Object.entries({ green, red, yellow, unassessed, scale2, partial, partialOrange })
     .map(([k, v]) => [k, { ...v, carePlan: undefined }])));
-  console.log(`Wrote news2.json, triage.json, careplan.json and results.json to ${args.out}`);
+  console.log(`Wrote news2.json, news2-preliminary.json, triage.json, careplan.json and results.json to ${args.out}`);
 
   if (failures.length) {
     console.error(`${failures.length} check(s) failed: ${failures.join('; ')}`);

@@ -2,9 +2,11 @@ Profile: WestANews2Observation
 Parent: Observation
 Id: west-a-news2-observation
 Title: "WEST-A NEWS2 Observation"
-Description: "WEST-A NEWS2 Observation profile, used to record the National Early Warning Score 2 (NEWS2) total and its parameter scores, which WEST-A uses to set a priority from the vital parameters"
+Description: "WEST-A NEWS2 Observation profile, used to record the National Early Warning Score 2 (NEWS2) total and its parameter scores, which WEST-A uses to set a priority from the vital parameters, or, with status preliminary, a provisional NEWS2 of the parameters measured so far"
 
-* obeys westa-obs-1 and westa-obs-2
+* obeys westa-obs-1 and westa-obs-2 and westa-obs-3 and westa-obs-4
+
+* status ^short = "final | amended | corrected for NEWS2; preliminary for a provisional NEWS2, while parameters are missing"
 
 // CPG case feature: the WEST-A NEWS2 logic calculates the total from the vital signs
 * ^extension[+].url = $cpg-inferenceExpression
@@ -27,7 +29,7 @@ Description: "WEST-A NEWS2 Observation profile, used to record the National Earl
 * value[x] only integer
 * valueInteger ^minValueInteger = 0
 * valueInteger ^maxValueInteger = 20
-* valueInteger ^short = "NEWS2 total score (0-20)"
+* valueInteger ^short = "NEWS2 total score (0-20); in a preliminary NEWS2, the sum of the parameter scores so far"
 
 * derivedFrom MS
 * derivedFrom only Reference(WestARespiratoryRate or WestAOxygenSaturation or WestASupplementalOxygen or WestABloodPressure or WestAHeartRate or WestAConsciousness or WestABodyTemperature)
@@ -113,3 +115,13 @@ Invariant: westa-obs-2
 Description: "When all seven parameter scores are present, the total score is their sum"
 Severity: #error
 Expression: "component.where(value is integer).count() < 7 or component.value.ofType(integer).aggregate($this + $total, 0) = value.ofType(integer)"
+
+Invariant: westa-obs-3
+Description: "A final, amended or corrected NEWS2 has all seven parameter scores, or none: a NEWS2 that misses some is preliminary"
+Severity: #error
+Expression: "status in ('final' | 'amended' | 'corrected') implies (component.where(value is integer).empty() or component.where(value is integer).count() >= 7)"
+
+Invariant: westa-obs-4
+Description: "The total score of a preliminary NEWS2 is the sum of the parameter scores it has"
+Severity: #error
+Expression: "status = 'preliminary' implies (component.where(value is integer).empty() or component.value.ofType(integer).aggregate($this + $total, 0) = value.ofType(integer))"

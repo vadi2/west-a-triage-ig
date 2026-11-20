@@ -1,5 +1,7 @@
 WEST-A NEWS2 Observation records the National Early Warning Score 2 (NEWS2) that WEST-A uses to set a priority from the vital parameters: the total score and the score of each parameter. It is calculated from seven vital sign observations, which it references in `derivedFrom`, and the [WEST-A Triage Observation](StructureDefinition-west-a-triage-observation.html) references it in turn. The [triage mapping page](west-a-triage-mapping.html#news2) lists the parameters, their codes and how a score follows from a measurement.
 
+While the vital signs are coming in, it can also record a provisional NEWS2: status `preliminary`, with the scores of the parameters measured so far and their sum as the total. That total is a lower bound, since the missing parameters can only add points (see [provisional NEWS2](west-a-computable-guidelines.html#provisional-news2)). Once all seven are measured, record NEWS2 with status `final`.
+
 ```
 vital signs (measured) ──derivedFrom── NEWS2 (calculated) ──derivedFrom── WEST-A triage (assessed)
 ```
@@ -10,7 +12,7 @@ The elements below must always be present (mandatory) or must be supported when 
 
 #### Each WEST-A NEWS2 Observation Must Have
 
-A status, the survey category, the SNOMED CT code for the NEWS2 total score, the patient, the time the score was calculated, and the total score (0-20).
+A status (`final`, or `preliminary` for a provisional NEWS2), the survey category, the SNOMED CT code for the NEWS2 total score, the patient, the time the score was calculated, and the total score (0-20).
 
 #### Each WEST-A NEWS2 Observation Must Support
 
@@ -18,7 +20,7 @@ A status, the survey category, the SNOMED CT code for the NEWS2 total score, the
 - the seven vital sign observations the score is calculated from, in `derivedFrom`: [respiratory rate](StructureDefinition-west-a-respiratory-rate.html), [oxygen saturation](StructureDefinition-west-a-oxygen-saturation.html), [supplemental oxygen](StructureDefinition-west-a-supplemental-oxygen.html), [blood pressure](StructureDefinition-west-a-blood-pressure.html), [heart rate](StructureDefinition-west-a-heart-rate.html), [consciousness](StructureDefinition-west-a-consciousness.html) and [body temperature](StructureDefinition-west-a-body-temperature.html);
 - one score per parameter: respiration rate, oxygen saturation (scale 1 or scale 2, never both), supplemental oxygen, systolic blood pressure, pulse, consciousness (ACVPU) and temperature.
 
-When all seven parameter scores are sent, the total must be their sum.
+When all seven parameter scores are sent, the total must be their sum. A `final`, `amended` or `corrected` NEWS2 sends all seven parameter scores or none; one that misses a parameter is `preliminary`, and its total is the sum of the scores it sends.
 
 ### Building the JSON, step by step
 
@@ -229,6 +231,101 @@ Only the total score is mandatory:
         ]
       },
       "valueInteger": 0
+    }
+  ]
+}
+```
+
+#### A provisional NEWS2
+
+Before all seven parameters are measured, a NEWS2 is `preliminary`. It has a component only for each parameter scored so far, references only the vital signs measured, and its total is the sum of those scores. Here the respiration rate (2), the oxygen saturation (1) and the pulse (1) are measured, so NEWS2 is at least 4; the [example provisional NEWS2](Observation-example-news2-preliminary.html) is the complete instance:
+
+```json
+{
+  "resourceType": "Observation",
+  "meta": {
+    "profile": [
+      "https://vadi2.github.io/west-a-triage-ig/StructureDefinition/west-a-news2-observation"
+    ]
+  },
+  "language": "sv",
+  "status": "preliminary",
+  "category": [
+    {
+      "coding": [
+        {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "survey",
+          "display": "Survey"
+        }
+      ]
+    }
+  ],
+  "code": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "http://snomed.info/sct/45991000052106",
+        "code": "1104051000000101",
+        "display": "poäng enligt Royal College of Physicians NEWS2 (National Early Warning Score 2), totalpoäng"
+      }
+    ]
+  },
+  "subject": {
+    "reference": "Patient/example-patient-personnummer"
+  },
+  "effectiveDateTime": "2026-11-19T08:39:00+01:00",
+  "valueInteger": 4,
+  "derivedFrom": [
+    {
+      "reference": "Observation/example-respiratory-rate"
+    },
+    {
+      "reference": "Observation/example-oxygen-saturation"
+    },
+    {
+      "reference": "Observation/example-heart-rate"
+    }
+  ],
+  "component": [
+    {
+      "code": {
+        "coding": [
+          {
+            "system": "http://snomed.info/sct",
+            "version": "http://snomed.info/sct/45991000052106",
+            "code": "1104301000000104",
+            "display": "poäng enligt Royal College of Physicians NEWS2 (National Early Warning Score 2), andningsfrekvens"
+          }
+        ]
+      },
+      "valueInteger": 2
+    },
+    {
+      "code": {
+        "coding": [
+          {
+            "system": "http://snomed.info/sct",
+            "version": "http://snomed.info/sct/45991000052106",
+            "code": "1104311000000102",
+            "display": "poäng enligt Royal College of Physicians NEWS2 (National Early Warning Score 2), syremättnad 1"
+          }
+        ]
+      },
+      "valueInteger": 1
+    },
+    {
+      "code": {
+        "coding": [
+          {
+            "system": "http://snomed.info/sct",
+            "version": "http://snomed.info/sct/45991000052106",
+            "code": "1104351000000103",
+            "display": "poäng enligt Royal College of Physicians NEWS2 (National Early Warning Score 2), pulsfrekvens"
+          }
+        ]
+      },
+      "valueInteger": 1
     }
   ]
 }

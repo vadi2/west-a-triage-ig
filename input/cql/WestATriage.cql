@@ -5,7 +5,8 @@
  algorithm (pp. 3-48), and yellow as the lowest priority for some needs and processes (pp. 46-48).
  The triage nurse assesses the warning symptoms and the needs, and the criteria found are passed
  as codes from the WEST-A triage criterion code system; this logic gives each its priority, and
- proposes a priority only when NEWS2 is calculated and the warning symptoms are assessed.
+ proposes a priority only when NEWS2 is calculated and the warning symptoms are assessed. While the
+ triage is under way, it gives a provisional priority from what is known so far, a lower bound.
  The clinical assessment can raise the priority, but never lowers a red or orange patient (p. 8);
  that is the nurse's decision, so it is not calculated.
 */
@@ -120,14 +121,22 @@ define "Assessed Complaint Priority":
   "Most Urgent"({ "Priority Code"("Complaint Priority"), "Warning Symptom Priority" })
 
 // WEST-A p. 6: the colour of each NEWS2 clinical risk band
-define "Vital Parameter Priority":
-  case NEWS2."Clinical Risk For"("Use Oxygen Saturation Scale 2")
+define function "Priority For Risk"(risk String):
+  case risk
     when 'high' then "Red"
     when 'medium' then "Orange"
     when 'low-medium' then "Yellow"
     when 'low' then "Green"
     else null
   end
+
+define "Vital Parameter Priority":
+  "Priority For Risk"(NEWS2."Clinical Risk For"("Use Oxygen Saturation Scale 2"))
+
+// The colour of the provisional NEWS2 clinical risk: a lower bound until all seven
+// parameters are measured
+define "Provisional Vital Parameter Priority":
+  "Priority For Risk"(NEWS2."Provisional Clinical Risk For"("Use Oxygen Saturation Scale 2"))
 
 // A need from the triage criteria, or the parameter for a client that does not code them
 define "Lowest Priority From Needs":
@@ -153,6 +162,15 @@ define "Proposed Priority Is Green":
 
 define "Has Proposed Priority":
   "Proposed Priority" is not null
+
+// While the triage is under way: the most urgent of what is known so far, the colour of the
+// provisional NEWS2, the warning symptoms found and the Complaint Priority, and yellow for the
+// needs; null only when nothing is known. Every part can only become more urgent as the vital
+// signs and the warning symptoms come in, so this is a lower bound: it is never more urgent
+// than the Proposed Priority that follows, and it is the Proposed Priority once that is proposed.
+// Green means only that nothing more urgent is known yet.
+define "Provisional Proposed Priority":
+  "Most Urgent"({ "Provisional Vital Parameter Priority", "Assessed Complaint Priority", "Lowest Priority From Needs" })
 
 // The description of the task that proposes the triage priority
 define "Proposed Priority Summary":

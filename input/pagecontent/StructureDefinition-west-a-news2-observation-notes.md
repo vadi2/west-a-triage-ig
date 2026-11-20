@@ -14,6 +14,12 @@ GET [base]/Observation/[id]
 GET [base]/Observation?code=http://snomed.info/sct|1104051000000101&subject=Patient/[id]&_sort=-date
 ```
 
+**Find the complete NEWS2 scores of a patient, without the provisional ones**
+
+```
+GET [base]/Observation?code=http://snomed.info/sct|1104051000000101&subject=Patient/[id]&status=final,amended,corrected&_sort=-date
+```
+
 **Find the NEWS2 scores of an emergency department visit**
 
 ```

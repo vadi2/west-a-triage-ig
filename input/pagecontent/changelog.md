@@ -6,11 +6,11 @@
 - [WEST-A Blood Pressure](StructureDefinition-west-a-blood-pressure.html) profile, based on the FHIR core blood pressure profile
 - [WEST-A Body Temperature](StructureDefinition-west-a-body-temperature.html) profile, based on the FHIR core body temperature profile
 - [WEST-A chief complaint](CodeSystem-west-a-chief-complaint-cs.html) code system and [value set](ValueSet-west-a-chief-complaint-vs.html) for the 31 WEST-A complaint algorithms
-- [WEST-A Computable Guidelines](west-a-computable-guidelines.html) page, with the CQL logic, PlanDefinitions and ActivityDefinitions that calculate NEWS2 and propose a triage priority from NEWS2 and the triage criteria, tested in every build
+- [WEST-A Computable Guidelines](west-a-computable-guidelines.html) page, with the CQL logic, PlanDefinitions and ActivityDefinitions that calculate NEWS2 and propose a triage priority from NEWS2 and the triage criteria, and give a provisional NEWS2 and priority while the information is coming in, tested in every build
 - [WEST-A Consciousness](StructureDefinition-west-a-consciousness.html) profile for the ACVPU level of consciousness
 - [WEST-A Heart Rate](StructureDefinition-west-a-heart-rate.html) profile, based on the FHIR core heart rate profile
-- [WEST-A NEWS2 Logic](Library-WestANEWS2.html) and [WEST-A Triage Logic](Library-WestATriage.html) CQL libraries
-- [WEST-A NEWS2 Observation](StructureDefinition-west-a-news2-observation.html) profile for the NEWS2 total and parameter scores, calculated from the vital sign observations it references
+- [WEST-A NEWS2 Logic](Library-WestANEWS2.html) and [WEST-A Triage Logic](Library-WestATriage.html) CQL libraries, with provisional results, a lower bound, before all the vital signs are measured
+- [WEST-A NEWS2 Observation](StructureDefinition-west-a-news2-observation.html) profile for the NEWS2 total and parameter scores, calculated from the vital sign observations it references, or, with status preliminary, for a provisional NEWS2 of the parameters measured so far
 - [WEST-A observation code](CodeSystem-west-a-observation-code-cs.html) code system for the observation elements that SNOMED CT has no concept for, such as the triage criterion
 - [WEST-A Oxygen Saturation](StructureDefinition-west-a-oxygen-saturation.html) profile, based on the FHIR core oxygen saturation profile
 - [WEST-A Patient](StructureDefinition-west-a-patient.html) profile for the patient administrative data that WEST-A uses, based on the VGR Base Patient

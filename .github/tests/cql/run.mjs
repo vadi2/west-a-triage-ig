@@ -3,14 +3,17 @@
 //
 //   node run.mjs <IG output directory>
 //
-// Four kinds of tests:
+// Five kinds of tests:
 //   1. NEWS2 chart boundaries: generated from news2-chart.json, a transcription of the
 //      chart on WEST-A p. 6. Every band's edges are tested for every parameter.
 //   2. Triage criteria: generated from the WEST-A triage criterion code system of the built
 //      IG. Every concept must get the priority of its priority property from the CQL.
-//   3. Scenarios: cases.json, for the totals, the clinical risk and the triage priority.
-//   4. The guide's own examples: the example vital signs are run through the logic, and
-//      the result must match the example NEWS2 Observation and the example triage.
+//   3. Provisional NEWS2: generated from complete sets of vital signs, measured one parameter
+//      at a time. The provisional total, risk, missing parameters and priority must match the
+//      chart, and never be more than those of the complete measurements (a lower bound).
+//   4. Scenarios: cases.json, for the totals, the clinical risk and the triage priority.
+//   5. The guide's own examples: the example vital signs are run through the logic, and
+//      the result must match the example NEWS2 Observations and the example triage.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -176,14 +179,28 @@ function expectedNews2(vitals, scale2) {
     scores['Consciousness Score'],
     scores['Temperature Score'],
   ];
-  const complete = seven.every((s) => s !== null);
-  const total = complete ? seven.reduce((a, b) => a + b, 0) : null;
+  const known = seven.filter((s) => s !== null);
+  const sum = known.length ? known.reduce((a, b) => a + b, 0) : null;
+  const total = known.length === 7 ? sum : null;
   scores['Oxygen Saturation Score'] = seven[1];
   scores['NEWS2 Total Score'] = total;
-  scores['NEWS2 Clinical Risk'] =
-    total === null ? null : total >= 7 ? 'high' : total >= 5 ? 'medium' : seven.includes(3) ? 'low-medium' : 'low';
+  scores['NEWS2 Clinical Risk'] = riskBand(total, seven);
+  scores['Provisional NEWS2 Total Score'] = sum;
+  scores['Provisional NEWS2 Clinical Risk'] = riskBand(sum, seven);
+  scores['NEWS2 Missing Parameters'] = PARAMETER_NAMES.filter((_, i) => seven[i] === null);
   return scores;
 }
+
+// The names of the seven parameters, in the order of the chart, as the CQL lists them
+const PARAMETER_NAMES = ['Respiration Rate', 'Oxygen Saturation', 'Supplemental Oxygen', 'Systolic Blood Pressure', 'Pulse', 'Consciousness', 'Temperature'];
+
+function riskBand(total, scores) {
+  return total === null ? null : total >= 7 ? 'high' : total >= 5 ? 'medium' : scores.includes(3) ? 'low-medium' : 'low';
+}
+
+// The priority code of a clinical risk band (WEST-A p. 6)
+const RISK_PRIORITY = { high: '1', medium: '2', 'low-medium': '3', low: '4' };
+const mostUrgent = (...codes) => codes.filter(Boolean).sort()[0] ?? null;
 
 // Values on both edges of every band of the chart
 function boundaryCases() {
@@ -267,6 +284,70 @@ function criterionCases() {
   return cases;
 }
 
+// ---------------------------------------------------------------- provisional NEWS2
+
+// Complete sets of vital signs, each measured one parameter at a time in two orders: every
+// step must give the provisional NEWS2 of the chart for what is measured so far, and never
+// more than the complete set gives. complaintPriority is the assessed warning symptoms
+// (null: not assessed), which the provisional priority includes from the start.
+const PROVISIONAL_SETS = [
+  { name: 'the guide\'s examples (NEWS2 5)', vitals: { respirationRate: 22, oxygenSaturation: 95, systolic: 105, pulse: 95, temperature: 37.5 }, complaintPriority: '4' },
+  { name: 'a single 3 (low-medium)', vitals: { respirationRate: 26 }, complaintPriority: null },
+  { name: 'NEWS2 13 (high)', vitals: { respirationRate: 25, oxygenSaturation: 90, oxygenFlow: 2, systolic: 95, consciousness: '450847001' }, complaintPriority: '3' },
+  { name: 'all normal (low)', vitals: {}, complaintPriority: null },
+  { name: 'scale 2 on oxygen', vitals: { oxygenSaturation: 97, oxygenFlow: 2, pulse: 115 }, complaintPriority: '4', scale2: true },
+  { name: 'scale 2 on air, orange warning symptom', vitals: { oxygenSaturation: 95, temperature: 39.5 }, complaintPriority: '2', scale2: true },
+];
+const PARAMETERS = ['respirationRate', 'oxygenSaturation', 'oxygenFlow', 'systolic', 'pulse', 'consciousness', 'temperature'];
+
+function provisionalCases() {
+  const cases = [];
+  for (const set of PROVISIONAL_SETS) {
+    const full = { ...BASELINE, ...set.vitals };
+    const scale2 = !!set.scale2;
+    const final = expectedNews2(full, scale2);
+    const finalPriority = mostUrgent(RISK_PRIORITY[final['NEWS2 Clinical Risk']], set.complaintPriority);
+    const parameters = {
+      ...(set.complaintPriority ? { 'Complaint Priority': set.complaintPriority } : {}),
+      ...(scale2 ? { 'Use Oxygen Saturation Scale 2': true } : {}),
+    };
+    for (const order of [PARAMETERS, [...PARAMETERS].reverse()]) {
+      for (let measured = 0; measured <= 7; measured++) {
+        if (order !== PARAMETERS && (measured === 0 || measured === 7)) continue;
+        const vitals = Object.fromEntries(PARAMETERS.map((p) => [p, order.slice(0, measured).includes(p) ? full[p] : null]));
+        const expected = expectedNews2(vitals, scale2);
+        const provisionalPriority = mostUrgent(RISK_PRIORITY[expected['Provisional NEWS2 Clinical Risk']], set.complaintPriority);
+        cases.push({
+          name: `Provisional: ${set.name}, ${measured === 7 ? 'all measured' : `${order.slice(0, measured).join(', ') || 'nothing'} measured`}`,
+          vitals,
+          parameters,
+          expect: {
+            WestANEWS2: {
+              'Provisional NEWS2 Total Score': expected['Provisional NEWS2 Total Score'],
+              'Provisional NEWS2 Clinical Risk': expected['Provisional NEWS2 Clinical Risk'],
+              'NEWS2 Missing Parameters': expected['NEWS2 Missing Parameters'],
+              'NEWS2 Total Score': expected['NEWS2 Total Score'],
+            },
+            WestATriage: { 'Provisional Proposed Priority': provisionalPriority },
+          },
+          // a lower bound: never more than the complete measurements, and the same once complete
+          check: ({ WestANEWS2: n, WestATriage: t }) => {
+            const total = n['Provisional NEWS2 Total Score'];
+            if (total !== null && total > final['NEWS2 Total Score']) return `provisional total ${total} is more than the final ${final['NEWS2 Total Score']}`;
+            const priority = t['Provisional Proposed Priority'];
+            if (priority !== null && finalPriority !== null && priority < finalPriority) return `provisional priority ${priority} is more urgent than the final ${finalPriority}`;
+            if (measured === 7 && total !== final['NEWS2 Total Score']) return `provisional total ${total} is not the final ${final['NEWS2 Total Score']} with all measured`;
+            if (measured === 7 && set.complaintPriority && t['Proposed Priority'] !== priority) return `provisional priority ${priority} is not the proposed ${t['Proposed Priority']} with all measured`;
+            if (measured < 7 && t['Proposed Priority'] !== null) return `a priority is proposed with ${7 - measured} parameters missing`;
+            return null;
+          },
+        });
+      }
+    }
+  }
+  return cases;
+}
+
 // ---------------------------------------------------------------- the guide's examples
 
 function exampleCase() {
@@ -306,6 +387,38 @@ function exampleCase() {
   };
 }
 
+// The example provisional NEWS2: its vital signs give its scores and its total so far
+function preliminaryExampleCase() {
+  const read = (name) => JSON.parse(fs.readFileSync(path.join(outputDir, `${name}.json`), 'utf8'));
+  const news2 = read('Observation-example-news2-preliminary');
+  if (news2.status !== 'preliminary') throw new Error('example-news2-preliminary: not preliminary');
+  const vitals = news2.derivedFrom.map((ref) => read(`Observation-${ref.reference.split('/')[1]}`));
+  const patient = read(`Patient-${news2.subject.reference.split('/')[1]}`);
+  const names = {
+    '1104301000000104': 'Respiration Rate Score',
+    '1104311000000102': 'Oxygen Saturation Scale 1 Score',
+    '1104331000000105': 'Supplemental Oxygen Score',
+    '1104341000000101': 'Systolic Blood Pressure Score',
+    '1104351000000103': 'Pulse Score',
+    '1104361000000100': 'Consciousness Score',
+    '1104371000000107': 'Temperature Score',
+  };
+  const expect = { 'Provisional NEWS2 Total Score': news2.valueInteger, 'NEWS2 Total Score': null };
+  for (const name of Object.values(names)) expect[name] = null;
+  for (const component of news2.component ?? []) {
+    const code = component.code.coding.find((c) => c.system === SCT)?.code;
+    if (!names[code]) throw new Error(`example-news2-preliminary: unexpected component ${code}`);
+    expect[names[code]] = component.valueInteger;
+  }
+  expect['NEWS2 Missing Parameters'] = PARAMETER_NAMES.filter((n) => expect[`${n === 'Oxygen Saturation' ? 'Oxygen Saturation Scale 1' : n} Score`] === null);
+  return {
+    name: 'Examples: the example vital signs measured so far give the example provisional NEWS2',
+    bundle: { resourceType: 'Bundle', type: 'collection', entry: [patient, ...vitals].map((resource) => ({ resource })) },
+    patientId: patient.id,
+    expect: { WestANEWS2: expect },
+  };
+}
+
 // ---------------------------------------------------------------- running
 
 // A triage priority code is compared by its code alone; a code from any other system
@@ -316,7 +429,9 @@ const normalize = (v) =>
   : typeof v === 'object' && 'code' in v && 'system' in v ? (v.system === PRIORITY_CS ? v.code : `${v.system}|${v.code}`)
   : v;
 
-const same = (a, b) => (typeof a === 'number' && typeof b === 'number' ? Math.abs(a - b) < 1e-9 : a === b);
+const same = (a, b) => (typeof a === 'number' && typeof b === 'number' ? Math.abs(a - b) < 1e-9
+  : Array.isArray(a) || Array.isArray(b) ? JSON.stringify(a) === JSON.stringify(b)
+  : a === b);
 
 // The parameters each library declares. Every one is passed, as null (false for a Boolean)
 // when the case does not set it: cql-execution 3.3.2 returns the parameter definition
@@ -391,7 +506,8 @@ if (criteria.length < 150) {
   console.log(`::error::too few triage criteria: ${criteria.length}`);
   process.exit(1);
 }
-const all = [...boundaries, ...criteria, ...scenarios, exampleCase()];
+const provisional = provisionalCases();
+const all = [...boundaries, ...criteria, ...provisional, ...scenarios, exampleCase(), preliminaryExampleCase()];
 let failed = 0;
 for (const [index, testCase] of all.entries()) {
   let failures;

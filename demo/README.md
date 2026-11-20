@@ -73,7 +73,7 @@ Plain ES modules for the browser and Node 20. `extract.js` needs its dependency 
 - `cds.js`: talks to the FHIR server and runs the guideline.
   - `fhir(base)` → `{ request, read, search, create, update, transaction, operation(path, parameters?, { method }) }`.
   - `runTriage(client, { patientId, encounterId, practitionerId, complaintPriority, yellowAsLowest, scale2, triageCriteria })`
-    → `{ news2, proposedPriority, vitalParameterPriority, summaries, carePlan }`, by
+    → `{ news2, proposedPriority, vitalParameterPriority, provisional, summaries, carePlan }`, by
     `PlanDefinition/west-a-triage/$apply` and `Library/WestANEWS2` and `Library/WestATriage`
     `$evaluate`. Takes 1–15 s on HAPI, so show progress.
     - `complaintPriority`: `'1'`–`'4'`, a Coding, or `null` (left out: the override is optional).
@@ -89,8 +89,24 @@ Plain ES modules for the browser and Node 20. `extract.js` needs its dependency 
     - `proposedPriority`, `vitalParameterPriority`: Codings of the WEST-A triage priority
       code system, or `null`. No priority is proposed until NEWS2 is complete and the warning
       symptoms are assessed (a symptom, `163`, or `complaintPriority`).
-  - `news2Observation({ news2, patientId, encounterId, performerId, effectiveDateTime, derivedFrom?, id? })`
-    → a WEST-A NEWS2 Observation; `derivedFrom` defaults to `news2.derivedFrom`.
+    - `provisional`: `{ total, risk, missing, priority }`, what is known so far, from the same
+      two `$evaluate` calls. `total` (number or `null`) is the sum of the parameter scores
+      measured so far, `risk` (`'low'`, `'low-medium'`, `'medium'`, `'high'` or `null`) its
+      clinical risk band, `missing` the names of the parameters not yet scored, in chart order
+      (`'Respiration Rate'`, `'Oxygen Saturation'`, `'Supplemental Oxygen'`,
+      `'Systolic Blood Pressure'`, `'Pulse'`, `'Consciousness'`, `'Temperature'`; `[]` when
+      NEWS2 is complete), and `priority` a Coding of the triage priority code system: the most
+      urgent of the provisional NEWS2 colour, the warning symptoms, `complaintPriority` and the
+      needs, `null` only when nothing is known. All are lower bounds: they can only rise as
+      data comes in, and they equal `news2.total`, `news2.risk` and `proposedPriority` once
+      those are there. Show a provisional green as "at least green", not as green; a
+      provisional red or orange already holds.
+  - `news2Observation({ news2, provisional?, patientId, encounterId, performerId, effectiveDateTime, derivedFrom?, id? })`
+    → a WEST-A NEWS2 Observation; `derivedFrom` defaults to `news2.derivedFrom`. Without
+    `provisional` it is `final` and needs a complete NEWS2. With `provisional` (the
+    `provisional` of `runTriage`) it is a `preliminary` NEWS2: total `provisional.total`, only
+    the scores measured so far. It throws when nothing is measured yet, or when all seven are
+    (record it as final then).
   - `triageObservation({ priority, chiefComplaint, news2?, proposedPriority?, vitalParameterPriority?, patientId, encounterId, performerId, effectiveDateTime, note?, derivedFrom, criteria, id? })`
     → a WEST-A Triage Observation, each criterion a component. `news2` may be the
     Observation, an id, or a Reference (a `urn:uuid` inside a transaction). Throws when

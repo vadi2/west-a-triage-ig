@@ -1,6 +1,6 @@
 ### Overview
 
-This page describes the parts of WEST-A that a computer can calculate, written as a computable guideline in the format of the HL7 [Clinical Practice Guidelines](https://hl7.org/fhir/uv/cpg/) implementation guide (CPG on FHIR): NEWS2 from the vital signs, and a proposed triage priority. The logic is written in [CQL](https://cql.hl7.org) and tested automatically in every build (see [QA](#qa)). The source is the WEST-A triage manual for adults, VGR version 2025:02:01; page numbers refer to the WEST-A PDF.
+This page describes the parts of WEST-A that a computer can calculate, written as a computable guideline in the format of the HL7 [Clinical Practice Guidelines](https://hl7.org/fhir/uv/cpg/) implementation guide (CPG on FHIR): NEWS2 from the vital signs, and a proposed triage priority, both also provisionally while the information is coming in. The logic is written in [CQL](https://cql.hl7.org) and tested automatically in every build (see [QA](#qa)). The source is the WEST-A triage manual for adults, VGR version 2025:02:01; page numbers refer to the WEST-A PDF.
 
 The guideline proposes; the triage nurse decides. WEST-A gives the clinical assessment the same weight as the warning symptoms and the vital parameters (p. 8), and the warning symptoms of the chief complaint need a nurse to assess them, so the logic takes the warning symptoms found as input and does not replace the triage.
 
@@ -13,8 +13,8 @@ The guideline proposes; the triage nurse decides. WEST-A gives the clinical asse
 <tr><td><a href="PlanDefinition-west-a-news2-calculation.html">WEST-A NEWS2 Calculation</a> (PlanDefinition)</td><td>When any vital sign is recorded and all seven NEWS2 parameters are measured, propose to record NEWS2</td></tr>
 <tr><td><a href="ActivityDefinition-west-a-record-news2.html">WEST-A Record NEWS2</a> (ActivityDefinition)</td><td>A task to record a <a href="StructureDefinition-west-a-news2-observation.html">WEST-A NEWS2 Observation</a>, described with the total and the clinical risk</td></tr>
 <tr><td><a href="ActivityDefinition-west-a-record-triage-priority.html">WEST-A Record Triage Priority</a> (ActivityDefinition)</td><td>A task to record a <a href="StructureDefinition-west-a-triage-observation.html">WEST-A Triage Observation</a>, described with the proposed priority</td></tr>
-<tr><td><a href="Library-WestANEWS2.html">WEST-A NEWS2 Logic</a> (Library, CQL)</td><td>The NEWS2 chart: parameter scores, total and clinical risk</td></tr>
-<tr><td><a href="Library-WestATriage.html">WEST-A Triage Logic</a> (Library, CQL)</td><td>The priority from the vital parameters, and the proposed priority</td></tr>
+<tr><td><a href="Library-WestANEWS2.html">WEST-A NEWS2 Logic</a> (Library, CQL)</td><td>The NEWS2 chart: parameter scores, total and clinical risk, also provisional</td></tr>
+<tr><td><a href="Library-WestATriage.html">WEST-A Triage Logic</a> (Library, CQL)</td><td>The priority from the vital parameters, and the proposed priority, also provisional</td></tr>
 <tr><td><a href="Library-FHIRHelpers.html">FHIRHelpers</a> (Library, CQL)</td><td>The standard library that converts FHIR R4 types to CQL types</td></tr>
 <tr><td><a href="Questionnaire-west-a-triage-questionnaire.html">WEST-A Triage Questionnaire</a> (Questionnaire)</td><td>The triage form: the vital signs, extracted as Observations, and the assessment that the guideline takes as input (see <a href="#questionnaire">triage form</a>)</td></tr>
 </tbody>
@@ -60,6 +60,25 @@ A CDS service applies a PlanDefinition with the `$apply` operation for a patient
 
 The total is calculated only when all seven parameters are measured. Scale 2 is for a patient with known respiratory failure, on a physician's order; the CQL parameter `Use Oxygen Saturation Scale 2` selects it. Both libraries declare it, because CQL cannot pass a parameter to an included library: WEST-A Triage Logic passes its own to the `Clinical Risk For` function of WEST-A NEWS2 Logic.
 
+#### Provisional NEWS2 {#provisional-news2}
+
+While the vital signs are coming in, WEST-A NEWS2 Logic also scores the parameters measured so far:
+
+<table class="grid">
+<thead>
+<tr><th>CQL definition</th><th>Value</th></tr>
+</thead>
+<tbody>
+<tr><td><code>Provisional NEWS2 Total Score</code></td><td>The sum of the parameter scores so far; null when no parameter is scored</td></tr>
+<tr><td><code>Provisional NEWS2 Clinical Risk</code></td><td>The clinical risk band of that sum, a single parameter scoring 3 included</td></tr>
+<tr><td><code>NEWS2 Missing Parameters</code></td><td>The parameters not yet scored, in the order of the chart: <code>Respiration Rate</code>, <code>Oxygen Saturation</code>, <code>Supplemental Oxygen</code>, <code>Systolic Blood Pressure</code>, <code>Pulse</code>, <code>Consciousness</code>, <code>Temperature</code>; empty when NEWS2 is complete</td></tr>
+</tbody>
+</table>
+
+A parameter not yet measured can only add points, so the provisional total and risk are a **lower bound**: the patient's NEWS2 is at least that, and they can only rise as the missing parameters come in. A provisional total of 5 is already medium risk, orange, whatever is still missing; a provisional total of 2 says nothing about what the complete NEWS2 will be. With all seven parameters, they are the NEWS2 total and clinical risk. A parameter counts as missing when it cannot be scored: not measured, measured in another unit, or, on scale 2, an oxygen saturation of 93% or more before it is known whether the patient is on oxygen. A new measurement of a parameter that is already scored replaces it, and can change the score either way. The functions `Provisional Total Score For`, `Provisional Clinical Risk For` and `Missing Parameters For` take the oxygen saturation scale, as `Clinical Risk For` does.
+
+`NEWS2 Total Score` and `NEWS2 Clinical Risk` keep their meaning: they are null until all seven parameters are measured. A provisional NEWS2 can be recorded as a [WEST-A NEWS2 Observation](StructureDefinition-west-a-news2-observation.html) with status `preliminary`, which has only the scores of the parameters measured, and whose total is their sum.
+
 ### Triage priority
 
 [WEST-A Triage Logic](Library-WestATriage.html) gives each NEWS2 clinical risk band the colour of page 6:
@@ -88,6 +107,12 @@ A priority is proposed only when NEWS2 is calculated and the nurse has assessed 
 The CQL lists the warning symptoms of each colour, since a terminology server cannot be assumed to filter a code system by its properties; the tests check the lists against the code system.
 
 The nurse then records the priority in a [WEST-A Triage Observation](StructureDefinition-west-a-triage-observation.html). The clinical assessment can raise it, but a red or orange patient is never given a lower priority (p. 8).
+
+#### Provisional priority {#provisional-priority}
+
+While the triage is under way, `Provisional Proposed Priority` is the most urgent of what is known so far: the colour of the [provisional NEWS2](#provisional-news2) clinical risk (`Provisional Vital Parameter Priority`), the warning symptoms found and `Complaint Priority`, and yellow for the needs. It is null only when nothing is known. Each of these can only become more urgent as the vital signs and the warning symptoms come in, so it is a lower bound too: it is never more urgent than the proposed priority that follows, and it is the proposed priority once one is proposed. A provisional green means only that nothing more urgent is known yet, not that the patient is green. A provisional red or orange, on the other hand, already holds: a red or orange patient is never given a lower priority.
+
+The PlanDefinitions stay with the complete NEWS2: they propose to record NEWS2 and a priority only when all seven parameters are measured and the warning symptoms are assessed. A client that shows the provisional results evaluates the libraries with `$evaluate`.
 
 ### Triage form {#questionnaire}
 
@@ -133,9 +158,10 @@ Every build checks the guideline in four ways, and the [triage form](#questionna
 3. **Execution.** A test runner (`.github/tests/cql`) runs the ELM from the build with the [CQL execution engine](https://github.com/cqframework/cql-execution), and fails the build on any wrong result:
    - every edge of every band of the NEWS2 chart, generated from `news2-chart.json`, which transcribes the chart on page 6 independently of the CQL;
    - every concept of the [triage criterion code system](CodeSystem-west-a-triage-criterion-cs.html), generated from the code system the build produces: each warning symptom alone must give the colour of its `priority` property, each need yellow as the lowest priority, `163` green, and each group nothing;
-   - scenarios in `cases.json`: the risk bands and their colours, an incomplete NEWS2, the warning symptoms and the needs that set the priority, several warning symptoms, a warning symptom together with `Complaint Priority`, no proposal before the warning symptoms are assessed, scale 2 through both libraries, rounding between the chart's steps, units, and which observation counts;
-   - this guide's examples: the [example vital signs](Observation-example-respiratory-rate.html) must give the [example NEWS2](Observation-example-news2.html), score by score, and the triage criteria and NEWS2 of the [example triage](Observation-example-triage-chest-pain.html) must give its priority.
-4. **Invariants.** The NEWS2 profile itself checks that the total is the sum of the parameter scores (`westa-obs-2`), and the CI checks that an instance breaking it is rejected. It also checks that a triage criterion group cannot be recorded as a criterion.
+   - the provisional NEWS2 of several sets of vital signs, measured one parameter at a time in two orders: at each step the provisional total, risk, missing parameters and priority must be those of the chart for what is measured so far, never more than those of the complete set, and the same as the final ones once all is measured;
+   - scenarios in `cases.json`: the risk bands and their colours, an incomplete NEWS2, provisional results from one to six parameters, the warning symptoms and the needs that set the priority, several warning symptoms, a warning symptom together with `Complaint Priority`, no proposal before the warning symptoms are assessed, scale 2 through both libraries, rounding between the chart's steps, units, and which observation counts;
+   - this guide's examples: the [example vital signs](Observation-example-respiratory-rate.html) must give the [example NEWS2](Observation-example-news2.html), score by score, those measured first the [example provisional NEWS2](Observation-example-news2-preliminary.html), and the triage criteria and NEWS2 of the [example triage](Observation-example-triage-chest-pain.html) must give its priority.
+4. **Invariants.** The NEWS2 profile itself checks that the total is the sum of the parameter scores (`westa-obs-2`, and `westa-obs-4` for a preliminary NEWS2), and that a final NEWS2 with parameter scores has all seven (`westa-obs-3`); the CI checks that instances breaking them are rejected. It also checks that a triage criterion group cannot be recorded as a criterion.
 5. **Extraction.** The CI extracts the vital signs from the [example triage form](QuestionnaireResponse-example-triage-questionnaire-response.html) with `demo/lib/extract.js`, checks their codes, values and references (`demo/lib/extract.test.mjs`), and validates each extracted Observation against its WEST-A profile.
 
 To add a test, add a case to `cases.json`, giving the vital signs that differ from normal and the expected value of any CQL definition.
@@ -145,5 +171,6 @@ To add a test, add a case to `cases.json`, giving the vital signs that differ fr
 - The logic uses the latest observation of each parameter for the patient, not only those of the current visit. A CDS service that runs it should pass only the data of the emergency department visit.
 - The proposed tasks carry the result in their description only. The [record-inference task](https://hl7.org/fhir/uv/cpg/StructureDefinition-cpg-recordinferencetask.html) profile also asks for the inferred Observation in `Task.input`, which the CDS service has to add: building the Observation in CQL is left for a later version.
 - ONEWS2 for pregnant patients (p. 20) is not calculated: SNOMED CT has no ONEWS2 codes.
+- The provisional results are a lower bound as the missing parameters and warning symptoms come in. A new measurement that replaces an older one, or a changed `Complaint Priority`, can lower them.
 - The logic takes the triage criteria as a parameter rather than reading them from a recorded Triage Observation, which records the outcome of the triage the logic proposes.
 - The logic does not check that a warning symptom belongs to the chief complaint, nor the time window of the green gynecology criteria ("GRÖN 07-16", see [open questions](west-a-triage-mapping.html#open-questions)).

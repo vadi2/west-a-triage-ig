@@ -58,7 +58,7 @@ Title: "WEST-A NEWS2 Logic"
 Description: "CQL logic that calculates NEWS2 from the WEST-A vital signs: the score of each parameter, the total and the clinical risk (WEST-A p. 6)"
 * insert WestALogicLibrary(WestANEWS2)
 * title = "WEST-A NEWS2 Logic"
-* description = "Calculates NEWS2 (National Early Warning Score 2) as WEST-A uses it (p. 6) from the latest final vital sign observations of the patient: the score of each of the seven parameters, the total when all seven are measured, and the clinical risk (low, low-medium, medium or high). The thresholds are those of the Royal College of Physicians NEWS2 chart. The parameter `Use Oxygen Saturation Scale 2` selects scale 2 for a patient with known respiratory failure, on a physician's order."
+* description = "Calculates NEWS2 (National Early Warning Score 2) as WEST-A uses it (p. 6) from the latest final vital sign observations of the patient: the score of each of the seven parameters, the total when all seven are measured, and the clinical risk (low, low-medium, medium or high); and, while parameters are missing, the provisional total and clinical risk of those measured so far, a lower bound, with the names of the missing parameters. The thresholds are those of the Royal College of Physicians NEWS2 chart. The parameter `Use Oxygen Saturation Scale 2` selects scale 2 for a patient with known respiratory failure, on a physician's order."
 
 Instance: WestATriage
 InstanceOf: Library
@@ -67,7 +67,7 @@ Title: "WEST-A Triage Logic"
 Description: "CQL logic that proposes a WEST-A triage priority from NEWS2, the warning symptoms of the chief complaint and the needs that give yellow as the lowest priority"
 * insert WestALogicLibrary(WestATriage)
 * title = "WEST-A Triage Logic"
-* description = "Proposes a WEST-A triage priority. The priority from the vital parameters is the colour of the NEWS2 clinical risk (p. 6): high red, medium orange, low-medium yellow, low green. The proposed priority is the most urgent of that, the colour of the warning symptoms found (parameter `Triage Criteria`, codes from the WEST-A triage criterion code system; or their colour alone, parameter `Complaint Priority`), and yellow for frail elderly, likely admission, or violence or sexual assault (pp. 46-48: a need in `Triage Criteria`, or parameter `Yellow As Lowest Priority`). The triage nurse assesses the warning symptoms and the needs, and decides the final priority: the clinical assessment can raise it, but never lowers a red or orange patient (p. 8)."
+* description = "Proposes a WEST-A triage priority. The priority from the vital parameters is the colour of the NEWS2 clinical risk (p. 6): high red, medium orange, low-medium yellow, low green. The proposed priority is the most urgent of that, the colour of the warning symptoms found (parameter `Triage Criteria`, codes from the WEST-A triage criterion code system; or their colour alone, parameter `Complaint Priority`), and yellow for frail elderly, likely admission, or violence or sexual assault (pp. 46-48: a need in `Triage Criteria`, or parameter `Yellow As Lowest Priority`). While the triage is under way, the provisional proposed priority is the most urgent of what is known so far, a lower bound. The triage nurse assesses the warning symptoms and the needs, and decides the final priority: the clinical assessment can raise it, but never lowers a red or orange patient (p. 8)."
 
 Instance: west-a-news2-calculation
 InstanceOf: $cpg-computableplandefinition

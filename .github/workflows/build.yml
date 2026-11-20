@@ -369,10 +369,10 @@ jobs:
       - name: Run the end-to-end test
         run: node demo/e2e/run.mjs --base http://localhost:8080/fhir --out e2e-output
 
-      - name: Validate the recorded NEWS2 and triage Observations
+      - name: Validate the recorded NEWS2 (final and preliminary) and triage Observations
         run: |
           python3 .github/scripts/validate.py --info --validator validator_cli.jar \
-            e2e-output/news2.json e2e-output/triage.json
+            e2e-output/news2.json e2e-output/news2-preliminary.json e2e-output/triage.json
 
       - name: List the FHIR packages
         id: fhir-packages

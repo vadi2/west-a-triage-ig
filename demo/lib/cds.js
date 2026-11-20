@@ -7,6 +7,8 @@
 //   const result = await runTriage(client, { patientId, encounterId, complaintPriority: '4' });
 //   // result.proposedPriority.code === '2', result.news2.total === 5
 //   const news2 = await client.create(news2Observation({ news2: result.news2, patientId, encounterId, performerId }));
+//   // while vital signs are missing: result.provisional.total, .risk, .missing, .priority, and
+//   // news2Observation({ news2: result.news2, provisional: result.provisional, ... }) is preliminary
 //   const triage = await client.create(triageObservation({ priority: result.proposedPriority,
 //     chiefComplaint: '4', news2: news2, patientId, encounterId, performerId }));
 
@@ -161,11 +163,20 @@ function parameterValue(parameter) {
   return key ? parameter[key] : null;
 }
 
+// The output parameters by name. A CQL list comes back as one parameter per element, so a
+// name that is repeated collects its values in an array.
 function outputs(parameters) {
   const values = {};
-  for (const p of parameters?.parameter ?? []) values[p.name] = parameterValue(p);
+  for (const p of parameters?.parameter ?? []) {
+    const value = parameterValue(p);
+    if (!(p.name in values)) values[p.name] = value;
+    else values[p.name] = [].concat(values[p.name], value);
+  }
   return values;
 }
+
+// A CQL list output as an array: [] for an empty list or null
+const listOutput = (value) => [].concat(value ?? []).filter((v) => v !== null && v !== undefined);
 
 // The CQL parameters of the WEST-A libraries, as a Parameters resource
 function cqlParameters({ complaintPriority, yellowAsLowest, scale2, triageCriteria }) {
@@ -223,7 +234,10 @@ function walkCarePlan(carePlan, plan = 'PlanDefinition/west-a-triage') {
  * - Library/WestANEWS2/$evaluate gives the parameter scores, the total, the clinical risk
  *   and the vital sign observations they are calculated from;
  * - Library/WestATriage/$evaluate gives the priority from the vital parameters, and the
- *   proposed priority, which must agree with $apply.
+ *   proposed priority, which must agree with $apply;
+ * - the same two $evaluate calls give the provisional NEWS2 and priority, from what is known
+ *   so far: a lower bound, which can only rise as the missing parameters and the warning
+ *   symptoms come in, and which is the final result once that is complete.
  *
  * @param {ReturnType<typeof fhir>} client
  * @param {object} options
@@ -241,7 +255,11 @@ function walkCarePlan(carePlan, plan = 'PlanDefinition/west-a-triage') {
  *   news2: { total: number|null, risk: string|null, scale2: boolean,
  *            scores: Object<string, number|null>, derivedFrom: {reference: string}[] },
  *   proposedPriority: object|null, vitalParameterPriority: object|null,
+ *   provisional: { total: number|null, risk: string|null, missing: string[], priority: object|null },
  *   summaries: string[], carePlan: object }>}
+ *   provisional.missing names the parameters not yet scored ('Respiration Rate', 'Oxygen
+ *   Saturation', 'Supplemental Oxygen', 'Systolic Blood Pressure', 'Pulse', 'Consciousness',
+ *   'Temperature'); it is empty when NEWS2 is complete.
  */
 export async function runTriage(client, {
   patientId, encounterId, practitionerId, complaintPriority = null, yellowAsLowest = false, scale2 = false,
@@ -272,8 +290,9 @@ export async function runTriage(client, {
   const scoreNames = NEWS2_SCORES.map(([name]) => name);
   const [carePlan, news2Out, triageOut] = await Promise.all([
     client.operation('PlanDefinition/west-a-triage/$apply', applyParameters),
-    evaluate('WestANEWS2', ['NEWS2 Total Score', 'NEWS2 Clinical Risk', ...scoreNames, ...NEWS2_OBSERVATIONS]),
-    evaluate('WestATriage', ['Vital Parameter Priority', 'Proposed Priority']),
+    evaluate('WestANEWS2', ['NEWS2 Total Score', 'NEWS2 Clinical Risk', ...scoreNames, ...NEWS2_OBSERVATIONS,
+      'Provisional NEWS2 Total Score', 'Provisional NEWS2 Clinical Risk', 'NEWS2 Missing Parameters']),
+    evaluate('WestATriage', ['Vital Parameter Priority', 'Proposed Priority', 'Provisional Proposed Priority']),
   ]);
 
   const n = outputs(news2Out);
@@ -304,15 +323,25 @@ export async function runTriage(client, {
     },
     proposedPriority,
     vitalParameterPriority: t['Vital Parameter Priority'] ? priorityCoding(t['Vital Parameter Priority']) : null,
+    provisional: {
+      total: n['Provisional NEWS2 Total Score'] ?? null,
+      risk: n['Provisional NEWS2 Clinical Risk'] ?? null,
+      missing: listOutput(n['NEWS2 Missing Parameters']),
+      priority: t['Provisional Proposed Priority'] ? priorityCoding(t['Provisional Proposed Priority']) : null,
+    },
     summaries,
     carePlan,
   };
 }
 
 /**
- * A WEST-A NEWS2 Observation from the NEWS2 result of runTriage.
+ * A WEST-A NEWS2 Observation from the NEWS2 result of runTriage: final when NEWS2 is
+ * complete, or, with options.provisional, a preliminary NEWS2 of the parameters measured so
+ * far, whose total is the provisional total and which has only the known scores.
  * @param {object} options
  * @param {{ total: number, scores: object, scale2?: boolean, derivedFrom?: object[] }} options.news2
+ * @param {{ total: number, missing: string[] }} [options.provisional]  the provisional result
+ *   of runTriage, for a preliminary NEWS2 while parameters are missing
  * @param {string} options.patientId
  * @param {string} [options.encounterId]
  * @param {string} [options.performerId]  Practitioner id (or 'PractitionerRole/...')
@@ -322,10 +351,18 @@ export async function runTriage(client, {
  * @param {string} [options.id]
  */
 export function news2Observation({
-  news2, patientId, encounterId, performerId, effectiveDateTime = new Date().toISOString(), derivedFrom, id,
+  news2, provisional, patientId, encounterId, performerId, effectiveDateTime = new Date().toISOString(), derivedFrom, id,
 }) {
-  if (!news2 || news2.total === null || news2.total === undefined) throw new Error('NEWS2 is not calculated: not all seven parameters are measured');
+  const preliminary = !!provisional;
+  if (preliminary) {
+    if (!news2?.scores) throw new Error('A preliminary NEWS2 needs the news2 result of runTriage, for its scores');
+    if (provisional.total === null || provisional.total === undefined) throw new Error('No NEWS2 parameter is measured yet');
+    if (!provisional.missing?.length) throw new Error('All seven NEWS2 parameters are measured: record NEWS2 as final');
+  } else if (!news2 || news2.total === null || news2.total === undefined) {
+    throw new Error('NEWS2 is not calculated: not all seven parameters are measured');
+  }
   if (!patientId) throw new Error('news2Observation needs a patientId');
+  const total = preliminary ? provisional.total : news2.total;
   const component = NEWS2_SCORES
     .filter(([name]) => news2.scores[name] !== null && news2.scores[name] !== undefined)
     .map(([name, code, display]) => ({
@@ -333,21 +370,21 @@ export function news2Observation({
       valueInteger: news2.scores[name],
     }));
   const sum = component.reduce((total, c) => total + c.valueInteger, 0);
-  if (component.length === 7 && sum !== news2.total) throw new Error(`NEWS2 total ${news2.total} is not the sum of the scores, ${sum}`);
+  if ((preliminary || component.length === 7) && sum !== total) throw new Error(`NEWS2 total ${total} is not the sum of the scores, ${sum}`);
   const sources = (derivedFrom ?? news2.derivedFrom ?? []).map((r) => (typeof r === 'string' ? reference('Observation', r) : r));
   return {
     resourceType: 'Observation',
     ...(id ? { id } : {}),
     meta: { profile: [NEWS2_PROFILE] },
     language: 'sv',
-    status: 'final',
+    status: preliminary ? 'preliminary' : 'final',
     category: survey,
     code: { coding: [sctSe('1104051000000101', `${NEWS2_TEXT}, totalpoäng`)] },
     subject: reference('Patient', patientId),
     ...(encounterId ? { encounter: reference('Encounter', encounterId) } : {}),
     effectiveDateTime,
     ...(performerId ? { performer: [reference('Practitioner', performerId)] } : {}),
-    valueInteger: news2.total,
+    valueInteger: total,
     ...(sources.length ? { derivedFrom: sources } : {}),
     component,
   };

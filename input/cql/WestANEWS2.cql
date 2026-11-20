@@ -1,7 +1,9 @@
 /*
 @description: NEWS2 (National Early Warning Score 2) as WEST-A uses it (WEST-A VGR 2025, p. 6):
  the score of each vital parameter, the total score and the clinical risk, calculated from the
- latest vital sign observations of the WEST-A vital signs profiles. The thresholds are those of the
+ latest vital sign observations of the WEST-A vital signs profiles; and, while the vital signs
+ are coming in, a provisional total and clinical risk of the parameters measured so far, which
+ are a lower bound, with the parameters still missing. The thresholds are those of the
  Royal College of Physicians NEWS2 chart, which page 6 of WEST-A reproduces.
 */
 library WestANEWS2 version '0.1.0'
@@ -267,14 +269,53 @@ define function "Total Score For"(scale2 Boolean):
   if Count("Parameter Scores For"(scale2)) = 7 then Sum("Parameter Scores For"(scale2)) else null
 
 // WEST-A p. 6: 7 or more high, 5-6 medium, a single parameter scoring 3 low-medium, 0-4 low
-define function "Clinical Risk For"(scale2 Boolean):
+define function "Risk Band"(total Integer, scores List<Integer>):
   case
-    when "Total Score For"(scale2) is null then null
-    when "Total Score For"(scale2) >= 7 then 'high'
-    when "Total Score For"(scale2) >= 5 then 'medium'
-    when exists (("Parameter Scores For"(scale2)) S where S = 3) then 'low-medium'
+    when total is null then null
+    when total >= 7 then 'high'
+    when total >= 5 then 'medium'
+    when exists (scores S where S = 3) then 'low-medium'
     else 'low'
   end
+
+define function "Clinical Risk For"(scale2 Boolean):
+  "Risk Band"("Total Score For"(scale2), "Parameter Scores For"(scale2))
+
+/*
+ * Provisional NEWS2, while the vital signs are coming in: the scores of the parameters measured
+ * so far. A parameter not yet measured can only add points, never take them away, so the
+ * provisional total and clinical risk are a lower bound of the NEWS2 that the complete
+ * measurements give: they can only rise as the missing parameters come in (a new measurement
+ * of a parameter already scored replaces it, and can change it either way). With all seven
+ * parameters they are the NEWS2 total and clinical risk.
+ */
+
+// The sum of the parameter scores so far; null when no parameter can be scored yet
+define function "Provisional Total Score For"(scale2 Boolean):
+  if Count("Parameter Scores For"(scale2)) = 0 then null else Sum("Parameter Scores For"(scale2))
+
+// The clinical risk band of the provisional total, a single parameter scoring 3 included:
+// the least risk the patient has
+define function "Provisional Clinical Risk For"(scale2 Boolean):
+  "Risk Band"("Provisional Total Score For"(scale2), "Parameter Scores For"(scale2))
+
+// The parameters that cannot be scored yet, in the order of the NEWS2 chart: not measured,
+// measured in another unit, or, on scale 2, an oxygen saturation of 93% or more while it is
+// not known whether the patient is on oxygen
+define function "Missing Parameters For"(scale2 Boolean):
+  (
+    {
+      Tuple { name: 'Respiration Rate', score: "Respiration Rate Score" },
+      Tuple { name: 'Oxygen Saturation', score: "Oxygen Saturation Score For"(scale2) },
+      Tuple { name: 'Supplemental Oxygen', score: "Supplemental Oxygen Score" },
+      Tuple { name: 'Systolic Blood Pressure', score: "Systolic Blood Pressure Score" },
+      Tuple { name: 'Pulse', score: "Pulse Score" },
+      Tuple { name: 'Consciousness', score: "Consciousness Score" },
+      Tuple { name: 'Temperature', score: "Temperature Score" }
+    }
+  ) P
+    where P.score is null
+    return P.name
 
 /*
  * The scores on the scale that the parameter selects: the components of the WEST-A NEWS2
@@ -298,6 +339,18 @@ define "Any Parameter Scores 3":
 
 define "NEWS2 Clinical Risk":
   "Clinical Risk For"("Use Oxygen Saturation Scale 2")
+
+// A lower bound of the NEWS2 total until all seven parameters are measured, then the total
+define "Provisional NEWS2 Total Score":
+  "Provisional Total Score For"("Use Oxygen Saturation Scale 2")
+
+// A lower bound of the NEWS2 clinical risk until all seven parameters are measured, then the risk
+define "Provisional NEWS2 Clinical Risk":
+  "Provisional Clinical Risk For"("Use Oxygen Saturation Scale 2")
+
+// The names of the parameters not yet scored; empty when NEWS2 is complete
+define "NEWS2 Missing Parameters":
+  "Missing Parameters For"("Use Oxygen Saturation Scale 2")
 
 // The description of the task that proposes to record the NEWS2 Observation
 define "NEWS2 Summary":

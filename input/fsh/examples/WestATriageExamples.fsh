@@ -143,6 +143,27 @@ Description: "NEWS2 calculated from the vital parameters at triage: respiration 
 * component[temperature].code = $sct-se#1104371000000107 "poäng enligt Royal College of Physicians NEWS2 (National Early Warning Score 2), temperatur"
 * component[temperature].valueInteger = 0
 
+Instance: example-news2-preliminary
+InstanceOf: WestANews2Observation
+Usage: #example
+Title: "Example WEST-A NEWS2 Observation - Provisional, 4 so far"
+Description: "Provisional NEWS2, recorded while the vital signs are coming in: respiration rate 22 (2), oxygen saturation 95% on scale 1 (1) and pulse 95 (1) are measured, and supplemental oxygen, blood pressure, consciousness and temperature are not yet. The total so far is 4, low clinical risk so far; the missing parameters can only add to it."
+* insert ExampleTriageContext
+* status = #preliminary
+* category[survey] = $observation-category#survey "Survey"
+* code = $sct-se#1104051000000101 "poäng enligt Royal College of Physicians NEWS2 (National Early Warning Score 2), totalpoäng"
+* effectiveDateTime = "2026-11-19T08:39:00+01:00"
+* valueInteger = 4
+* derivedFrom[0] = Reference(Observation/example-respiratory-rate)
+* derivedFrom[+] = Reference(Observation/example-oxygen-saturation)
+* derivedFrom[+] = Reference(Observation/example-heart-rate)
+* component[respirationRate].code = $sct-se#1104301000000104 "poäng enligt Royal College of Physicians NEWS2 (National Early Warning Score 2), andningsfrekvens"
+* component[respirationRate].valueInteger = 2
+* component[oxygenSaturationScale1].code = $sct-se#1104311000000102 "poäng enligt Royal College of Physicians NEWS2 (National Early Warning Score 2), syremättnad 1"
+* component[oxygenSaturationScale1].valueInteger = 1
+* component[pulse].code = $sct-se#1104351000000103 "poäng enligt Royal College of Physicians NEWS2 (National Early Warning Score 2), pulsfrekvens"
+* component[pulse].valueInteger = 1
+
 Instance: example-triage-chest-pain
 InstanceOf: WestATriageObservation
 Usage: #example
