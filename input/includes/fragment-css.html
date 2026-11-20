@@ -1,0 +1,16 @@
+{% comment %}
+Overrides the empty fragment-css.html placeholder of fhir2.base.template, to work
+around a template bug in the page heading numbers.
+
+The template's fragment-pagebegin.html, since
+https://github.com/HL7/ig-template-base2/commit/2d36135, writes
+  h2{--heading-prefix:"{{label | escape}}"}
+where label is the array that `split: '.0'` returns. The escape filter turns the
+array into its Ruby string form, so the headings read ["1"] Home instead of 1 Home.
+
+This include is rendered in <head>, before that rule, and sets the same value as a
+plain string; "body h2" is more specific than "h2", so it wins. Remove this file
+once the template is fixed upstream.
+{% endcomment %}
+{% assign westa_heading_label = site.data.pages[localPage].label | split: '.0' | join: '' %}
+<style type="text/css">body h2{--heading-prefix:"{{site.data.info.headingOffset | escape}}{{westa_heading_label | escape}}"}</style>
