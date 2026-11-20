@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import type { Encounter, Observation, Patient } from 'fhir/r4';
 import { ErrorNote } from '../components/ErrorNote';
+import { Samples } from '../components/Samples';
 import { stamp } from '../components/format';
 import {
   age,
@@ -132,8 +133,10 @@ export function PatientScreen({ onStart, onRecord }: Props) {
   );
 }
 
+const EMPTY: PatientDraft = { given: '', family: '', gender: 'unknown', birthDate: '' };
+
 function NewPatient({ onCreated }: { onCreated: (p: Patient) => void }) {
-  const [d, setD] = useState<PatientDraft>(randomPatientDraft);
+  const [d, setD] = useState<PatientDraft>(EMPTY);
   const [error, setError] = useState<unknown>();
   const [busy, setBusy] = useState(false);
   const set = (k: keyof PatientDraft) => (e: { target: { value: string } }) => setD({ ...d, [k]: e.target.value });
@@ -155,6 +158,11 @@ function NewPatient({ onCreated }: { onCreated: (p: Patient) => void }) {
   return (
     <section className="new-patient" aria-labelledby="new">
       <h2 id="new">New synthetic patient</h2>
+      <Samples>
+        <button type="button" onClick={() => setD(randomPatientDraft())} title="An invented Swedish name, birth date and gender">
+          Sample patient
+        </button>
+      </Samples>
       <p className="quiet">
         Gets a VGR reserve number (LRID) such as <span className="num">{valid ? reserveNumber(d).slice(0, 9) + 'NNN' : '–'}</span>{' '}
         and a test-data tag. Never enter a real person.
@@ -184,9 +192,6 @@ function NewPatient({ onCreated }: { onCreated: (p: Patient) => void }) {
         <div className="row">
           <button type="submit" className="primary" disabled={!valid || busy}>
             {busy ? 'Saving…' : 'Save and start triage'}
-          </button>
-          <button type="button" onClick={() => setD(randomPatientDraft())}>
-            Another name
           </button>
         </div>
         <ErrorNote error={error} what="Saving the patient" />

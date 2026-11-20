@@ -11,14 +11,16 @@ import {
 import type { Stay } from '../App';
 import { ErrorNote } from '../components/ErrorNote';
 import { Pinboard } from '../components/Pinboard';
+import { Samples } from '../components/Samples';
 import { RendererTheme } from '../theme';
 import { readAnswers } from '../services/answers';
 import { client, runTriage } from '../services/cds';
-import { CRITERION_SYSTEM, criteriaReasons, loadCriteria, NEED_CODES, NO_WARNING_SYMPTOMS, type Criteria } from '../services/criteria';
-import { IG, MOCK, NURSE, QUESTIONNAIRE_ID, QUESTIONNAIRE_URL } from '../services/config';
+import { criteriaReasons, loadCriteria, NEED_CODES, NO_WARNING_SYMPTOMS, type Criteria } from '../services/criteria';
+import { MOCK, NURSE, QUESTIONNAIRE_ID, QUESTIONNAIRE_URL } from '../services/config';
 import { extractVitals } from '../services/extract';
 import { news2 } from '../services/news2';
 import { nowLocal } from '../services/patients';
+import { scenarioResponse, TRIAGE_SCENARIOS, type TriageScenario } from '../services/samples';
 import { withAnswerOptions } from '../services/terminology';
 
 type StepState = 'waiting' | 'running' | 'done' | 'failed';
@@ -40,7 +42,7 @@ export function TriageFormScreen({ stay, onDone }: { stay: Stay; onDone: (s: Sta
   const [now, setNow] = useState(Date.now());
   const [error, setError] = useState<unknown>();
   const [incomplete, setIncomplete] = useState<string | undefined>();
-  // Bumped once a filled-in form has rendered, see fillExample
+  // Bumped once a filled-in form has rendered, see fillScenario
   const [filled, setFilled] = useState(0);
 
   useEffect(() => {
@@ -173,12 +175,13 @@ export function TriageFormScreen({ stay, onDone }: { stay: Stay; onDone: (s: Sta
     }
   }
 
-  function fillExample() {
+  function fillScenario(scenario: TriageScenario) {
     if (!formQuestionnaire) return;
+    setIncomplete(undefined);
     // Right after buildForm the renderer has not yet worked out which items its enableWhen
     // shows, so removeEmptyAnswersFromResponse drops the triage criteria: read them again
     // once the form has rendered.
-    void build(formQuestionnaire, exampleResponse()).then(() => setTimeout(() => setFilled((n) => n + 1), 300));
+    void build(formQuestionnaire, scenarioResponse(scenario)).then(() => setTimeout(() => setFilled((n) => n + 1), 300));
   }
 
   if (loadError) return <ErrorNote error={loadError} what={`Loading Questionnaire/${QUESTIONNAIRE_ID} and its terminology`} />;
@@ -190,10 +193,15 @@ export function TriageFormScreen({ stay, onDone }: { stay: Stay; onDone: (s: Sta
       <section className="form-col" aria-labelledby="form-title">
         <div className="form-top">
           <h1 id="form-title">WEST-A triage form</h1>
-          <button type="button" onClick={fillExample} disabled={!ready || !!steps}>
-            Fill the guide’s example
-          </button>
         </div>
+        <Samples>
+          {TRIAGE_SCENARIOS.map((s) => (
+            <button key={s.id} type="button" title={s.title} onClick={() => fillScenario(s)} disabled={!ready || !!steps}>
+              {s.label}
+              <span className="sr-only">: {s.title}</span>
+            </button>
+          ))}
+        </Samples>
         {!ready ? (
           <p className="quiet">Loading the Questionnaire…</p>
         ) : (
@@ -268,53 +276,3 @@ async function savedObservations(sent: Bundle, result: Bundle): Promise<Observat
   }
   return out;
 }
-
-const SCT = 'http://snomed.info/sct';
-
-/** The guide's example triage: NEWS2 5 (medium risk), chest pain with an orange warning symptom (15). */
-function exampleResponse(): QuestionnaireResponse {
-  return {
-    resourceType: 'QuestionnaireResponse',
-    status: 'in-progress',
-    item: [
-      {
-        linkId: 'vitals',
-        item: [
-          { linkId: 'respiratory-rate', answer: [{ valueInteger: 22 }] },
-          { linkId: 'oxygen-saturation', answer: [{ valueInteger: 95 }] },
-          { linkId: 'oxygen-flow', answer: [{ valueDecimal: 0 }] },
-          { linkId: 'systolic', answer: [{ valueInteger: 105 }] },
-          { linkId: 'diastolic', answer: [{ valueInteger: 70 }] },
-          { linkId: 'heart-rate', answer: [{ valueInteger: 95 }] },
-          { linkId: 'consciousness', answer: [{ valueCoding: { system: SCT, version: 'http://snomed.info/sct/45991000052106', code: '248234008', display: 'Mentally alert' } }] },
-          { linkId: 'temperature', answer: [{ valueDecimal: 37.5 }] },
-        ],
-      },
-      {
-        linkId: 'assessment',
-        item: [
-          { linkId: 'chief-complaint', answer: [{ valueCoding: { system: `${IG}/CodeSystem/west-a-chief-complaint-cs`, code: '4', display: 'Bröstsmärta' } }] },
-          {
-            linkId: 'triage-criteria',
-            item: [
-              {
-                linkId: 'triage-criteria-4',
-                answer: [
-                  {
-                    valueCoding: {
-                      system: CRITERION_SYSTEM,
-                      code: '15',
-                      display: 'Ongoing chest pain with suspected acute coronary syndrome or another serious cause',
-                    },
-                  },
-                ],
-              },
-            ],
-          },
-          { linkId: 'oxygen-scale-2', answer: [{ valueBoolean: false }] },
-        ],
-      },
-    ],
-  };
-}
-

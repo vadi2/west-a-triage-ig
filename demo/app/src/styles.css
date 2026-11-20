@@ -255,6 +255,49 @@ legend {
   text-transform: uppercase;
 }
 
+/* Sample data for a presenter: a quiet row of small buttons under a label, so it never
+   competes with the form's own actions */
+.samples {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 12px;
+}
+.samples-label {
+  margin-right: 2px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.samples button {
+  min-height: 32px;
+  padding: 3px 10px;
+  border-width: 1.5px;
+  border-color: var(--ink-a25);
+  font-size: 14px;
+  font-weight: 400;
+}
+.samples button:hover:not(:disabled) {
+  border-color: var(--ink);
+}
+.samples button:disabled {
+  font-size: 13px;
+}
+.note + .samples {
+  margin-top: -6px;
+}
+.edit-summary {
+  margin-top: 12px;
+}
+.edit-summary summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+.edit-summary .summary-field {
+  margin-top: 8px;
+}
 /* ---------------------------------------------------------------- wristband */
 
 .band {

@@ -4,11 +4,13 @@ import type { Route, Stay } from '../App';
 import { ErrorNote } from '../components/ErrorNote';
 import { clock } from '../components/format';
 import { Pinboard } from '../components/Pinboard';
+import { Samples } from '../components/Samples';
 import { boardNews2, client, news2Observation, triageObservation } from '../services/cds';
 import { criteriaReasons, loadCriteria, recordedCriteria, type Criteria } from '../services/criteria';
 import { NURSE } from '../services/config';
 import { uuid } from '../services/libs';
 import { nowLocal } from '../services/patients';
+import { sampleAssessmentNote } from '../services/samples';
 import { allowed, mostUrgent, priority, priorityCoding, priorityOf, RISK_PRIORITY, RISK_TEXT, type PriorityCode } from '../services/priority';
 
 interface Props {
@@ -194,6 +196,15 @@ export function ResultScreen({ stay, onRecorded, go }: Props) {
               Note {lowered ? '(needed when the priority is lowered)' : '(optional)'}
               <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2} required={lowered} />
             </label>
+            <Samples>
+              <button
+                type="button"
+                title="An invented note in Swedish, for the priority picked on the board"
+                onClick={() => setNote(sampleAssessmentNote(lowered ? 'lowered' : selected && guard && selected < guard ? 'raised' : 'kept'))}
+              >
+                Sample note
+              </button>
+            </Samples>
             <button
               type="button"
               className={`primary big record-btn ${selected ? `state-${priority(selected)!.key}` : ''}`}
