@@ -159,7 +159,7 @@ const CHIEF_COMPLAINT = '1269489004';
  * @param {object[]} input.vitals the WEST-A vital sign Observations
  * @param {object} input.news2 WEST-A NEWS2 Observation
  * @param {object} input.triage WEST-A Triage Observation
- * @param {string} [input.dischargeDate] FHIR dateTime of discharge; defaults to `date`
+ * @param {string} [input.dischargeDate] FHIR dateTime of discharge; defaults to the end of the encounter, else `date`
  * @param {string} [input.dischargeSummary] plain text of the hospital course; blank lines separate paragraphs
  * @param {string} [input.language] BCP 47 language of the document; defaults to the language of the resources, else "sv"
  * @param {string} [input.date] FHIR dateTime of the document; defaults to now
@@ -187,7 +187,7 @@ export function dischargeReport(input) {
   const language = documentLanguage(input.language, inputs);
   const L = LABELS[language.split('-')[0].toLowerCase()] ?? LABELS.en;
   const date = input.date ?? new Date().toISOString();
-  const dischargeDate = input.dischargeDate ?? date;
+  const dischargeDate = input.dischargeDate ?? encounter.period?.end ?? date;
   const documentId = input.documentId ?? randomUuid();
   if (!isUuid(documentId)) throw new TypeError('dischargeReport: documentId must be a UUID');
   if (encounter.period?.start && compareDateTime(dischargeDate, encounter.period.start) < 0) {
