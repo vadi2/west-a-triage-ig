@@ -992,6 +992,15 @@ label.prio-cell:hover:not(.is-closed):not(.is-selected) {
 }
 
 @media (max-width: 600px) {
+  /* The renderer pads each nested group (the triage criteria sit two deep), which leaves
+     the check-box labels a column of a few words on a phone */
+  .renderer .MuiPaper-root {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+  .renderer .MuiPaper-root > .MuiBox-root {
+    max-width: none !important;
+  }
   :root {
     --param-w: 118px;
   }

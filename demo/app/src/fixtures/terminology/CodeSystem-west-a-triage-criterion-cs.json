@@ -1,0 +1,5390 @@
+{
+ "resourceType": "CodeSystem",
+ "id": "west-a-triage-criterion-cs",
+ "language": "sv",
+ "url": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-criterion-cs",
+ "version": "0.1.0",
+ "name": "TriageCriterionCS",
+ "title": "WEST-A triage criterion",
+ "status": "draft",
+ "experimental": true,
+ "date": "2026-11-20T08:33:48+00:00",
+ "publisher": "WEST-A FHIR modelling (unofficial draft)",
+ "contact": [
+  {
+   "name": "WEST-A FHIR modelling (unofficial draft)",
+   "telecom": [
+    {
+     "system": "url",
+     "value": "https://github.com/vadi2/west-a-triage-ig"
+    }
+   ]
+  }
+ ],
+ "description": "Triage criteria of WEST-A: the warning symptoms (varningssymtom) of each complaint algorithm, and the needs and processes that give yellow as the lowest priority. Each criterion names the chief complaint whose algorithm lists it and the triage priority it gives. Grouping concepts, which cannot be selected, hold the gynecology and trauma subgroups and the needs.",
+ "jurisdiction": [
+  {
+   "coding": [
+    {
+     "system": "urn:iso:std:iso:3166",
+     "code": "SE",
+     "display": "Sweden"
+    }
+   ]
+  }
+ ],
+ "copyright": "WEST-A is developed by Västra Götalandsregionen. This code system is an unofficial representation of its warning symptoms and needs. Its structure was checked against the WEST-A 2025 decision support definition of the open-triage project.",
+ "caseSensitive": true,
+ "hierarchyMeaning": "grouped-by",
+ "content": "complete",
+ "property": [
+  {
+   "code": "parent",
+   "uri": "http://hl7.org/fhir/concept-properties#parent",
+   "description": "The group the criterion belongs to",
+   "type": "code"
+  },
+  {
+   "code": "notSelectable",
+   "uri": "http://hl7.org/fhir/concept-properties#notSelectable",
+   "description": "A group of criteria, which cannot be recorded itself",
+   "type": "boolean"
+  },
+  {
+   "code": "complaint",
+   "description": "The chief complaint (WEST-A chief complaint code system) whose complaint algorithm lists the criterion",
+   "type": "Coding"
+  },
+  {
+   "code": "priority",
+   "description": "The triage priority (WEST-A triage priority code system) that the criterion gives",
+   "type": "Coding"
+  }
+ ],
+ "concept": [
+  {
+   "code": "AAA",
+   "display": "Gyn: gravid t.o.m. vecka 17+6",
+   "definition": "Group of the gynecological criteria for a patient who is pregnant up to week 17+6 (WEST-A pages 21-22).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Gynecology: pregnant up to week 17+6"
+    }
+   ],
+   "property": [
+    {
+     "code": "notSelectable",
+     "valueBoolean": true
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    }
+   ]
+  },
+  {
+   "code": "AAB",
+   "display": "Gyn: graviditetsillamående/kräkningar",
+   "definition": "Group of the gynecological criteria for nausea and vomiting of pregnancy (WEST-A pages 21-22).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Gynecology: nausea and vomiting of pregnancy"
+    }
+   ],
+   "property": [
+    {
+     "code": "notSelectable",
+     "valueBoolean": true
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    }
+   ]
+  },
+  {
+   "code": "AAC",
+   "display": "Gyn: ej gravid, buksmärta/blödning",
+   "definition": "Group of the gynecological criteria for abdominal pain or bleeding in a patient who is not pregnant (WEST-A pages 21-22).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Gynecology: not pregnant, abdominal pain/bleeding"
+    }
+   ],
+   "property": [
+    {
+     "code": "notSelectable",
+     "valueBoolean": true
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    }
+   ]
+  },
+  {
+   "code": "AAD",
+   "display": "Gyn: postoperativt",
+   "definition": "Group of the gynecological criteria after a gynecological operation (WEST-A pages 21-22).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Gynecology: postoperative"
+    }
+   ],
+   "property": [
+    {
+     "code": "notSelectable",
+     "valueBoolean": true
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    }
+   ]
+  },
+  {
+   "code": "AAE",
+   "display": "Gyn: urinstämma",
+   "definition": "Group of the gynecological criteria for urinary retention (WEST-A pages 21-22).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Gynecology: urinary retention"
+    }
+   ],
+   "property": [
+    {
+     "code": "notSelectable",
+     "valueBoolean": true
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    }
+   ]
+  },
+  {
+   "code": "AAF",
+   "display": "Gyn: bartolinit/vulvaabscess och lokal infektion",
+   "definition": "Group of the gynecological criteria for bartholinitis, vulvar abscess or another local infection (WEST-A pages 21-22).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Gynecology: bartholinitis/vulvar abscess and local infection"
+    }
+   ],
+   "property": [
+    {
+     "code": "notSelectable",
+     "valueBoolean": true
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    }
+   ]
+  },
+  {
+   "code": "AAG",
+   "display": "Traumalarm nivå 1",
+   "definition": "Group of the national trauma alert criteria of level 1, which are red (WEST-A page 43).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Trauma alert level 1"
+    }
+   ],
+   "property": [
+    {
+     "code": "notSelectable",
+     "valueBoolean": true
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    }
+   ]
+  },
+  {
+   "code": "AAH",
+   "display": "Traumalarm nivå 2",
+   "definition": "Group of the national trauma alert criteria of level 2: the mechanism of injury suggests high-energy trauma to an unprotected patient, with a risk of severe injury despite stable vital parameters. They are red (WEST-A page 43).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Trauma alert level 2"
+    }
+   ],
+   "property": [
+    {
+     "code": "notSelectable",
+     "valueBoolean": true
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    }
+   ]
+  },
+  {
+   "code": "AAI",
+   "display": "Traumalarm nivå 3",
+   "definition": "Group of the national trauma alert criteria of level 3, which are yellow (WEST-A page 43).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Trauma alert level 3"
+    }
+   ],
+   "property": [
+    {
+     "code": "notSelectable",
+     "valueBoolean": true
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    }
+   ]
+  },
+  {
+   "code": "AAJ",
+   "display": "Trauma/skador som inte uppfyller traumalarmskriterierna",
+   "definition": "Group of the trauma warning symptoms for a patient who does not meet the trauma alert criteria (WEST-A page 44).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Trauma/injuries not meeting the trauma alert criteria"
+    }
+   ],
+   "property": [
+    {
+     "code": "notSelectable",
+     "valueBoolean": true
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    }
+   ]
+  },
+  {
+   "code": "AAK",
+   "display": "Behov och processer",
+   "definition": "Group of the needs and processes that give yellow as the lowest priority, whatever the chief complaint (WEST-A pages 46-48).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Needs and processes"
+    }
+   ],
+   "property": [
+    {
+     "code": "notSelectable",
+     "valueBoolean": true
+    }
+   ]
+  },
+  {
+   "code": "1",
+   "display": "Luftväg: stridor, hotad eller ofri luftväg, intuberad/larynxmask",
+   "definition": "Red warning symptom of the allergy, cardiac arrest/airway obstruction and poisoning algorithms (WEST-A pages 10, 24 and 28).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Airway: stridor, threatened or obstructed airway, intubated/laryngeal mask"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "1",
+      "display": "Allergi"
+     }
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "13",
+      "display": "Hjärtstopp/luftvägshinder"
+     }
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "17",
+      "display": "Intox"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "2",
+   "display": "Allergisk reaktion: akut och potentiellt allvarlig",
+   "definition": "Orange warning symptom of the allergy algorithm (WEST-A page 10).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Allergic reaction: acute and potentially serious"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "1",
+      "display": "Allergi"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "3",
+   "display": "Bett av giftigt djur",
+   "definition": "Yellow warning symptom of the allergy algorithm (WEST-A page 10).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Bite of a venomous animal"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "1",
+      "display": "Allergi"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "4",
+   "display": "Blödning: stor och okontrollerad",
+   "definition": "Red warning symptom of the bleeding/anemia algorithm (WEST-A page 12).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Bleeding: major and uncontrolled"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "3",
+      "display": "Blödning/anemi"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "5",
+   "display": "Hematemes/pågående melena",
+   "definition": "Orange warning symptom of the bleeding/anemia algorithm (WEST-A page 12).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Hematemesis/ongoing melena"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "3",
+      "display": "Blödning/anemi"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "6",
+   "display": "Blödning: stor men kontrollerad",
+   "definition": "Yellow warning symptom of the bleeding/anemia algorithm (WEST-A page 12).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Bleeding: major but controlled"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "3",
+      "display": "Blödning/anemi"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "7",
+   "display": "Hematemes/pågående melena med puls >120",
+   "definition": "Red warning symptom of the bleeding/anemia algorithm (WEST-A page 12).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Hematemesis/ongoing melena with pulse >120"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "3",
+      "display": "Blödning/anemi"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "8",
+   "display": "Bakre näsblödning/postop tonsillblödning",
+   "definition": "Orange warning symptom of the bleeding/anemia algorithm (WEST-A page 12).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Posterior nosebleed/postoperative tonsil bleeding"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "3",
+      "display": "Blödning/anemi"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "9",
+   "display": "Hb <60 utan pågående blödning",
+   "definition": "Yellow warning symptom of the bleeding/anemia algorithm (WEST-A page 12).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Hb <60 g/L without ongoing bleeding"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "3",
+      "display": "Blödning/anemi"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "10",
+   "display": "Riklig vaginalblödning: blöder genom flera nattbindor/tim",
+   "definition": "Orange warning symptom of the bleeding/anemia and gynecology algorithms (WEST-A pages 12 and 21). Page 21 gives this criterion yellow in the gynecology group for a patient who is not pregnant; page 12 gives it orange. It is orange in both, as the more urgent.",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Heavy vaginal bleeding: soaking several night pads an hour"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAC"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "3",
+      "display": "Blödning/anemi"
+     }
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "11",
+   "display": "Bröstsmärta med ST-höjning/nytillkommet grenblock",
+   "definition": "Red warning symptom of the chest pain algorithm (WEST-A page 13).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Chest pain with ST elevation/new bundle branch block"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "4",
+      "display": "Bröstsmärta"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "12",
+   "display": "Bröstsmärta med nytillkomna EKG-förändringar",
+   "definition": "Orange warning symptom of the chest pain algorithm (WEST-A page 13).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Chest pain with new ECG changes"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "4",
+      "display": "Bröstsmärta"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "13",
+   "display": "Bröstsmärta pågående men med låg misstanke om allvarlig orsak och utan tydlig palpömhet",
+   "definition": "Yellow warning symptom of the chest pain algorithm (WEST-A page 13).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Ongoing chest pain with low suspicion of a serious cause and without clear tenderness on palpation"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "4",
+      "display": "Bröstsmärta"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "14",
+   "display": "Bröstsmärta med svimning eller pågående vegetativa symtom",
+   "definition": "Red warning symptom of the chest pain algorithm (WEST-A page 13).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Chest pain with fainting or ongoing autonomic symptoms"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "4",
+      "display": "Bröstsmärta"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "15",
+   "display": "Bröstsmärta, pågående med misstanke om AKS eller annan allvarlig orsak",
+   "definition": "Orange warning symptom of the chest pain algorithm (WEST-A page 13).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Ongoing chest pain with suspected acute coronary syndrome or another serious cause"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "4",
+      "display": "Bröstsmärta"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "16",
+   "display": "Bröstsmärta senaste 24 tim, ej pågående men med misstanke om AKS eller annan allvarlig orsak",
+   "definition": "Yellow warning symptom of the chest pain algorithm (WEST-A page 13).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Chest pain in the last 24 hours, not ongoing, with suspected acute coronary syndrome or another serious cause"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "4",
+      "display": "Bröstsmärta"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "17",
+   "display": "Bröstsmärta andningskorrelerad med misstanke om allvarlig orsak",
+   "definition": "Yellow warning symptom of the chest pain algorithm (WEST-A page 13).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Breathing-related chest pain with suspected serious cause"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "4",
+      "display": "Bröstsmärta"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "18",
+   "display": "Buksmärta: plötsligt påkommen, svår (nivå 3) och konstant med SBT <90 och/eller puls >120",
+   "definition": "Red warning symptom of the abdominal pain algorithm (WEST-A page 14).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Abdominal pain: sudden, severe (level 3) and constant, with systolic blood pressure <90 and/or pulse >120"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "5",
+      "display": "Buksmärta"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "19",
+   "display": "Buksmärta: plötsligt påkommen och svår (nivå 3) eller vegetativa symtom",
+   "definition": "Orange warning symptom of the abdominal pain algorithm (WEST-A page 14).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Abdominal pain: sudden and severe (level 3), or autonomic symptoms"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "5",
+      "display": "Buksmärta"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "20",
+   "display": "Kräkningar: pågående",
+   "definition": "Yellow warning symptom of the abdominal pain and diarrhea/vomiting algorithms (WEST-A pages 14 and 16).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Vomiting: ongoing"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "5",
+      "display": "Buksmärta"
+     }
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "7",
+      "display": "Diarré/kräkningar"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "21",
+   "display": "Hypoglykemi: Glc <2,5",
+   "definition": "Red warning symptom of the diabetes algorithm (WEST-A page 15).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Hypoglycemia: glucose <2.5 mmol/L"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "6",
+      "display": "Diabetes"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "22",
+   "display": "Hyperglykemi: Glc >11 + AF ≥22 eller metabol acidos",
+   "definition": "Orange warning symptom of the diabetes algorithm (WEST-A page 15).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Hyperglycemia: glucose >11 mmol/L with respiratory rate ≥22, or metabolic acidosis"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "6",
+      "display": "Diabetes"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "23",
+   "display": "Dyspné med skummande andning",
+   "definition": "Red warning symptom of the dyspnea algorithm (WEST-A page 17).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Dyspnea with foaming breathing"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "8",
+      "display": "Dyspné"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "24",
+   "display": "Dyspné: akut svår/synligt ansträngd andning/cyanos/utmattad patient",
+   "definition": "Orange warning symptom of the dyspnea algorithm (WEST-A page 17).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Dyspnea: acute and severe/visibly labored breathing/cyanosis/exhausted patient"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "8",
+      "display": "Dyspné"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "25",
+   "display": "Dyspné: kraftig med ST-höjning/nytillkommet grenblock",
+   "definition": "Red warning symptom of the dyspnea algorithm (WEST-A page 17).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Dyspnea: severe, with ST elevation/new bundle branch block"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "8",
+      "display": "Dyspné"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "26",
+   "display": "Dyspné: nytillkommen med nytillkomna EKG-förändringar",
+   "definition": "Orange warning symptom of the dyspnea algorithm (WEST-A page 17).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Dyspnea: new, with new ECG changes"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "8",
+      "display": "Dyspné"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "27",
+   "display": "Akut ischemi (blek och kall extremitet)",
+   "definition": "Orange warning symptom of the limb problem algorithm (WEST-A page 18).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Acute ischemia (pale and cold limb)"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "9",
+      "display": "Extremitetsproblem"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "28",
+   "display": "Extremitetssmärta/-svullnad med nytillkommen dyspné",
+   "definition": "Yellow warning symptom of the limb problem algorithm (WEST-A page 18).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Limb pain/swelling with new dyspnea"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "9",
+      "display": "Extremitetsproblem"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "29",
+   "display": "Intraartikulär svullnad, rodnad led (en led) med feber/misstänkt infektion",
+   "definition": "Yellow warning symptom of the limb problem algorithm (WEST-A page 18).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Intra-articular swelling, red joint (one joint) with fever/suspected infection"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "9",
+      "display": "Extremitetsproblem"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "30",
+   "display": "Gravid med kraftig vaginal blödning (blöder genom flera nattbindor/tim)",
+   "definition": "Red warning symptom of the pregnancy from week 18+0/postpartum algorithm (WEST-A page 19).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Pregnant with heavy vaginal bleeding (soaking several night pads an hour)"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "10",
+      "display": "Graviditet fr.o.m. 18+0/postpartum"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "31",
+   "display": "Gravid med måttlig vaginal blödning (mer än kraftig mens)",
+   "definition": "Orange warning symptom of the pregnancy from week 18+0/postpartum algorithm (WEST-A page 19).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Pregnant with moderate vaginal bleeding (more than a heavy period)"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "10",
+      "display": "Graviditet fr.o.m. 18+0/postpartum"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "32",
+   "display": "Gravid med pågående eller genomgånget krampanfall (t.o.m. 2 v efter födsel)",
+   "definition": "Red warning symptom of the pregnancy from week 18+0/postpartum algorithm (WEST-A page 19).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Pregnant with an ongoing or past seizure (up to 2 weeks after delivery)"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "10",
+      "display": "Graviditet fr.o.m. 18+0/postpartum"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "33",
+   "display": "Gravid med kraftig buksmärta, ihållande eller intervallsmärta",
+   "definition": "Orange warning symptom of the pregnancy from week 18+0/postpartum algorithm (WEST-A page 19).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Pregnant with severe abdominal pain, constant or intermittent"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "10",
+      "display": "Graviditet fr.o.m. 18+0/postpartum"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "34",
+   "display": "Gravid, planerad eller spontan abort med misstänkt infektion, gynkonsult",
+   "definition": "Yellow warning symptom of the pregnancy from week 18+0/postpartum algorithm (WEST-A page 19).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Pregnant, planned or spontaneous abortion with suspected infection; gynecology consultation"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "10",
+      "display": "Graviditet fr.o.m. 18+0/postpartum"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "35",
+   "display": "Gravid med snabbt insättande starka buksmärtor",
+   "definition": "Red warning symptom of the pregnancy from week 18+0/postpartum algorithm (WEST-A page 19).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Pregnant with rapid-onset severe abdominal pain"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "10",
+      "display": "Graviditet fr.o.m. 18+0/postpartum"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "36",
+   "display": "Gravid + huvudvärk el. buksmärta el. bröstsmärta el. kräkning + BT >140/90 (preeklampsi)",
+   "definition": "Orange warning symptom of the pregnancy from week 18+0/postpartum algorithm (WEST-A page 19).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Pregnant with headache, abdominal pain, chest pain or vomiting, and blood pressure >140/90 (preeclampsia)"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "10",
+      "display": "Graviditet fr.o.m. 18+0/postpartum"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "37",
+   "display": "Gravid med SBT >160 eller DBT >110",
+   "definition": "Red warning symptom of the pregnancy from week 18+0/postpartum algorithm (WEST-A page 19).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Pregnant with systolic blood pressure >160 or diastolic >110"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "10",
+      "display": "Graviditet fr.o.m. 18+0/postpartum"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "38",
+   "display": "Postpartum (inom 14 d) med feber >38",
+   "definition": "Orange warning symptom of the pregnancy from week 18+0/postpartum algorithm (WEST-A page 19).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Postpartum (within 14 days) with fever >38 °C"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "10",
+      "display": "Graviditet fr.o.m. 18+0/postpartum"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "39",
+   "display": "Gravid och trauma mot buken",
+   "definition": "Orange warning symptom of the pregnancy from week 18+0/postpartum algorithm (WEST-A page 19).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Pregnant with abdominal trauma"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "10",
+      "display": "Graviditet fr.o.m. 18+0/postpartum"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "40",
+   "display": "Plötsligt påkommen lågt sittande buksmärta och chock med/utan större vaginal blödning",
+   "definition": "Red warning symptom of the gynecology algorithm (WEST-A page 21).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Sudden low abdominal pain and shock, with or without major vaginal bleeding"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAA"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "41",
+   "display": "Lågt sittande svår buksmärta och puls >120 trots given smärtlindring (med/utan större vaginal blödning)",
+   "definition": "Orange warning symptom of the gynecology algorithm (WEST-A page 21).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Severe low abdominal pain and pulse >120 despite pain relief (with or without major vaginal bleeding)"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAA"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "42",
+   "display": "Feber med frossa",
+   "definition": "Orange warning symptom of the gynecology algorithm (WEST-A page 21).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Fever with chills"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAA"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "43",
+   "display": "Lågt sittande buksmärta",
+   "definition": "Yellow warning symptom of the gynecology algorithm (WEST-A page 21).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Low abdominal pain"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAA"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "44",
+   "display": "Pågående missfall >v 10 enl. ultraljud",
+   "definition": "Yellow warning symptom of the gynecology algorithm (WEST-A page 21).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Ongoing miscarriage beyond week 10 by ultrasound"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAA"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "45",
+   "display": "Feber/CRP och lågt sittande buksmärta/blödning",
+   "definition": "Yellow warning symptom of the gynecology algorithm (WEST-A page 21).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Fever/raised CRP and low abdominal pain/bleeding"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAA"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "46",
+   "display": "Buksvullnad, buksmärta och ökad AF i samband med inledd IVF-behandling",
+   "definition": "Yellow warning symptom of the gynecology algorithm (WEST-A page 21). Suspected ovarian hyperstimulation syndrome (OHSS).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Abdominal swelling, abdominal pain and raised respiratory rate after starting IVF treatment"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAA"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "47",
+   "display": "Remiss från gynekolog med misstanke om extrauterin graviditet utan ovanstående symtom",
+   "definition": "Green criterion of the gynecology algorithm (WEST-A page 22), which applies from 07:00 to 16:00 (\"GRÖN 07-16\").",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Referral from a gynecologist for suspected ectopic pregnancy, without the symptoms above"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAA"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "4",
+      "display": "Grön"
+     }
+    }
+   ]
+  },
+  {
+   "code": "48",
+   "display": "Lågt sittande, sidoförskjutet bukobehag med eller utan mindre vaginal blödning där intrauterin graviditet ej konstaterats",
+   "definition": "Green criterion of the gynecology algorithm (WEST-A page 22), which applies from 07:00 to 16:00 (\"GRÖN 07-16\").",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Low, one-sided abdominal discomfort with or without minor vaginal bleeding, where intrauterine pregnancy has not been confirmed"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAA"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "4",
+      "display": "Grön"
+     }
+    }
+   ]
+  },
+  {
+   "code": "49",
+   "display": "Lågt sittande centralt bukobehag med avtagande graviditetssymtom >v 10",
+   "definition": "Green criterion of the gynecology algorithm (WEST-A page 22), which applies from 07:00 to 16:00 (\"GRÖN 07-16\").",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Low central abdominal discomfort with fading pregnancy symptoms beyond week 10"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAA"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "4",
+      "display": "Grön"
+     }
+    }
+   ]
+  },
+  {
+   "code": "50",
+   "display": "Övrig blödning i tidig graviditet",
+   "definition": "Green criterion of the gynecology algorithm (WEST-A page 22), which applies from 07:00 to 16:00 (\"GRÖN 07-16\").",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Other bleeding in early pregnancy"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAA"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "4",
+      "display": "Grön"
+     }
+    }
+   ]
+  },
+  {
+   "code": "51",
+   "display": "PUQE-score 13-15 p trots behandling, som ej kan anstå till nästa dag",
+   "definition": "Yellow warning symptom of the gynecology algorithm (WEST-A page 21).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "PUQE score 13-15 despite treatment, which cannot wait until the next day"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAB"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "52",
+   "display": "PUQE-score <13 p: råd i triage och hänvisning till vårdcentral",
+   "definition": "Green criterion of the gynecology algorithm (WEST-A page 22), which applies from 07:00 to 16:00 (\"GRÖN 07-16\").",
+   "designation": [
+    {
+     "language": "en",
+     "value": "PUQE score <13: advice at triage and referral to primary care"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAB"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "4",
+      "display": "Grön"
+     }
+    }
+   ]
+  },
+  {
+   "code": "53",
+   "display": "Blödning och chock",
+   "definition": "Red warning symptom of the gynecology algorithm (WEST-A page 21).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Bleeding and shock"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAC"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "54",
+   "display": "Puls >120 eller svår smärta trots given smärtlindring",
+   "definition": "Orange warning symptom of the gynecology algorithm (WEST-A page 21).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Pulse >120 or severe pain despite pain relief"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAC"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "55",
+   "display": "Feber och lågt sittande bukbesvär med förhöjt CRP",
+   "definition": "Yellow warning symptom of the gynecology algorithm (WEST-A page 21).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Fever and low abdominal complaints with raised CRP"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAC"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "56",
+   "display": "Känd endometrios eller under utredning för svår dysmenorré (när andra orsaker till smärtan är uteslutna) som inte klarar sig på åtgärder patienten har hemma",
+   "definition": "Yellow warning symptom of the gynecology algorithm (WEST-A page 21).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Known endometriosis, or under investigation for severe dysmenorrhea (other causes of the pain excluded), not managing with the measures available at home"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAC"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "57",
+   "display": "Några dygns anamnes på lågt sittande buksmärta och flytningar/blödningar",
+   "definition": "Green criterion of the gynecology algorithm (WEST-A page 22), which applies from 07:00 to 16:00 (\"GRÖN 07-16\").",
+   "designation": [
+    {
+     "language": "en",
+     "value": "A few days' history of low abdominal pain and discharge/bleeding"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAC"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "4",
+      "display": "Grön"
+     }
+    }
+   ]
+  },
+  {
+   "code": "58",
+   "display": "Prolapsring som trillat ut och orsakar handikappande framfall",
+   "definition": "Green criterion of the gynecology algorithm (WEST-A page 22), which applies from 07:00 to 16:00 (\"GRÖN 07-16\").",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Prolapse ring that has fallen out, causing disabling prolapse"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAC"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "4",
+      "display": "Grön"
+     }
+    }
+   ]
+  },
+  {
+   "code": "59",
+   "display": "Blödning från plats för suturer",
+   "definition": "Yellow warning symptom of the gynecology algorithm (WEST-A page 21).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Bleeding from the suture site"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAD"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "60",
+   "display": "Vaginaltoppsruptur",
+   "definition": "Yellow warning symptom of the gynecology algorithm (WEST-A page 21). After a hysterectomy the top of the vagina is sutured, and can rupture; it rarely bleeds or hurts, but needs assessment because of the risk of bowel prolapse and infection.",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Vaginal cuff rupture"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAD"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "61",
+   "display": "Smärta trots smärtlindring som ej kan anstå till nästa dag",
+   "definition": "Yellow warning symptom of the gynecology algorithm (WEST-A page 21).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Pain despite pain relief that cannot wait until the next day"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAD"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "62",
+   "display": "Komplikation med obehag, lättare smärta relaterat till operationen",
+   "definition": "Green criterion of the gynecology algorithm (WEST-A page 22), which applies from 07:00 to 16:00 (\"GRÖN 07-16\").",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Complication with discomfort or mild pain related to the operation"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAD"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "4",
+      "display": "Grön"
+     }
+    }
+   ]
+  },
+  {
+   "code": "63",
+   "display": "Svår buksmärta",
+   "definition": "Orange warning symptom of the gynecology algorithm (WEST-A page 21).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Severe abdominal pain"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAE"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "64",
+   "display": "Ej kissat på 6 timmar",
+   "definition": "Orange warning symptom of the gynecology algorithm (WEST-A page 21).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Has not passed urine for 6 hours"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAE"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "65",
+   "display": "Svårighet att tömma blåsan (med eller utan prolapsring)",
+   "definition": "Yellow warning symptom of the gynecology algorithm (WEST-A page 21).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Difficulty emptying the bladder (with or without a prolapse ring)"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAE"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "66",
+   "display": "Ring som trillat ut och orsakar funktionshindrande framfall",
+   "definition": "Green criterion of the gynecology algorithm (WEST-A page 22), which applies from 07:00 to 16:00 (\"GRÖN 07-16\").",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Ring that has fallen out, causing prolapse that impairs function"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAE"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "4",
+      "display": "Grön"
+     }
+    }
+   ]
+  },
+  {
+   "code": "67",
+   "display": "Uttalad smärta, svårt att sitta/röra sig, feber",
+   "definition": "Yellow warning symptom of the gynecology algorithm (WEST-A page 21).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Marked pain, difficulty sitting/moving, fever"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAF"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "68",
+   "display": "Svårt att kissa",
+   "definition": "Yellow warning symptom of the gynecology algorithm (WEST-A page 21).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Difficulty passing urine"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAF"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "69",
+   "display": "Bartolinit/vulvaabscess utan uttalade besvär enligt ovan",
+   "definition": "Green criterion of the gynecology algorithm (WEST-A page 22), which applies from 07:00 to 16:00 (\"GRÖN 07-16\").",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Bartholinitis/vulvar abscess without the marked complaints above"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAF"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "4",
+      "display": "Grön"
+     }
+    }
+   ]
+  },
+  {
+   "code": "70",
+   "display": "Wordkateter som trillat ut <6 tim efter insättning",
+   "definition": "Green criterion of the gynecology algorithm (WEST-A page 22), which applies from 07:00 to 16:00 (\"GRÖN 07-16\").",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Word catheter that has fallen out less than 6 hours after insertion"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAF"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "11",
+      "display": "Gynekologiska sökorsaker (från 16 år)"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "4",
+      "display": "Grön"
+     }
+    }
+   ]
+  },
+  {
+   "code": "71",
+   "display": "Takykardi: breddökad (som orsak till vårdtillfället)",
+   "definition": "Orange warning symptom of the heart rhythm algorithm (WEST-A page 23).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Tachycardia: wide-complex (as the reason for the visit)"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "12",
+      "display": "Hjärtrytm"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "72",
+   "display": "Hjärtstopp: pågående/åtgärdat",
+   "definition": "Red warning symptom of the cardiac arrest/airway obstruction algorithm (WEST-A page 24).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Cardiac arrest: ongoing/treated"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "13",
+      "display": "Hjärtstopp/luftvägshinder"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "73",
+   "display": "Huvudvärk: urakut debut och intensiv",
+   "definition": "Orange warning symptom of the headache algorithm (WEST-A page 26).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Headache: thunderclap onset and intense"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "15",
+      "display": "Huvudvärk"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "74",
+   "display": "Infektion: misstänkt + NEWS2 ≥7",
+   "definition": "Red warning symptom of the infection/fever/sepsis algorithm (WEST-A page 27).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Infection: suspected, with NEWS2 ≥7"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "16",
+      "display": "Infektion/feber/sepsis"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "75",
+   "display": "Infektion: misstänkt samt NEWS2 5-6",
+   "definition": "Orange warning symptom of the infection/fever/sepsis algorithm (WEST-A page 27).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Infection: suspected, with NEWS2 5-6"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "16",
+      "display": "Infektion/feber/sepsis"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "76",
+   "display": "Infektion med feber, påverkad och nackstel/meningism/petekier",
+   "definition": "Red warning symptom of the infection/fever/sepsis algorithm (WEST-A page 27).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Infection with fever, affected general condition and neck stiffness/meningism/petechiae"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "16",
+      "display": "Infektion/feber/sepsis"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "77",
+   "display": "Infektion: misstänkt med pågående cytostatikabehandling/immunsupprimerad",
+   "definition": "Orange warning symptom of the infection/fever/sepsis algorithm (WEST-A page 27).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Infection: suspected, during chemotherapy or immunosuppression"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "16",
+      "display": "Infektion/feber/sepsis"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "78",
+   "display": "Intox: akut och allvarlig eller suicidal",
+   "definition": "Orange warning symptom of the poisoning algorithm (WEST-A page 28).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Poisoning: acute and serious, or suicidal"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "17",
+      "display": "Intox"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "79",
+   "display": "Bett av giftig orm",
+   "definition": "Yellow warning symptom of the poisoning algorithm (WEST-A page 28).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Bite of a venomous snake"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "17",
+      "display": "Intox"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "80",
+   "display": "Medvetslös",
+   "definition": "Red warning symptom of the poisoning and altered consciousness algorithms (WEST-A pages 28 and 32).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Unconscious"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "17",
+      "display": "Intox"
+     }
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "21",
+      "display": "Medvetandepåverkan"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "81",
+   "display": "Sänkt medvetande: nytillkommet",
+   "definition": "Orange warning symptom of the poisoning, altered consciousness and neurology/dizziness/seizures algorithms (WEST-A pages 28, 32 and 33).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Reduced consciousness: new"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "17",
+      "display": "Intox"
+     }
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "21",
+      "display": "Medvetandepåverkan"
+     }
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "22",
+      "display": "Neuro/yrsel/kramper"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "82",
+   "display": "Förvirring: nytillkommen",
+   "definition": "Orange warning symptom of the poisoning and altered consciousness algorithms (WEST-A pages 28 and 32).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Confusion: new"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "17",
+      "display": "Intox"
+     }
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "21",
+      "display": "Medvetandepåverkan"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "83",
+   "display": "Inklämt ljumskbråck",
+   "definition": "Orange warning symptom of the groin algorithm (WEST-A page 31).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Incarcerated inguinal hernia"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "20",
+      "display": "Ljumske"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "84",
+   "display": "Strokemisstanke med symtom ≤4,5 tim och mNIHSS ≥1 p",
+   "definition": "Red warning symptom of the neurology/dizziness/seizures algorithm (WEST-A page 33).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Suspected stroke with symptoms for ≤4.5 hours and mNIHSS ≥1"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "22",
+      "display": "Neuro/yrsel/kramper"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "85",
+   "display": "Strokemisstanke med symtom >24 tim och mNIHSS ≥2 p",
+   "definition": "Yellow warning symptom of the neurology/dizziness/seizures algorithm (WEST-A page 33).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Suspected stroke with symptoms for >24 hours and mNIHSS ≥2"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "22",
+      "display": "Neuro/yrsel/kramper"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "86",
+   "display": "Strokemisstanke med symtom 4,5-24 tim alt. okänd debut och mNIHSS ≥2 p",
+   "definition": "Red warning symptom of the neurology/dizziness/seizures algorithm (WEST-A page 33).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Suspected stroke with symptoms for 4.5-24 hours or unknown onset, and mNIHSS ≥2"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "22",
+      "display": "Neuro/yrsel/kramper"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "87",
+   "display": "Strokemisstanke med symtom 4,5-24 tim alt. okänd debut och mNIHSS 1 p",
+   "definition": "Yellow warning symptom of the neurology/dizziness/seizures algorithm (WEST-A page 33).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Suspected stroke with symptoms for 4.5-24 hours or unknown onset, and mNIHSS 1"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "22",
+      "display": "Neuro/yrsel/kramper"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "88",
+   "display": "Yrsel: akut påkommen med symtom ≤4,5 tim och mNIHSS ≥1 p",
+   "definition": "Red warning symptom of the neurology/dizziness/seizures algorithm (WEST-A page 33).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Dizziness: acute, with symptoms for ≤4.5 hours and mNIHSS ≥1"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "22",
+      "display": "Neuro/yrsel/kramper"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "89",
+   "display": "Yrsel: akut påkommen med symtom >24 tim och mNIHSS ≥2 p",
+   "definition": "Yellow warning symptom of the neurology/dizziness/seizures algorithm (WEST-A page 33).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Dizziness: acute, with symptoms for >24 hours and mNIHSS ≥2"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "22",
+      "display": "Neuro/yrsel/kramper"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "90",
+   "display": "Kramper: pågående",
+   "definition": "Red warning symptom of the neurology/dizziness/seizures algorithm (WEST-A page 33).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Seizures: ongoing"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "22",
+      "display": "Neuro/yrsel/kramper"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "91",
+   "display": "Yrsel: akut påkommen med symtom 4,5-24 tim alt. okänd debut och mNIHSS 1 p",
+   "definition": "Yellow warning symptom of the neurology/dizziness/seizures algorithm (WEST-A page 33).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Dizziness: acute, with symptoms for 4.5-24 hours or unknown onset, and mNIHSS 1"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "22",
+      "display": "Neuro/yrsel/kramper"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "92",
+   "display": "TIA: senaste 24 tim, nu symtomfri",
+   "definition": "Yellow warning symptom of the neurology/dizziness/seizures algorithm (WEST-A page 33).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "TIA: in the last 24 hours, now symptom-free"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "22",
+      "display": "Neuro/yrsel/kramper"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "93",
+   "display": "Kalium ≥6,0 och EKG-förändringar",
+   "definition": "Red warning symptom of the non-specific illness algorithm (WEST-A page 35).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Potassium ≥6.0 mmol/L with ECG changes"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "23",
+      "display": "Ospecifik sjukdom"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "94",
+   "display": "Känd Addisons sjukdom eller binjurebarkssvikt",
+   "definition": "Orange warning symptom of the non-specific illness algorithm (WEST-A page 35).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Known Addison's disease or adrenal insufficiency"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "23",
+      "display": "Ospecifik sjukdom"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "95",
+   "display": "Pågående suicidförsök eller misstänkt allvarlig kroppsskada, mekanisk skada eller intag av substanser; ska bedömas på somatisk akutmottagning",
+   "definition": "Red warning symptom of the mental health problems algorithm (WEST-A page 36).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Ongoing suicide attempt, or suspected serious bodily harm from mechanical injury or ingested substances; to be assessed at a somatic emergency department"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "24",
+      "display": "Psykiska besvär"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "96",
+   "display": "Pågående våld eller agerande eller annat beteende som kräver fysiskt ingripande",
+   "definition": "Red warning symptom of the mental health problems algorithm (WEST-A page 36).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Ongoing violence, or acting out or other behavior that requires physical intervention"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "24",
+      "display": "Psykiska besvär"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "97",
+   "display": "Delirium tremens",
+   "definition": "Red warning symptom of the mental health problems algorithm (WEST-A page 36).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Delirium tremens"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "24",
+      "display": "Psykiska besvär"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "98",
+   "display": "Överhängande pågående suicidavsikt",
+   "definition": "Orange warning symptom of the mental health problems algorithm (WEST-A page 36).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Imminent ongoing suicidal intent"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "24",
+      "display": "Psykiska besvär"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "99",
+   "display": "Fysiskt hotfull",
+   "definition": "Orange warning symptom of the mental health problems algorithm (WEST-A page 36).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Physically threatening"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "24",
+      "display": "Psykiska besvär"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "100",
+   "display": "Ätstörning i verifierat metabolt tillstånd (blodgas pH, BE eller laktat) eller sjunkande medvetande inom de senaste 12 timmarna",
+   "definition": "Orange warning symptom of the mental health problems algorithm (WEST-A page 36).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Eating disorder with a verified metabolic disturbance (blood gas pH, base excess or lactate), or falling consciousness in the last 12 hours"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "24",
+      "display": "Psykiska besvär"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "101",
+   "display": "Katatoni",
+   "definition": "Orange warning symptom of the mental health problems algorithm (WEST-A page 36).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Catatonia"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "24",
+      "display": "Psykiska besvär"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "102",
+   "display": "Abstinens med risk för EP och DT (somatisk påverkan)",
+   "definition": "Orange warning symptom of the mental health problems algorithm (WEST-A page 36).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Withdrawal with risk of seizures and delirium tremens (somatically affected)"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "24",
+      "display": "Psykiska besvär"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "103",
+   "display": "Pågående självskada",
+   "definition": "Yellow warning symptom of the mental health problems algorithm (WEST-A page 36).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Ongoing self-harm"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "24",
+      "display": "Psykiska besvär"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "104",
+   "display": "Övrig suicidalitet, steg 5 eller mer på suicidstegen",
+   "definition": "Yellow warning symptom of the mental health problems algorithm (WEST-A page 36).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Other suicidality, step 5 or higher on the suicide ladder"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "24",
+      "display": "Psykiska besvär"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "105",
+   "display": "Verbalt hotfull",
+   "definition": "Yellow warning symptom of the mental health problems algorithm (WEST-A page 36).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Verbally threatening"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "24",
+      "display": "Psykiska besvär"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "106",
+   "display": "Ätstörning, ny eller försämrad, och inte i stånd att ta hand om sig själv",
+   "definition": "Yellow warning symptom of the mental health problems algorithm (WEST-A page 36).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Eating disorder, new or worse, and unable to take care of oneself"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "24",
+      "display": "Psykiska besvär"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "107",
+   "display": "Frihetsberövad",
+   "definition": "Yellow warning symptom of the mental health problems algorithm (WEST-A page 36).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Deprived of liberty"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "24",
+      "display": "Psykiska besvär"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "108",
+   "display": "Nytillkommen avvikande verklighetsuppfattning/beteende",
+   "definition": "Yellow warning symptom of the mental health problems algorithm (WEST-A page 36).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "New abnormal perception of reality or behavior"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "24",
+      "display": "Psykiska besvär"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "109",
+   "display": "Påtagliga hämningar",
+   "definition": "Yellow warning symptom of the mental health problems algorithm (WEST-A page 36).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Marked inhibition"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "24",
+      "display": "Psykiska besvär"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "110",
+   "display": "Konfusion/dissociation",
+   "definition": "Yellow warning symptom of the mental health problems algorithm (WEST-A page 36).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Confusion/dissociation"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "24",
+      "display": "Psykiska besvär"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "111",
+   "display": "Ryggsmärta med nytillkommen ridbyxanestesi eller inkontinens",
+   "definition": "Orange warning symptom of the back pain algorithm (WEST-A page 39).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Back pain with new saddle anesthesia or incontinence"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "26",
+      "display": "Ryggsmärta"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "112",
+   "display": "Svimning: helt utan förkänning",
+   "definition": "Orange warning symptom of the fainting algorithm (WEST-A page 40).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Fainting: without any warning"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "27",
+      "display": "Svimning"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "113",
+   "display": "Underlivssmärtor/skrotumsmärtor: hastigt påkommande, kraftiga och ihållande",
+   "definition": "Orange warning symptom of the male genital problems algorithm (WEST-A page 41).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Genital or scrotal pain: sudden, severe and persistent"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "28",
+      "display": "Underlivsbesvär män"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "114",
+   "display": "Urostopp",
+   "definition": "Yellow warning symptom of the urinary tract problems algorithm (WEST-A page 42).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Urinary retention"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "29",
+      "display": "Urinvägsbesvär"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "115",
+   "display": "Behov av ventilationsstöd",
+   "definition": "Red warning symptom of the trauma/injuries algorithm (WEST-A page 43).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Needs ventilatory support"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAG"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "116",
+   "display": "AF <10 eller >29",
+   "definition": "Red warning symptom of the trauma/injuries algorithm (WEST-A page 43).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Respiratory rate <10 or >29"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAG"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "117",
+   "display": "BT <90 eller ej palpabel radialispuls",
+   "definition": "Red warning symptom of the trauma/injuries algorithm (WEST-A page 43).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Blood pressure <90 or no palpable radial pulse"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAG"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "118",
+   "display": "RLS ≥3 eller GCS ≤13",
+   "definition": "Red warning symptom of the trauma/injuries algorithm (WEST-A page 43).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "RLS ≥3 or GCS ≤13"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAG"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "119",
+   "display": "Penetrerande våld mot huvud, hals, bål, extremiteter ovan armbåge/knä (inte ytliga skärsår)",
+   "definition": "Red warning symptom of the trauma/injuries algorithm (WEST-A page 43).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Penetrating injury to the head, neck, trunk, or limbs above the elbow/knee (not superficial cuts)"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAG"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "120",
+   "display": "Öppen skallskada/impressionsfraktur",
+   "definition": "Red warning symptom of the trauma/injuries algorithm (WEST-A page 43).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Open skull injury/depressed skull fracture"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAG"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "121",
+   "display": "Ansikts-/halsskada med hotad luftväg",
+   "definition": "Red warning symptom of the trauma/injuries algorithm (WEST-A page 43).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Face or neck injury with threatened airway"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAG"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "122",
+   "display": "Instabil/deformerad bröstkorg",
+   "definition": "Red warning symptom of the trauma/injuries algorithm (WEST-A page 43).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Unstable/deformed chest wall"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAG"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "123",
+   "display": "Svår smärta i bäckenet (misstänkt bäckenfraktur)",
+   "definition": "Red warning symptom of the trauma/injuries algorithm (WEST-A page 43).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Severe pelvic pain (suspected pelvic fracture)"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAG"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "124",
+   "display": "Misstänkt ryggmärgsskada",
+   "definition": "Red warning symptom of the trauma/injuries algorithm (WEST-A page 43).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Suspected spinal cord injury"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAG"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "125",
+   "display": "≥2 frakturer på långa rörben",
+   "definition": "Red warning symptom of the trauma/injuries algorithm (WEST-A page 43).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Fractures of ≥2 long bones"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAG"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "126",
+   "display": "Amputation ovan hand/fot",
+   "definition": "Red warning symptom of the trauma/injuries algorithm (WEST-A page 43).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Amputation above the hand/foot"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAG"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "127",
+   "display": "Stor yttre blödning",
+   "definition": "Red warning symptom of the trauma/injuries algorithm (WEST-A page 43).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Major external bleeding"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAG"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "128",
+   "display": "Brännskada ≥18 % eller inhalationsskada",
+   "definition": "Red warning symptom of the trauma/injuries algorithm (WEST-A page 43).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Burn ≥18% or inhalation injury"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAG"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "129",
+   "display": "Bilolycka >50 km/tim utan bilbälte",
+   "definition": "Red warning symptom of the trauma/injuries algorithm (WEST-A page 43).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Car crash >50 km/h without a seat belt"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAH"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "130",
+   "display": "Utkastad ur fordon",
+   "definition": "Red warning symptom of the trauma/injuries algorithm (WEST-A page 43).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Ejected from a vehicle"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAH"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "131",
+   "display": "Fastklämd med losstagning >20 min",
+   "definition": "Red warning symptom of the trauma/injuries algorithm (WEST-A page 43).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Trapped, with extrication taking >20 minutes"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAH"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "132",
+   "display": "MC-olycka (eller motsvarande) >35 km/tim",
+   "definition": "Red warning symptom of the trauma/injuries algorithm (WEST-A page 43).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Motorcycle crash (or similar) >35 km/h"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAH"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "133",
+   "display": "Fall >5 m",
+   "definition": "Red warning symptom of the trauma/injuries algorithm (WEST-A page 43).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Fall from >5 m"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAH"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "134",
+   "display": "Fall >3 m",
+   "definition": "Yellow warning symptom of the trauma/injuries algorithm (WEST-A page 43).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Fall from >3 m"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAI"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "135",
+   "display": "Trafikolycka med misstanke om högenergivåld",
+   "definition": "Yellow warning symptom of the trauma/injuries algorithm (WEST-A page 43).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Traffic accident with suspected high-energy trauma"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAI"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "136",
+   "display": "MC-/mopedolycka >35 km/tim",
+   "definition": "Yellow warning symptom of the trauma/injuries algorithm (WEST-A page 43).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Motorcycle or moped crash >35 km/h"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAI"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "137",
+   "display": "Hästolycka",
+   "definition": "Yellow warning symptom of the trauma/injuries algorithm (WEST-A page 43).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Horse-related accident"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAI"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "138",
+   "display": "Oskyddad trafikant",
+   "definition": "Yellow warning symptom of the trauma/injuries algorithm (WEST-A page 43).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Unprotected road user"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAI"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "139",
+   "display": "Hängning/strypning",
+   "definition": "Red warning symptom of the trauma/injuries algorithm (WEST-A page 44).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Hanging/strangulation"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAJ"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "140",
+   "display": "Ögonskada: penetrerande eller frätande",
+   "definition": "Red warning symptom of the trauma/injuries and eyes and ears algorithms (WEST-A pages 44 and 45).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Eye injury: penetrating or corrosive"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAJ"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "31",
+      "display": "Ögon och öron"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "141",
+   "display": "Buk-/thoraxtrauma med tilltagande smärta/omfång, urostopp eller hematuri",
+   "definition": "Red warning symptom of the trauma/injuries algorithm (WEST-A page 44).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Abdominal or chest trauma with increasing pain or girth, urinary retention or hematuria"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAJ"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "142",
+   "display": "Fraktur med misstänkt kärlskada (nedsatt cirkulation distalt, blek och kall extremitet) eller nervskada",
+   "definition": "Red warning symptom of the trauma/injuries algorithm (WEST-A page 44).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Fracture with suspected vascular injury (reduced distal circulation, pale and cold limb) or nerve injury"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAJ"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "143",
+   "display": "Drunkning/dykolycka",
+   "definition": "Red warning symptom of the trauma/injuries algorithm (WEST-A page 44).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Drowning/diving accident"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAJ"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "144",
+   "display": "Kemolycka/strålskada",
+   "definition": "Red warning symptom of the trauma/injuries algorithm (WEST-A page 44).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Chemical accident/radiation injury"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAJ"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "145",
+   "display": "Elolycka: högspänning/blixt",
+   "definition": "Red warning symptom of the trauma/injuries algorithm (WEST-A page 44).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Electrical injury: high voltage/lightning"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAJ"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "146",
+   "display": "Skalltrauma med GCS ≤14, eller GCS 15 och 1 av: blödningsrisk (Waran/NOAK, dubbel trombocythämmare eller blödarsjuka), krampanfall, neurologiska avvikelser, shuntbehandling",
+   "definition": "Orange warning symptom of the trauma/injuries algorithm (WEST-A page 44).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Head injury with GCS ≤14, or GCS 15 and one of: bleeding risk (warfarin/DOAC, dual antiplatelet therapy or bleeding disorder), seizure, neurological abnormality, shunt"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAJ"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "147",
+   "display": "Buk-/thoraxtrauma med vegetativa symtom",
+   "definition": "Orange warning symptom of the trauma/injuries algorithm (WEST-A page 44).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Abdominal or chest trauma with autonomic symptoms"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAJ"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "148",
+   "display": "Ledluxation (ej fingrar/tår), protesluxation eller luxationsfraktur",
+   "definition": "Orange warning symptom of the trauma/injuries algorithm (WEST-A page 44).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Joint dislocation (not fingers or toes), prosthesis dislocation or fracture-dislocation"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAJ"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "149",
+   "display": "Fraktur: öppen, felställd eller höftnära",
+   "definition": "Orange warning symptom of the trauma/injuries algorithm (WEST-A page 44).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Fracture: open, displaced or of the hip"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAJ"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "150",
+   "display": "Brännskada/frätskada 5-18 % eller cirkumferent",
+   "definition": "Orange warning symptom of the trauma/injuries algorithm (WEST-A page 44).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Burn or corrosive injury of 5-18%, or circumferential"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAJ"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "151",
+   "display": "Skalltrauma: GCS 15 och varit avsvimmad el. amnesi el. upprepade kräkningar",
+   "definition": "Yellow warning symptom of the trauma/injuries algorithm (WEST-A page 44).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Head injury: GCS 15 with loss of consciousness, amnesia or repeated vomiting"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAJ"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "152",
+   "display": "GCS 15 och ≥65 år med trombocythämmare",
+   "definition": "Yellow warning symptom of the trauma/injuries algorithm (WEST-A page 44).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "GCS 15, age 65 or more, on antiplatelet therapy"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAJ"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "153",
+   "display": "Nackskada: med palpömhet över kotpelaren",
+   "definition": "Yellow warning symptom of the trauma/injuries algorithm (WEST-A page 44).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Neck injury with tenderness over the spine"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAJ"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "154",
+   "display": "Skada: med oproportionerlig smärtnivå",
+   "definition": "Yellow warning symptom of the trauma/injuries algorithm (WEST-A page 44).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Injury with disproportionate pain"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAJ"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "155",
+   "display": "Fraktur: stark misstanke, aktuell (<48 tim efter skadetillfället)",
+   "definition": "Yellow warning symptom of the trauma/injuries algorithm (WEST-A page 44).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Fracture: strongly suspected, recent (<48 hours after the injury)"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAJ"
+    },
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "30",
+      "display": "Trauma/skador"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "156",
+   "display": "Ofri eller hotad luftväg",
+   "definition": "Red warning symptom of the eyes and ears algorithm (WEST-A page 45). With an injury, see trauma.",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Obstructed or threatened airway"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "31",
+      "display": "Ögon och öron"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "1",
+      "display": "Röd"
+     }
+    }
+   ]
+  },
+  {
+   "code": "157",
+   "display": "Svalt knappcellsbatteri eller ≥2 magneter",
+   "definition": "Orange warning symptom of the eyes and ears algorithm (WEST-A page 45).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Swallowed button battery or ≥2 magnets"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "31",
+      "display": "Ögon och öron"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "2",
+      "display": "Orange"
+     }
+    }
+   ]
+  },
+  {
+   "code": "158",
+   "display": "Stopp i esofagus, kan inte svälja saliv",
+   "definition": "Yellow warning symptom of the eyes and ears algorithm (WEST-A page 45).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Esophageal obstruction, cannot swallow saliva"
+    }
+   ],
+   "property": [
+    {
+     "code": "complaint",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+      "code": "31",
+      "display": "Ögon och öron"
+     }
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "159",
+   "display": "Skör äldre enligt screening (FRESH)",
+   "definition": "Need or process that gives yellow as the lowest priority (WEST-A page 46). Age 75 or more with 2 or more points on the modified FRESH screening: living in a care home (2 points), reduced endurance, general tiredness for less than 2 months, frequent falls or fear of falling, and needing help with shopping (1 point each). Prioritized first within its colour.",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Frail elderly by screening (FRESH)"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAK"
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "160",
+   "display": "Sannolikt slutenvårdsbehov",
+   "definition": "Need or process that gives yellow as the lowest priority (WEST-A page 47).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Likely to need inpatient care"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAK"
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "161",
+   "display": "Sexuellt övergrepp: påtalat eller misstänkt",
+   "definition": "Need or process that gives yellow as the lowest priority (WEST-A page 48).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Sexual assault: reported or suspected"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAK"
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "162",
+   "display": "Våld i nära relation: påtalat eller misstänkt",
+   "definition": "Need or process that gives yellow as the lowest priority (WEST-A page 48).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Intimate partner violence: reported or suspected"
+    }
+   ],
+   "property": [
+    {
+     "code": "parent",
+     "valueCode": "AAK"
+    },
+    {
+     "code": "priority",
+     "valueCoding": {
+      "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+      "code": "3",
+      "display": "Gul"
+     }
+    }
+   ]
+  },
+  {
+   "code": "163",
+   "display": "Inga varningssymtom",
+   "definition": "The triage nurse has assessed the warning symptoms of the chief complaint algorithm, and none of them applies.",
+   "designation": [
+    {
+     "language": "en",
+     "value": "No warning symptoms"
+    }
+   ]
+  }
+ ]
+}

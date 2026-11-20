@@ -1,8 +1,8 @@
 import type { Bundle, FhirResource, OperationOutcome, Parameters, Resource } from 'fhir/r4';
 
 /**
- * The small client that demo/lib/cds.js exports as `fhir(base)`. The app writes to the server
- * only through this shape, so the real module can replace `httpClient` without other changes.
+ * The app's FHIR client: `httpClient` for a server, `mockClient` (services/mockServer.ts) for
+ * the in-browser store. runTriage in real mode uses the client of demo/lib/cds.js instead.
  */
 export interface FhirClient {
   base: string;

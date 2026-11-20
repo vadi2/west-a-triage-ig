@@ -8,7 +8,8 @@ Screens, in the order a nurse uses them:
 
 1. **Patients** – who is at the triage desk: search by name or identifier, the queue with
    each patient's last priority, or a new synthetic patient (VGR reserve number, LRID,
-   tagged `HTEST`). Starting a triage creates an in-progress emergency Encounter.
+   tagged `HTEST`). Starting a triage opens the patient's in-progress emergency Encounter,
+   or creates one.
 2. **Triage** – the WEST-A Questionnaire in the renderer, with NEWS2 counted beside it while
    you type. Saving stores the QuestionnaireResponse, extracts and posts the vital signs,
    and runs the guideline on the server.
@@ -25,6 +26,7 @@ Screens, in the order a nurse uses them:
 ## Run it in mock mode (no server)
 
 ```sh
+(cd ../lib && npm install)     # extract.js's dependency, which the build imports
 npm install
 npm run dev:mock          # http://localhost:5173
 # or, lighter on memory:
@@ -32,28 +34,43 @@ VITE_MOCK=1 npm run build && npm run preview   # http://localhost:4173
 ```
 
 Mock mode keeps an in-memory FHIR store in the browser (saved in `localStorage` under
-`west-a-mock-db-v1`), seeded with the guide's example patients, two synthetic test patients
-with earlier triages, the nurse, and a fixture Questionnaire that follows the linkId
-table in `../README.md`. Extraction, the guideline and the discharge report are
-stand-ins written from the guide's CQL and profiles; they say so on screen
-("MOCK SERVER"). To start over, clear the site's storage.
+`west-a-mock-db-v2`), seeded with the guide's example patients, two synthetic test patients
+with earlier triages, the nurse, the built Questionnaire (`src/fixtures/questionnaire.json`,
+from the IG package) and the value sets and code systems it uses. Extraction, the
+Observations and the discharge report come from the real `demo/lib` modules in both modes;
+only the guideline is applied in the browser (`mockRunTriage` in `src/services/cds.ts`:
+NEWS2, the priority of each triage criterion from the code system's `priority` property,
+the override, the needs as a yellow floor, the most urgent wins). The header says
+"MOCK SERVER". To start over, clear the site's storage.
 
 ## Run it against HAPI
 
-Start HAPI and load the guide (`../hapi/`), then:
+Start HAPI and load the guide (`../README.md`, *Run everything locally*), then:
 
 ```sh
-npm run dev               # /fhir is proxied to http://localhost:8080/fhir
-HAPI_URL=http://otherhost:8080 npm run dev     # another server, still proxied
+npm run build && npm run preview   # /fhir is proxied to http://localhost:8080/fhir
+npm run dev                        # the same, with hot reload (more memory)
+HAPI_URL=http://otherhost:8080 npm run preview  # another server, still proxied
 VITE_FHIR_BASE=https://example.org/fhir npm run build   # call a server directly (needs CORS)
 ```
 
 The app loads `../lib/extract.js`, `../lib/cds.js` and `../lib/hdr.js` with
-`import.meta.glob`, so it builds while they do not exist yet. When one is missing, the step
-that needs it fails with a plain message naming the file. Restart Vite after adding them.
+`import.meta.glob`; when one is missing, the step that needs it fails with a plain message
+naming the file. The adapters in `src/services/` are the only code that touches them:
+`extract.ts`, `cds.ts`, `hdr.ts`, with their types in `libs.ts`.
 
-The adapters in `src/services/` are the only code that touches those modules:
-`extract.ts`, `cds.ts`, `hdr.ts` (and `fhirClient.ts`, the client handed to `runTriage`).
+**Value sets are expanded in the browser.** HAPI's `$expand` fails for a value set that
+includes a whole code system (Hibernate Search is off in the starter: `HSEARCH800001`), and
+its ACVPU expansion has no displays. So `src/services/terminology.ts` reads each
+`answerValueSet`'s ValueSet and CodeSystem from the server and hands the renderer a copy of
+the Questionnaire with `answerOption`s. Extraction still gets the Questionnaire as
+published.
+
+**Triage criteria.** Every answer of an item whose linkId starts with `triage-criteria` is a
+criterion (`src/services/answers.ts`). They go to `runTriage` and onto the triage
+Observation (with the Swedish displays of the code system), and the board shows them as
+pins in the priority row: one per priority of the warning symptoms, *override* for
+`complaint-priority`, *lowest for need* for a need (159–162) or a yellow-floor answer.
 
 ## The design decision
 
@@ -84,5 +101,9 @@ most urgent end on the left), type "only small type".
 
 ## Screenshots
 
+Real mode, against HAPI 8.12 with the guide's CI package: the guide's example (chest pain,
+criterion 15, NEWS2 5) proposes Orange, raised to Röd.
 `screenshots/form-desktop.jpg`, `screenshots/result-desktop.jpg`,
-`screenshots/result-phone.jpg`, `screenshots/form-phone.jpg`, `screenshots/record-phone.jpg`.
+`screenshots/record-desktop.jpg`, `screenshots/report-desktop.jpg` (1366 × 768) and
+`screenshots/form-phone.jpg`, `screenshots/result-phone.jpg`, `screenshots/record-phone.jpg`,
+`screenshots/report-phone.jpg` (390 × 844).

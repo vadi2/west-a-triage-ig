@@ -76,6 +76,13 @@ export async function createSyntheticPatient(d: PatientDraft): Promise<Patient> 
   });
 }
 
+/** The patient's open visit (the latest one in progress), or a new one. */
+export async function openEncounter(patient: Patient): Promise<Encounter> {
+  const open = entries(await client.search<Encounter>('Encounter', { subject: `Patient/${patient.id}`, status: 'in-progress' }))
+    .sort((a, b) => (b.period?.start ?? '').localeCompare(a.period?.start ?? ''))[0];
+  return open ?? startEncounter(patient);
+}
+
 /** An emergency department visit, as example-encounter-emergency. */
 export async function startEncounter(patient: Patient): Promise<Encounter> {
   return client.create<Encounter>({

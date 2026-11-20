@@ -19,7 +19,8 @@ packages (this guide, SDC 4.0.0, HL7 Europe HDR 1.0.0).
 | `demo/lib/` | Plain ES modules shared by the app and the end-to-end test (browser and Node 20) |
 | `demo/app/` | The web app (Vite, React, TypeScript, Smart Forms renderer) |
 | `demo/e2e/` | Headless end-to-end run, used by CI |
-| `.github/workflows/demo.yml` | CI: HAPI as a service container, load the IG, run the end-to-end test, validate the output |
+| `.github/workflows/build.yml` | CI: job `build` builds the guide (SUSHI, IG Publisher); job `e2e` starts HAPI as a service container, loads the built package and runs the end-to-end test |
+| `.github/workflows/hdr.yml` | CI (manual): builds the example discharge report with `demo/lib/hdr.js` and validates it against the HDR 1.0.0 Bundle profile |
 
 ## FHIR server
 
@@ -64,24 +65,69 @@ performer and effectiveDateTime from them.
 
 ## Library contract (`demo/lib`)
 
+Plain ES modules for the browser and Node 20. `extract.js` needs its dependency installed:
+`npm install` in `demo/lib` (the app's build imports it from there too).
+
 - `extract.js`: `extractVitals(questionnaire, questionnaireResponse)` → Promise of a
   transaction Bundle with the 7 vital sign Observations (blood pressure as one Observation
-  with two components), each conforming to its WEST-A profile.
+  with two components), each conforming to its WEST-A profile. Pass the Questionnaire as
+  published (with its extraction templates). Throws when the QuestionnaireResponse has no
+  `subject` or `authored`.
 - `cds.js`: talks to the FHIR server and runs the guideline.
-  - `fhir(base)` → a small client: `read`, `search`, `create`, `update`, `transaction`, `operation`.
-  - `runTriage(client, { patientId, encounterId, complaintPriority, yellowAsLowest, scale2 })`
-    → `{ news2: { total, risk, scores: { 'Respiration Rate Score': n, ... } }, proposedPriority: Coding | null, summaries: string[], carePlan }`
-    by `PlanDefinition/west-a-triage/$apply` (and `Library/$evaluate` for the scores).
-  - `news2Observation(...)`, `triageObservation(...)` → resources conforming to the WEST-A
-    NEWS2 and Triage Observation profiles, with `derivedFrom` set.
-- `hdr.js`: `dischargeReport({ patient, encounter, author, organization, vitals, news2, triage, ... })`
-  → a document Bundle conforming to the HL7 Europe HDR 1.0.0 Bundle profile.
+  - `fhir(base)` → `{ request, read, search, create, update, transaction, operation(path, parameters?, { method }) }`.
+  - `runTriage(client, { patientId, encounterId, practitionerId, complaintPriority, yellowAsLowest, scale2, triageCriteria })`
+    → `{ news2, proposedPriority, vitalParameterPriority, summaries, carePlan }`, by
+    `PlanDefinition/west-a-triage/$apply` and `Library/WestANEWS2` and `Library/WestATriage`
+    `$evaluate`. Takes 1–15 s on HAPI, so show progress.
+    - `complaintPriority`: `'1'`–`'4'`, a Coding, or `null` (left out: the override is optional).
+    - `triageCriteria`: codes or Codings of the WEST-A triage criterion code system (below).
+    - `news2`: `{ total, risk, scale2, scores, derivedFrom }`. `scores` is keyed by the CQL
+      definitions: `Respiration Rate Score`, `Oxygen Saturation Scale 1 Score` *or*
+      `Oxygen Saturation Scale 2 Score`, `Supplemental Oxygen Score`, `Systolic Blood Pressure Score`,
+      `Pulse Score`, `Consciousness Score`, `Temperature Score`. `derivedFrom` references the
+      vital sign Observations the CQL scored (the latest of each).
+    - `proposedPriority`, `vitalParameterPriority`: Codings of the WEST-A triage priority
+      code system, or `null`. No priority is proposed until NEWS2 is complete and the warning
+      symptoms are assessed (a symptom, `163`, or `complaintPriority`).
+  - `news2Observation({ news2, patientId, encounterId, performerId, effectiveDateTime, derivedFrom?, id? })`
+    → a WEST-A NEWS2 Observation; `derivedFrom` defaults to `news2.derivedFrom`.
+  - `triageObservation({ priority, chiefComplaint, news2?, proposedPriority?, patientId, encounterId, performerId, effectiveDateTime, note?, derivedFrom, criteria, id? })`
+    → a WEST-A Triage Observation, each criterion a component. `news2` may be the
+    Observation, an id, or a Reference (a `urn:uuid` inside a transaction). Throws when
+    `priority` is lower than a proposed red or orange (WEST-A p. 8).
+  - The builders write `language: 'sv'`; give Swedish displays (the code system displays)
+    or none.
+- `hdr.js`: `dischargeReport({ patient, encounter, author, organization?, vitals, news2, triage, dischargeDate?, dischargeSummary?, language?, fhirBase? })`
+  → a document Bundle conforming to the HL7 Europe HDR 1.0.0 Bundle profile. It takes *one*
+  NEWS2 and *one* triage Observation: the app passes the latest triage of the stay, the
+  NEWS2 it was based on, and the vital signs that NEWS2 was scored from, and says so on
+  screen. Without `organization` it names a placeholder emergency department. Throws when
+  the resources disagree on `language`.
 
 CQL parameter names are exactly those of the libraries: `Triage Criteria` (List<Code>),
 `Complaint Priority` (Code), `Yellow As Lowest Priority` (Boolean), `Use Oxygen Saturation
 Scale 2` (Boolean). `Triage Criteria` is every answer of every item whose linkId starts with
 `triage-criteria` (FHIRPath on the QuestionnaireResponse:
 `repeat(item).where(linkId.startsWith('triage-criteria')).answer.value`).
+
+HAPI 8.12 passes a CQL list parameter that is given only once as a single value, and the
+CQL then sees `Triage Criteria` as null; `cds.js` therefore sends a single criterion twice.
+
+## Run everything locally
+
+```sh
+cd demo/lib && npm install && cd ../..
+demo/hapi/start.sh                          # HAPI in podman, http://localhost:8080/fhir (about 1.2 GB)
+node demo/hapi/load.mjs output/package.tgz  # this guide's package: the ig-output artifact of a CI run
+cd demo/app && npm ci
+npm run build && npm run preview            # http://localhost:4173, /fhir proxied to HAPI
+# walk the flow, then stop the preview server and:
+demo/hapi/stop.sh                           # keeps the database volume; --purge deletes it
+```
+
+`npm run dev` works too, but the dev server takes more memory than the preview server.
+Without HAPI, `VITE_MOCK=1 npm run build && npm run preview` runs the app on an in-browser
+store (see `demo/app/README.md`).
 
 ## Ground rules
 

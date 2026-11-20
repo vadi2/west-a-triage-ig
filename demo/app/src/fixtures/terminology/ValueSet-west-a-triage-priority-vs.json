@@ -1,0 +1,42 @@
+{
+ "resourceType": "ValueSet",
+ "id": "west-a-triage-priority-vs",
+ "url": "https://vadi2.github.io/west-a-triage-ig/ValueSet/west-a-triage-priority-vs",
+ "version": "0.1.0",
+ "name": "TriagePriorityVS",
+ "title": "WEST-A triage priority value set",
+ "status": "draft",
+ "experimental": true,
+ "date": "2026-11-20T08:33:48+00:00",
+ "publisher": "WEST-A FHIR modelling (unofficial draft)",
+ "contact": [
+  {
+   "name": "WEST-A FHIR modelling (unofficial draft)",
+   "telecom": [
+    {
+     "system": "url",
+     "value": "https://github.com/vadi2/west-a-triage-ig"
+    }
+   ]
+  }
+ ],
+ "description": "WEST-A triage priorities",
+ "jurisdiction": [
+  {
+   "coding": [
+    {
+     "system": "urn:iso:std:iso:3166",
+     "code": "SE",
+     "display": "Sweden"
+    }
+   ]
+  }
+ ],
+ "compose": {
+  "include": [
+   {
+    "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs"
+   }
+  ]
+ }
+}

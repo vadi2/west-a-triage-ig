@@ -4,7 +4,7 @@ import { seedResources } from '../fixtures/seed';
 
 // An in-memory FHIR server for mock mode, seeded with the guide's examples. It keeps what the
 // app writes in this browser's localStorage, so a reload keeps the demo where it was.
-const KEY = 'west-a-mock-db-v1';
+const KEY = 'west-a-mock-db-v2';
 
 type Db = Record<string, Record<string, Resource>>;
 

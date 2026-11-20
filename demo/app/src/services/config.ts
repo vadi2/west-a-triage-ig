@@ -1,5 +1,6 @@
-// VITE_MOCK=1 runs the whole app against an in-memory FHIR server seeded with the guide's
-// examples, and against local stand-ins for demo/lib. Anything else talks to HAPI.
+// VITE_MOCK=1 runs the app against an in-memory FHIR server seeded with the guide's examples;
+// the guideline ($apply/$evaluate) is then applied in the browser. demo/lib builds the resources
+// in both modes. Anything else talks to HAPI.
 export const MOCK = import.meta.env.VITE_MOCK === '1';
 
 export const FHIR_BASE: string = import.meta.env.VITE_FHIR_BASE || '/fhir';

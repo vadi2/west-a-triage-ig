@@ -176,8 +176,12 @@ function cqlParameters({ complaintPriority, yellowAsLowest, scale2, triageCriter
   const complaint = priorityCoding(complaintPriority);
   // Not yet assessed: leave the parameter out, so it is null and no priority is proposed
   if (complaint) parameter.unshift({ name: 'Complaint Priority', valueCoding: complaint });
-  // A list parameter of CQL: one entry per element, and none at all when not given
-  for (const criterion of (triageCriteria ?? []).map(criterionCoding).filter(Boolean)) {
+  // A list parameter of CQL: one entry per element, and none at all when not given.
+  // HAPI (clinical-reasoning, HAPI 8.12) passes a parameter given once to the CQL as a single
+  // Code, not a list of one, and "Triage Criteria" then evaluates to null; a single criterion is
+  // therefore sent twice, which the logic reads as the same list (the most urgent, exists).
+  const criteria = (triageCriteria ?? []).map(criterionCoding).filter(Boolean);
+  for (const criterion of criteria.length === 1 ? [criteria[0], criteria[0]] : criteria) {
     parameter.push({ name: 'Triage Criteria', valueCoding: criterion });
   }
   return { resourceType: 'Parameters', parameter };

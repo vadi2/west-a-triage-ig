@@ -1,0 +1,84 @@
+{
+ "resourceType": "ValueSet",
+ "id": "west-a-acvpu-vs",
+ "url": "https://vadi2.github.io/west-a-triage-ig/ValueSet/west-a-acvpu-vs",
+ "version": "0.1.0",
+ "name": "AcvpuVS",
+ "title": "WEST-A ACVPU",
+ "status": "draft",
+ "experimental": true,
+ "date": "2026-11-20T08:33:48+00:00",
+ "publisher": "WEST-A FHIR modelling (unofficial draft)",
+ "contact": [
+  {
+   "name": "WEST-A FHIR modelling (unofficial draft)",
+   "telecom": [
+    {
+     "system": "url",
+     "value": "https://github.com/vadi2/west-a-triage-ig"
+    }
+   ]
+  }
+ ],
+ "description": "Levels of consciousness on the ACVPU scale (Alert, new Confusion, Voice, Pain, Unresponsive) that NEWS2 and WEST-A use",
+ "jurisdiction": [
+  {
+   "coding": [
+    {
+     "system": "urn:iso:std:iso:3166",
+     "code": "SE",
+     "display": "Sweden"
+    }
+   ]
+  }
+ ],
+ "compose": {
+  "include": [
+   {
+    "system": "http://snomed.info/sct",
+    "version": "http://snomed.info/sct/45991000052106",
+    "concept": [
+     {
+      "code": "248234008"
+     }
+    ]
+   },
+   {
+    "system": "http://snomed.info/sct",
+    "version": "http://snomed.info/sct/45991000052106",
+    "concept": [
+     {
+      "code": "130987000"
+     }
+    ]
+   },
+   {
+    "system": "http://snomed.info/sct",
+    "version": "http://snomed.info/sct/45991000052106",
+    "concept": [
+     {
+      "code": "300202002"
+     }
+    ]
+   },
+   {
+    "system": "http://snomed.info/sct",
+    "version": "http://snomed.info/sct/45991000052106",
+    "concept": [
+     {
+      "code": "450847001"
+     }
+    ]
+   },
+   {
+    "system": "http://snomed.info/sct",
+    "version": "http://snomed.info/sct/45991000052106",
+    "concept": [
+     {
+      "code": "422768004"
+     }
+    ]
+   }
+  ]
+ }
+}

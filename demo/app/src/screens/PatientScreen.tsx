@@ -12,7 +12,7 @@ import {
   patientName,
   randomPatientDraft,
   reserveNumber,
-  startEncounter,
+  openEncounter,
   type PatientDraft,
 } from '../services/patients';
 import { priority } from '../services/priority';
@@ -49,7 +49,7 @@ export function PatientScreen({ onStart, onRecord }: Props) {
     setBusy(p.id);
     setError(undefined);
     try {
-      onStart(p, await startEncounter(p));
+      onStart(p, await openEncounter(p));
     } catch (e) {
       setError(e);
       setBusy(undefined);

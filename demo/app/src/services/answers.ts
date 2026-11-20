@@ -11,6 +11,10 @@ export interface TriageAnswers {
   consciousness?: Coding;
   temperature?: number;
   chiefComplaint?: Coding;
+  /** Every answer of the items whose linkId starts with triage-criteria: the warning
+   * symptoms, "No warning symptoms" (163) and the needs and processes (159-162). */
+  triageCriteria: Coding[];
+  /** Optional manual override of the warning symptom priority. */
   complaintPriority?: Coding;
   frailElderly: boolean;
   likelyAdmission: boolean;
@@ -28,6 +32,17 @@ function findAnswer(items: QuestionnaireResponseItem[] | undefined, linkId: stri
   return undefined;
 }
 
+function collectCriteria(items: QuestionnaireResponseItem[] | undefined, out: Coding[] = []): Coding[] {
+  for (const item of items ?? []) {
+    if (item.linkId.startsWith('triage-criteria')) {
+      for (const a of item.answer ?? []) if (a.valueCoding) out.push(a.valueCoding);
+    }
+    collectCriteria(item.item, out);
+    collectCriteria(item.answer?.flatMap((a) => a.item ?? []), out);
+  }
+  return out;
+}
+
 const num = (a?: QuestionnaireResponseItemAnswer) => a?.valueInteger ?? a?.valueDecimal ?? a?.valueQuantity?.value;
 
 export function readAnswers(qr: QuestionnaireResponse | undefined): TriageAnswers {
@@ -42,6 +57,7 @@ export function readAnswers(qr: QuestionnaireResponse | undefined): TriageAnswer
     consciousness: a('consciousness')?.valueCoding,
     temperature: num(a('temperature')),
     chiefComplaint: a('chief-complaint')?.valueCoding,
+    triageCriteria: collectCriteria(qr?.item),
     complaintPriority: a('complaint-priority')?.valueCoding,
     frailElderly: a('frail-elderly')?.valueBoolean === true,
     likelyAdmission: a('likely-admission')?.valueBoolean === true,

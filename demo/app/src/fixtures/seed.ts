@@ -1,5 +1,12 @@
-import type { FhirResource, Observation, Questionnaire } from 'fhir/r4';
+import type { CodeSystem, FhirResource, Observation, Questionnaire, ValueSet } from 'fhir/r4';
+import { lib } from '../services/libs';
 import questionnaire from './questionnaire.json';
+import acvpuVs from './terminology/ValueSet-west-a-acvpu-vs.json';
+import complaintVs from './terminology/ValueSet-west-a-chief-complaint-vs.json';
+import priorityVs from './terminology/ValueSet-west-a-triage-priority-vs.json';
+import complaintCs from './terminology/CodeSystem-west-a-chief-complaint-cs.json';
+import priorityCs from './terminology/CodeSystem-west-a-triage-priority-cs.json';
+import criterionCs from './terminology/CodeSystem-west-a-triage-criterion-cs.json';
 
 // The guide's examples (input/fsh/examples), as HAPI holds them after demo/hapi/load.mjs,
 // plus two synthetic patients so the queue is not empty. All data is fictitious.
@@ -26,8 +33,9 @@ function triageSet(opts: {
   acvpu: [string, string];
   temp: number;
   scores: [number, number, number, number, number, number, number];
-  priority: [string, string];
-  complaint: [string, string];
+  priority: string;
+  complaint: string;
+  criteria: string[];
   note?: string;
 }): Observation[] {
   const ctx = {
@@ -56,39 +64,50 @@ function triageSet(opts: {
     { resourceType: 'Observation', id: id('body-temperature'), meta: sd('west-a-body-temperature'), ...ctx, category: cat('vital-signs', 'Vital Signs'), code: { coding: [{ system: LOINC, code: '8310-5', display: 'Body temperature' }] }, valueQuantity: q(opts.temp, 'Cel', '°C') },
   ];
   const later = (min: number) => new Date(new Date(opts.at).getTime() + min * 60000).toISOString().replace('.000Z', 'Z');
-  const comp = (code: string, v: number) => ({ code: { coding: [{ system: SCT, code }] }, valueInteger: v });
-  const total = opts.scores.reduce((a, b) => a + b, 0);
-  const news2: Observation = {
-    resourceType: 'Observation', id: id('news2'), meta: sd('west-a-news2-observation'), ...ctx, effectiveDateTime: later(2),
-    category: cat('survey', 'Survey'),
-    code: { coding: [{ system: SCT, code: '1104051000000101', display: 'Royal College of Physicians NEWS2 (National Early Warning Score 2) total score' }] },
-    valueInteger: total,
-    derivedFrom: vitals.map((v) => ({ reference: `Observation/${v.id}` })),
-    component: [
-      comp('1104301000000104', opts.scores[0]),
-      comp('1104311000000102', opts.scores[1]),
-      comp('1104331000000105', opts.scores[2]),
-      comp('1104341000000101', opts.scores[3]),
-      comp('1104351000000103', opts.scores[4]),
-      comp('1104361000000100', opts.scores[5]),
-      comp('1104371000000107', opts.scores[6]),
-    ],
-  };
-  const triage: Observation = {
-    resourceType: 'Observation', id: id('triage'), meta: sd('west-a-triage-observation'), ...ctx, effectiveDateTime: later(4),
-    category: cat('survey', 'Survey'),
-    code: { coding: [{ system: SCT, code: '425705009', display: 'Determination of acuity level' }] },
-    valueCodeableConcept: { coding: [{ system: `${IG}/CodeSystem/west-a-triage-priority-cs`, code: opts.priority[0], display: opts.priority[1] }] },
-    derivedFrom: [{ reference: `Observation/${news2.id}` }],
-    component: [{ code: { coding: [{ system: SCT, code: '1269489004', display: 'Chief complaint' }] }, valueCodeableConcept: { coding: [{ system: `${IG}/CodeSystem/west-a-chief-complaint-cs`, code: opts.complaint[0], display: opts.complaint[1] }] } }],
-    note: opts.note ? [{ text: opts.note }] : undefined,
-  };
+  const cds = lib('cds');
+  const [rr, spo2, o2, sys, hr, acvpu, temp] = opts.scores;
+  const news2 = cds.news2Observation({
+    id: id('news2'),
+    patientId: opts.patient,
+    encounterId: opts.encounter,
+    performerId: 'example-practitioner-triage-nurse',
+    effectiveDateTime: later(2),
+    news2: {
+      total: opts.scores.reduce((a, b) => a + b, 0),
+      risk: null,
+      scale2: false,
+      scores: {
+        'Respiration Rate Score': rr,
+        'Oxygen Saturation Scale 1 Score': spo2,
+        'Supplemental Oxygen Score': o2,
+        'Systolic Blood Pressure Score': sys,
+        'Pulse Score': hr,
+        'Consciousness Score': acvpu,
+        'Temperature Score': temp,
+      },
+      derivedFrom: vitals.map((v) => ({ reference: `Observation/${v.id}` })),
+    },
+  });
+  const triage = cds.triageObservation({
+    id: id('triage'),
+    priority: opts.priority as '1',
+    chiefComplaint: opts.complaint,
+    news2,
+    criteria: opts.criteria,
+    patientId: opts.patient,
+    encounterId: opts.encounter,
+    performerId: 'example-practitioner-triage-nurse',
+    effectiveDateTime: later(4),
+    note: opts.note,
+  });
   return [...vitals, news2, triage];
 }
 
 export function seedResources(): FhirResource[] {
   return [
     questionnaire as Questionnaire,
+    ...([acvpuVs, complaintVs, priorityVs] as ValueSet[]),
+    ...([complaintCs, priorityCs, criterionCs] as CodeSystem[]),
     {
       resourceType: 'Patient', id: 'example-patient-personnummer', meta: sd('west-a-patient'), language: 'sv',
       identifier: [{ system: 'http://electronichealth.se/identifier/personnummer', value: '196101182803' }],
@@ -138,18 +157,18 @@ export function seedResources(): FhirResource[] {
     ...triageSet({
       patient: 'example-patient-personnummer', encounter: 'example-encounter-emergency', prefix: 'example-', at: '2026-11-19T08:38:00+01:00',
       rr: 22, spo2: 95, o2: 0, sys: 105, dia: 70, hr: 95, acvpu: ['248234008', 'Mentally alert'], temp: 37.5,
-      scores: [2, 1, 0, 1, 1, 0, 0], priority: ['2', 'Orange'], complaint: ['4', 'Bröstsmärta'],
+      scores: [2, 1, 0, 1, 1, 0, 0], priority: '2', complaint: '4', criteria: ['15'],
       note: 'Bröstsmärta, pågående med misstanke om AKS.',
     }),
     ...triageSet({
       patient: 'synthetic-1', encounter: 'synthetic-1-ed', prefix: 'synthetic-1-a-', at: '2026-10-02T21:14:00+02:00',
       rr: 19, spo2: 94, o2: 0, sys: 128, dia: 74, hr: 88, acvpu: ['248234008', 'Mentally alert'], temp: 38.4,
-      scores: [0, 1, 0, 0, 0, 0, 1], priority: ['3', 'Gul'], complaint: ['16', 'Infektion/feber/sepsis'],
+      scores: [0, 1, 0, 0, 0, 0, 1], priority: '3', complaint: '16', criteria: ['163', '159'],
     }),
     ...triageSet({
       patient: 'synthetic-1', encounter: 'synthetic-1-ed', prefix: 'synthetic-1-b-', at: '2026-10-02T23:02:00+02:00',
       rr: 23, spo2: 92, o2: 2, sys: 104, dia: 61, hr: 112, acvpu: ['130987000', 'Acute confusion'], temp: 39.2,
-      scores: [2, 2, 2, 1, 2, 3, 2], priority: ['1', 'Röd'], complaint: ['16', 'Infektion/feber/sepsis'],
+      scores: [2, 2, 2, 1, 2, 3, 2], priority: '1', complaint: '16', criteria: ['74'],
       note: 'Ny förvirring, misstänkt sepsis. Läkare tillkallad.',
     }),
   ];

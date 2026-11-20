@@ -1,11 +1,12 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { Bundle, Observation } from 'fhir/r4';
 import type { Route, Stay } from '../App';
 import { ErrorNote } from '../components/ErrorNote';
 import { clock } from '../components/format';
-import { Pinboard, type SourcePin } from '../components/Pinboard';
+import { Pinboard } from '../components/Pinboard';
 import { yellowAsLowest } from '../services/answers';
-import { client, news2Observation, triageObservation } from '../services/cds';
+import { boardNews2, client, news2Observation, triageObservation } from '../services/cds';
+import { criteriaReasons, loadCriteria, recordedCriteria, type Criteria } from '../services/criteria';
 import { NURSE } from '../services/config';
 import { uuid } from '../services/libs';
 import { nowLocal } from '../services/patients';
@@ -20,8 +21,15 @@ interface Props {
 export function ResultScreen({ stay, onRecorded, go }: Props) {
   const result = stay.result!;
   const answers = stay.answers!;
+  const [criteria, setCriteria] = useState<Criteria | undefined>();
+  useEffect(() => {
+    loadCriteria(client).then(setCriteria, () => setCriteria(undefined));
+  }, []);
+  const reasons = useMemo(() => criteriaReasons(answers, criteria, yellowAsLowest(answers)), [answers, criteria]);
   const proposed = priorityOf(result.proposedPriority);
-  const floor = yellowAsLowest(answers);
+  const vital = priorityOf(result.vitalParameterPriority);
+  // Yellow as lowest priority: a need or process ticked in the form, or a need criterion (159-162)
+  const floor = yellowAsLowest(answers) || reasons.needs.length > 0;
   const closed = useMemo(() => allowed(proposed, floor), [proposed, floor]);
   const [selected, setSelected] = useState<PriorityCode | undefined>(stay.recorded?.priority ?? proposed);
   const [note, setNote] = useState('');
@@ -29,15 +37,11 @@ export function ResultScreen({ stay, onRecorded, go }: Props) {
   const [saving, setSaving] = useState(false);
   const recorded = stay.recorded;
 
-  const complaintPriority = priorityOf(answers.complaintPriority);
-  const sources: SourcePin[] = [
-    ...(complaintPriority ? [{ priority: complaintPriority, label: 'warning symptom' }] : []),
-    ...(floor ? [{ priority: '3' as const, label: 'lowest for need' }] : []),
-  ];
   const needs = [
     answers.frailElderly && 'frail elderly (p. 46)',
     answers.likelyAdmission && 'likely admission (p. 47)',
     answers.violenceOrAssault && 'violence or sexual assault (p. 48)',
+    ...reasons.needs,
   ].filter(Boolean);
   const complaint = answers.chiefComplaint?.display ?? answers.chiefComplaint?.code ?? '–';
   const lowered = !!(proposed && selected && selected > proposed);
@@ -48,25 +52,28 @@ export function ResultScreen({ stay, onRecorded, go }: Props) {
     setSaving(true);
     setError(undefined);
     try {
-      const at = nowLocal();
-      const who = { patientId: stay.patient.id!, encounterId: stay.encounter.id!, practitionerId: NURSE.id, effectiveDateTime: at };
-      const news2 = await news2Observation({
-        ...who,
-        news2: result.news2,
-        scale2: answers.scale2,
-        vitals: (stay.vitals ?? []).map((o) => ({ reference: `Observation/${o.id}` })),
-      });
+      const who = {
+        patientId: stay.patient.id!,
+        encounterId: stay.encounter.id!,
+        performerId: NURSE.id,
+        effectiveDateTime: nowLocal(),
+      };
+      // The scores and the vitals they were scored from, as the guideline returned them
+      const news2 = news2Observation({ ...who, news2: result.news2 });
       const news2Url = uuid();
+      // The note is part of the Swedish triage Observation (language 'sv')
       const notes = [
         selected !== proposed && proposed
-          ? `Clinical assessment: ${priority(selected)!.name}, proposed ${priority(proposed)!.name}.`
+          ? `Klinisk bedömning: ${priority(selected)!.name}, föreslagen ${priority(proposed)!.name}.`
           : '',
         note.trim(),
       ].filter(Boolean);
-      const triage = await triageObservation({
+      const triage = triageObservation({
         ...who,
         priority: priorityCoding(selected),
+        proposedPriority: result.proposedPriority,
         chiefComplaint: answers.chiefComplaint,
+        criteria: recordedCriteria(answers.triageCriteria, await loadCriteria(client)),
         news2: { reference: news2Url },
         note: notes.join(' ') || undefined,
       });
@@ -95,6 +102,7 @@ export function ResultScreen({ stay, onRecorded, go }: Props) {
   }
 
   const n = result.news2;
+  const board = useMemo(() => boardNews2(result.news2), [result.news2]);
   const pv = priority(proposed);
 
   return (
@@ -113,16 +121,35 @@ export function ResultScreen({ stay, onRecorded, go }: Props) {
         <ul className="reasons">
           <li>
             NEWS2 <strong className="num">{n.total ?? '–'}</strong>
-            {n.risk && (
+            {n.risk && <>, {RISK_TEXT[n.risk]} clinical risk</>}
+            {vital && (
               <>
-                , {RISK_TEXT[n.risk]} clinical risk → <strong>{priority(RISK_PRIORITY[n.risk])!.name}</strong> (p. 6)
+                {' '}
+                → <strong>{priority(vital)!.name}</strong> (p. 6)
+              </>
+            )}
+            {!vital && n.risk && (
+              <>
+                {' '}
+                → <strong>{priority(RISK_PRIORITY[n.risk])!.name}</strong> (p. 6)
               </>
             )}
           </li>
-          <li>
-            {complaint}: warning symptom{' '}
-            <strong>{complaintPriority ? priority(complaintPriority)!.name : 'not assessed'}</strong>
-          </li>
+          {reasons.symptoms.length === 0 && !reasons.override && (
+            <li>
+              {complaint}: warning symptoms <strong>not assessed</strong>
+            </li>
+          )}
+          {reasons.symptoms.map((s) => (
+            <li key={s.name}>
+              {complaint}: {s.name} → <strong>{s.priority ? priority(s.priority)!.name : '–'}</strong>
+            </li>
+          ))}
+          {reasons.override && (
+            <li>
+              Warning symptom priority set by hand → <strong>{priority(reasons.override)!.name}</strong>
+            </li>
+          )}
           {needs.length > 0 && (
             <li>
               {needs.join(', ')}: <strong>Gul</strong> at least
@@ -158,9 +185,7 @@ export function ResultScreen({ stay, onRecorded, go }: Props) {
           </div>
         ) : (
           <div className="decide">
-            <p>
-              Your clinical assessment can raise the priority. Pick it on the board, then record it.
-            </p>
+            <p>Your clinical assessment can raise the priority. Pick it on the board, then record it.</p>
             {closedNames.length > 0 && (
               <p id="closed-reason" className="closed-reason">
                 {closedNames.map(([c]) => priority(c)!.name).join(' and ')} closed: {closedNames[0][1]}.
@@ -185,8 +210,8 @@ export function ResultScreen({ stay, onRecorded, go }: Props) {
       <section className="result-board" aria-label="NEWS2 per parameter and priority">
         <Pinboard
           answers={answers}
-          news2={n}
-          sources={sources}
+          news2={board}
+          sources={reasons.pins}
           caption={
             <>
               <strong>NEWS2 per parameter</strong> · from the guideline on the server, at {clock(stay.response?.authored)}

@@ -1,0 +1,87 @@
+{
+ "resourceType": "CodeSystem",
+ "id": "west-a-triage-priority-cs",
+ "language": "sv",
+ "url": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+ "version": "0.1.0",
+ "name": "TriagePriorityCS",
+ "title": "WEST-A triage priority",
+ "status": "draft",
+ "experimental": true,
+ "date": "2026-11-20T08:33:48+00:00",
+ "publisher": "WEST-A FHIR modelling (unofficial draft)",
+ "contact": [
+  {
+   "name": "WEST-A FHIR modelling (unofficial draft)",
+   "telecom": [
+    {
+     "system": "url",
+     "value": "https://github.com/vadi2/west-a-triage-ig"
+    }
+   ]
+  }
+ ],
+ "description": "Triage priorities (colours) that WEST-A assigns at the emergency department",
+ "jurisdiction": [
+  {
+   "coding": [
+    {
+     "system": "urn:iso:std:iso:3166",
+     "code": "SE",
+     "display": "Sweden"
+    }
+   ]
+  }
+ ],
+ "copyright": "WEST-A is developed by Västra Götalandsregionen. This code system is an unofficial representation of its priority levels.",
+ "caseSensitive": true,
+ "hierarchyMeaning": "is-a",
+ "content": "complete",
+ "count": 4,
+ "concept": [
+  {
+   "code": "1",
+   "display": "Röd",
+   "definition": "Highest WEST-A priority: the patient has a red warning symptom or the vital parameters give red.",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Red"
+    }
+   ]
+  },
+  {
+   "code": "2",
+   "display": "Orange",
+   "definition": "Second-highest WEST-A priority: the patient has an orange warning symptom or the vital parameters give orange.",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Orange"
+    }
+   ]
+  },
+  {
+   "code": "3",
+   "display": "Gul",
+   "definition": "Third WEST-A priority: the patient has a yellow warning symptom, the vital parameters give yellow, or a need or process sets yellow as the lowest priority.",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Yellow"
+    }
+   ]
+  },
+  {
+   "code": "4",
+   "display": "Grön",
+   "definition": "Lowest WEST-A priority: no warning symptom, vital parameter, need or clinical assessment gives a higher priority.",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Green"
+    }
+   ]
+  }
+ ]
+}

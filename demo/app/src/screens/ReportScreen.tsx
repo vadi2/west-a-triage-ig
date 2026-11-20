@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
-import type { Bundle, Composition, CompositionSection, Encounter, Observation, Organization, Patient, Practitioner } from 'fhir/r4';
+import type { Bundle, Composition, CompositionSection, Encounter, Observation, Patient, Practitioner } from 'fhir/r4';
 import type { Route } from '../App';
 import { ErrorNote } from '../components/ErrorNote';
 import { clock, stamp } from '../components/format';
 import { Narrative } from '../components/Narrative';
 import { client } from '../services/cds';
-import { NURSE } from '../services/config';
+import { absoluteBase, NURSE } from '../services/config';
 import { entries } from '../services/fhirClient';
 import { dischargeReport } from '../services/hdr';
 import { nowLocal, patientName } from '../services/patients';
@@ -16,16 +16,15 @@ interface Props {
   go: (r: Route) => void;
 }
 
-// The emergency department that keeps the report. Not on the server: the HAPI load brings no
-// Organization, so the app supplies this one to the report.
-const ORGANIZATION: Organization = {
-  resourceType: 'Organization',
-  id: 'west-a-demo-ed',
-  active: true,
-  name: 'Akutmottagningen (demo), Västra Götalandsregionen',
-  type: [{ coding: [{ system: 'http://terminology.hl7.org/CodeSystem/organization-type', code: 'prov', display: 'Healthcare Provider' }] }],
-  address: [{ country: 'SE' }],
-};
+// The report takes one NEWS2 and one triage (demo/lib/hdr.js): the latest triage of the visit
+// and the NEWS2 it was based on, with the vital signs that NEWS2 was scored from. There is no
+// Organization on the server, so hdr.js names a placeholder emergency department.
+interface Basis {
+  triage: Observation;
+  news2: Observation;
+  vitals: Observation[];
+  triages: number;
+}
 
 const has = (o: Observation, code: string) => !!o.code.coding?.some((c) => c.code === code);
 
@@ -36,6 +35,7 @@ export function ReportScreen({ patientId, encounterId, go }: Props) {
   const [error, setError] = useState<unknown>();
   const [what, setWhat] = useState('Loading the visit');
   const [busy, setBusy] = useState(false);
+  const [basis, setBasis] = useState<Basis>();
 
   const build = useCallback(
     async (p: Patient, enc: Encounter) => {
@@ -48,10 +48,17 @@ export function ReportScreen({ patientId, encounterId, go }: Props) {
           client.search<Observation>('Observation', { subject: `Patient/${p.id}`, encounter: `Encounter/${enc.id}`, _sort: 'date', _count: '500' }),
         ]);
         const all = entries(obs);
-        const triage = all.filter((o) => has(o, '425705009'));
-        const news2 = all.filter((o) => has(o, '1104051000000101'));
-        const vitals = all.filter((o) => !triage.includes(o) && !news2.includes(o));
-        setReport(await dischargeReport({ patient: p, encounter: enc, author, organization: ORGANIZATION, vitals, news2, triage }));
+        const triages = all.filter((o) => has(o, '425705009'));
+        const news2s = all.filter((o) => has(o, '1104051000000101'));
+        const triage = triages.at(-1);
+        if (!triage) throw new Error('This visit has no triage to report on. Record one first.');
+        const linked = triage.derivedFrom?.map((r) => r.reference?.split('/').at(-1));
+        const news2 = news2s.find((o) => linked?.includes(o.id)) ?? news2s.at(-1);
+        if (!news2) throw new Error('This visit has no NEWS2 to report on. Record a triage first.');
+        const scored = new Set(news2.derivedFrom?.map((r) => r.reference?.split('/').at(-1)));
+        const vitals = all.filter((o) => o.id && scored.has(o.id));
+        setBasis({ triage, news2, vitals, triages: triages.length });
+        setReport(dischargeReport({ patient: p, encounter: enc, author, vitals, news2, triage, fhirBase: absoluteBase() }));
       } catch (e) {
         setError(e);
       } finally {
@@ -150,6 +157,13 @@ export function ReportScreen({ patientId, encounterId, go }: Props) {
               <strong>{composition.title}</strong> · {composition.type.coding?.[0]?.display ?? composition.type.text} ·{' '}
               {composition.status}
             </p>
+            {basis && (
+              <p className="quiet">
+                Based on the latest triage of the visit ({clock(basis.triage.effectiveDateTime)}
+                {basis.triages > 1 ? `, the last of ${basis.triages}` : ''}), its NEWS2 and the {basis.vitals.length} vital signs
+                that NEWS2 was scored from. The report holds one triage.
+              </p>
+            )}
             <p>
               Written {stamp(composition.date)} · {report.entry?.length ?? 0} resources in the Bundle · visit{' '}
               {stamp(encounter?.period?.start)} – {clock(encounter?.period?.end)}

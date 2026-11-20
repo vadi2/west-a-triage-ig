@@ -1,0 +1,384 @@
+{
+ "resourceType": "CodeSystem",
+ "id": "west-a-chief-complaint-cs",
+ "language": "sv",
+ "url": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+ "version": "0.1.0",
+ "name": "ChiefComplaintCS",
+ "title": "WEST-A chief complaint",
+ "status": "draft",
+ "experimental": true,
+ "date": "2026-11-20T08:33:48+00:00",
+ "publisher": "WEST-A FHIR modelling (unofficial draft)",
+ "contact": [
+  {
+   "name": "WEST-A FHIR modelling (unofficial draft)",
+   "telecom": [
+    {
+     "system": "url",
+     "value": "https://github.com/vadi2/west-a-triage-ig"
+    }
+   ]
+  }
+ ],
+ "description": "Chief complaints (sökorsaker) of WEST-A. Each concept is one WEST-A complaint algorithm; its warning symptoms are in the WEST-A triage criterion code system.",
+ "jurisdiction": [
+  {
+   "coding": [
+    {
+     "system": "urn:iso:std:iso:3166",
+     "code": "SE",
+     "display": "Sweden"
+    }
+   ]
+  }
+ ],
+ "copyright": "WEST-A is developed by Västra Götalandsregionen. This code system is an unofficial representation of its complaint algorithms.",
+ "caseSensitive": true,
+ "hierarchyMeaning": "is-a",
+ "content": "complete",
+ "count": 31,
+ "concept": [
+  {
+   "code": "1",
+   "display": "Allergi",
+   "definition": "Allergic reactions and bites of venomous animals (WEST-A page 10).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Allergy"
+    }
+   ]
+  },
+  {
+   "code": "2",
+   "display": "Blodtryck",
+   "definition": "High blood pressure (WEST-A page 11).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Blood pressure"
+    }
+   ]
+  },
+  {
+   "code": "3",
+   "display": "Blödning/anemi",
+   "definition": "Bleeding or anemia (WEST-A page 12).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Bleeding/anemia"
+    }
+   ]
+  },
+  {
+   "code": "4",
+   "display": "Bröstsmärta",
+   "definition": "Chest pain (WEST-A page 13).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Chest pain"
+    }
+   ]
+  },
+  {
+   "code": "5",
+   "display": "Buksmärta",
+   "definition": "Abdominal pain (WEST-A page 14).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Abdominal pain"
+    }
+   ]
+  },
+  {
+   "code": "6",
+   "display": "Diabetes",
+   "definition": "Problems related to diabetes, such as hypo- or hyperglycemia (WEST-A page 15).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Diabetes"
+    }
+   ]
+  },
+  {
+   "code": "7",
+   "display": "Diarré/kräkningar",
+   "definition": "Diarrhea or vomiting (WEST-A page 16).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Diarrhea/vomiting"
+    }
+   ]
+  },
+  {
+   "code": "8",
+   "display": "Dyspné",
+   "definition": "Shortness of breath (WEST-A page 17).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Dyspnea"
+    }
+   ]
+  },
+  {
+   "code": "9",
+   "display": "Extremitetsproblem",
+   "definition": "Pain, swelling or other problems of an arm or leg (WEST-A page 18).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Limb problem"
+    }
+   ]
+  },
+  {
+   "code": "10",
+   "display": "Graviditet fr.o.m. 18+0/postpartum",
+   "definition": "Complaints in pregnancy from week 18+0, or after delivery (WEST-A page 19).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Pregnancy from week 18+0/postpartum"
+    }
+   ]
+  },
+  {
+   "code": "11",
+   "display": "Gynekologiska sökorsaker (från 16 år)",
+   "definition": "Gynecological complaints from the age of 16, including pregnancy up to week 17+6 (WEST-A pages 21-22).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Gynecological complaints (from age 16)"
+    }
+   ]
+  },
+  {
+   "code": "12",
+   "display": "Hjärtrytm",
+   "definition": "Abnormal heart rhythm or rate (WEST-A page 23).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Heart rhythm"
+    }
+   ]
+  },
+  {
+   "code": "13",
+   "display": "Hjärtstopp/luftvägshinder",
+   "definition": "Cardiac arrest or airway obstruction (WEST-A page 24).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Cardiac arrest/airway obstruction"
+    }
+   ]
+  },
+  {
+   "code": "14",
+   "display": "Hud",
+   "definition": "Skin problems (WEST-A page 25).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Skin"
+    }
+   ]
+  },
+  {
+   "code": "15",
+   "display": "Huvudvärk",
+   "definition": "Headache (WEST-A page 26).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Headache"
+    }
+   ]
+  },
+  {
+   "code": "16",
+   "display": "Infektion/feber/sepsis",
+   "definition": "Suspected infection, fever or sepsis (WEST-A page 27).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Infection/fever/sepsis"
+    }
+   ]
+  },
+  {
+   "code": "17",
+   "display": "Intox",
+   "definition": "Poisoning or overdose (WEST-A page 28).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Poisoning"
+    }
+   ]
+  },
+  {
+   "code": "18",
+   "display": "Komplikation operation/gips",
+   "definition": "Complication after surgery, a cast or similar treatment (WEST-A page 29).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Complication after surgery or cast"
+    }
+   ]
+  },
+  {
+   "code": "19",
+   "display": "Leversjukdom",
+   "definition": "Complaints in a patient with liver disease (WEST-A page 30).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Liver disease"
+    }
+   ]
+  },
+  {
+   "code": "20",
+   "display": "Ljumske",
+   "definition": "Groin problems, such as hernia (WEST-A page 31).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Groin"
+    }
+   ]
+  },
+  {
+   "code": "21",
+   "display": "Medvetandepåverkan",
+   "definition": "Reduced or altered consciousness (WEST-A page 32).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Altered consciousness"
+    }
+   ]
+  },
+  {
+   "code": "22",
+   "display": "Neuro/yrsel/kramper",
+   "definition": "Neurological symptoms, dizziness or seizures (WEST-A page 33).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Neurology/dizziness/seizures"
+    }
+   ]
+  },
+  {
+   "code": "23",
+   "display": "Ospecifik sjukdom",
+   "definition": "Illness that WEST-A triages on its own page: abnormal potassium with ECG changes, or known Addison's disease or adrenal insufficiency (WEST-A page 35).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Non-specific illness"
+    }
+   ]
+  },
+  {
+   "code": "24",
+   "display": "Psykiska besvär",
+   "definition": "Mental health problems (WEST-A pages 36-37).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Mental health problems"
+    }
+   ]
+  },
+  {
+   "code": "25",
+   "display": "Rektala besvär",
+   "definition": "Rectal problems; the WEST-A page is headed \"Rect\" and has no warning symptoms of its own (WEST-A page 38).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Rectal problems"
+    }
+   ]
+  },
+  {
+   "code": "26",
+   "display": "Ryggsmärta",
+   "definition": "Back pain (WEST-A page 39).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Back pain"
+    }
+   ]
+  },
+  {
+   "code": "27",
+   "display": "Svimning",
+   "definition": "Fainting (WEST-A page 40).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Fainting"
+    }
+   ]
+  },
+  {
+   "code": "28",
+   "display": "Underlivsbesvär män",
+   "definition": "Genital problems in men (WEST-A page 41).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Male genital problems"
+    }
+   ]
+  },
+  {
+   "code": "29",
+   "display": "Urinvägsbesvär",
+   "definition": "Urinary tract problems (WEST-A page 42).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Urinary tract problems"
+    }
+   ]
+  },
+  {
+   "code": "30",
+   "display": "Trauma/skador",
+   "definition": "Trauma or injuries, with or without the national trauma alert criteria (WEST-A pages 43-44).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Trauma/injuries"
+    }
+   ]
+  },
+  {
+   "code": "31",
+   "display": "Ögon och öron",
+   "definition": "Eye and ear problems, including swallowed foreign bodies (WEST-A page 45).",
+   "designation": [
+    {
+     "language": "en",
+     "value": "Eyes and ears"
+    }
+   ]
+  }
+ ]
+}

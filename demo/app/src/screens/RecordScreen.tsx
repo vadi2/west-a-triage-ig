@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import type { Encounter, Observation, Patient } from 'fhir/r4';
 import type { Route } from '../App';
 import { ErrorNote } from '../components/ErrorNote';
+import { CRITERION_SYSTEM } from '../services/criteria';
 import { clock, stamp } from '../components/format';
 import { client } from '../services/cds';
 import { entries } from '../services/fhirClient';
@@ -166,6 +167,11 @@ export function RecordScreen({ patientId, highlightEncounter, go, onRetriage }: 
                       <strong>Triage</strong> · {t.component?.[0]?.valueCodeableConcept?.coding?.[0]?.display ?? 'no chief complaint'} ·{' '}
                       {performer(t)} · <span className="num">Observation/{t.id}</span>
                     </p>
+                    {criteriaOf(t).length > 0 && (
+                      <p className="event-criteria">
+                        Criteria: {criteriaOf(t).join(' · ')}
+                      </p>
+                    )}
                     {t.note?.map((nt, i) => (
                       <p key={i} className="event-note">
                         {nt.text}
@@ -231,6 +237,14 @@ export function RecordScreen({ patientId, highlightEncounter, go, onRetriage }: 
 }
 
 /** NEWS2 over time: one pin per score, the thread between them, bands at 5 and 7. */
+/** The triage criteria (warning symptoms and needs) recorded as components of a triage. */
+function criteriaOf(t: Observation): string[] {
+  return (t.component ?? [])
+    .map((c) => c.valueCodeableConcept?.coding?.[0])
+    .filter((c) => c?.system === CRITERION_SYSTEM)
+    .map((c) => `${c!.code} ${c!.display ?? ''}`.trim());
+}
+
 function News2Strip({ news2s, triageOf }: { news2s: Observation[]; triageOf: (o: Observation) => Observation | undefined }) {
   // On a phone the strip is drawn narrower, so its labels stay readable instead of shrinking with it
   const narrow = useNarrow();
