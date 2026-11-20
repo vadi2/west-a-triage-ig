@@ -1,0 +1,8 @@
+{
+  "name": "west-a-demo-lib",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@aehrc/sdc-template-extract": "1.0.16"
+  }
+}

@@ -19,3 +19,4 @@
 - [WEST-A Triage Mapping](west-a-triage-mapping.html) page
 - [WEST-A Triage Observation](StructureDefinition-west-a-triage-observation.html) profile for the triage priority and chief complaint
 - [WEST-A triage priority](CodeSystem-west-a-triage-priority-cs.html) code system and [value set](ValueSet-west-a-triage-priority-vs.html) for the Röd, Orange, Gul and Grön priorities
+- [WEST-A Triage Questionnaire](Questionnaire-west-a-triage-questionnaire.html) for the vital signs and the triage assessment, with SDC template-based extraction of the vital sign Observations, and an [example](QuestionnaireResponse-example-triage-questionnaire-response.html)
