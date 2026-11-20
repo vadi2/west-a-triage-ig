@@ -47,7 +47,12 @@ and the example Patient, Practitioner and Encounter.
 | `temperature` | decimal | Body temperature, °C |
 | `assessment` | group | Triage assessment |
 | `chief-complaint` | coding | From the WEST-A chief complaint value set |
-| `complaint-priority` | coding | Priority of the most urgent warning symptom of the complaint algorithm, from the WEST-A triage priority value set; 4 (Grön) when none |
+| `triage-criteria` | group | Triage criteria, enabled once `chief-complaint` is answered |
+| `triage-criteria-<n>` | coding, repeats | Warning symptoms of chief complaint `<n>`, enabled only when `chief-complaint` is `<n>`; codes from the WEST-A triage criterion value set (none for complaints 2, 14, 18, 19, 25) |
+| `triage-criteria-11`, `triage-criteria-30` | group | Gynaecology and trauma: one repeating coding item per heading of the manual, `triage-criteria-11-aaa` … `-aaf` and `triage-criteria-30-aag` … `-aaj` |
+| `triage-criteria-none` | coding, repeats | `163` *Inga varningssymtom*, offered for every complaint |
+| `triage-criteria-needs` | coding, repeats | Needs and processes `159`-`162`, offered for every complaint |
+| `complaint-priority` | coding | Optional manual override: priority of the warning symptoms, from the WEST-A triage priority value set |
 | `frail-elderly` | boolean | Yellow as lowest priority (p. 46) |
 | `likely-admission` | boolean | Yellow as lowest priority (p. 47) |
 | `violence-or-assault` | boolean | Yellow as lowest priority (p. 48) |
@@ -72,8 +77,11 @@ performer and effectiveDateTime from them.
 - `hdr.js`: `dischargeReport({ patient, encounter, author, organization, vitals, news2, triage, ... })`
   → a document Bundle conforming to the HL7 Europe HDR 1.0.0 Bundle profile.
 
-CQL parameter names are exactly those of the libraries: `Complaint Priority` (Code),
-`Yellow As Lowest Priority` (Boolean), `Use Oxygen Saturation Scale 2` (Boolean).
+CQL parameter names are exactly those of the libraries: `Triage Criteria` (List<Code>),
+`Complaint Priority` (Code), `Yellow As Lowest Priority` (Boolean), `Use Oxygen Saturation
+Scale 2` (Boolean). `Triage Criteria` is every answer of every item whose linkId starts with
+`triage-criteria` (FHIRPath on the QuestionnaireResponse:
+`repeat(item).where(linkId.startsWith('triage-criteria')).answer.value`).
 
 ## Ground rules
 
