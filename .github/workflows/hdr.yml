@@ -1,0 +1,101 @@
+name: Discharge report
+
+# Builds the example HL7 Europe Hospital Discharge Report (demo/lib/hdr.js) from this
+# guide's examples and validates it against the HDR 1.0.0 Bundle profile.
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: Path or URL of the WEST-A IG package.tgz
+        required: false
+        default: https://build.fhir.org/ig/vadi2/west-a-triage-ig/package.tgz
+  # A workflow is only dispatchable once GitHub has seen it run, and it is not on main yet
+  push:
+    branches: [demo-hdr]
+    paths:
+      - demo/lib/hdr.js
+      - demo/lib/make-hdr-example.mjs
+      - demo/lib/fixtures/discharge-report.json
+      - .github/workflows/hdr.yml
+  pull_request:
+    paths:
+      - demo/lib/hdr.js
+      - demo/lib/make-hdr-example.mjs
+      - demo/lib/fixtures/discharge-report.json
+      - .github/workflows/hdr.yml
+
+env:
+  HDR_PROFILE: http://hl7.eu/fhir/hdr/StructureDefinition/bundle-eu-hdr
+  JAVA_TOOL_OPTIONS: "-Xmx6g"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "20"
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Get the WEST-A package
+        env:
+          PACKAGE: ${{ inputs.package || 'https://build.fhir.org/ig/vadi2/west-a-triage-ig/package.tgz' }}
+        run: |
+          case "$PACKAGE" in
+            http://*|https://*) curl -fsSL -o "$RUNNER_TEMP/west-a.tgz" "$PACKAGE" ;;
+            *) cp "$PACKAGE" "$RUNNER_TEMP/west-a.tgz" ;;
+          esac
+
+      - name: Build the example discharge report
+        run: |
+          node demo/lib/make-hdr-example.mjs "$RUNNER_TEMP/west-a.tgz"
+          if ! git diff --quiet -- demo/lib/fixtures/discharge-report.json; then
+            echo "::warning file=demo/lib/fixtures/discharge-report.json::the committed example differs from the one built from the current package; regenerate and commit it"
+            git diff --stat -- demo/lib/fixtures/discharge-report.json
+          fi
+
+      - name: Download the validator
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/validator_cli.jar" \
+            https://github.com/hapifhir/org.hl7.fhir.core/releases/latest/download/validator_cli.jar
+
+      - name: Validate against the HDR Bundle profile
+        run: |
+          java -jar "$RUNNER_TEMP/validator_cli.jar" demo/lib/fixtures/discharge-report.json \
+            -version 4.0.1 -ig hl7.fhir.eu.hdr#1.0.0 -ig "$RUNNER_TEMP/west-a.tgz" -sct se \
+            -profile "$HDR_PROFILE" -output hdr-validation.json | tee hdr-validation.txt || true
+          python3 - <<'EOF'
+          import json, os
+          oo = json.load(open("hdr-validation.json"))
+          if oo.get("resourceType") == "Bundle":  # one OperationOutcome per input file
+              oo = oo["entry"][0]["resource"]
+          issues = oo.get("issue", [])
+          count = {s: sum(1 for i in issues if i["severity"] == s) for s in ("fatal", "error", "warning", "information")}
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as f:
+              f.write(f"### HDR validation\n\n{count['fatal'] + count['error']} errors, {count['warning']} warnings, {count['information']} information\n\n")
+              for i in issues:
+                  if i["severity"] in ("fatal", "error", "warning"):
+                      where = ", ".join(i.get("expression", []) or i.get("location", []))
+                      f.write(f"- **{i['severity']}** `{where}`: {i.get('details', {}).get('text', '')}\n")
+          print(count)
+          if count["fatal"] + count["error"]:
+              raise SystemExit("validation errors")
+          EOF
+
+      - name: Upload the report and its validation
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v5
+        with:
+          name: discharge-report
+          path: |
+            demo/lib/fixtures/discharge-report.json
+            hdr-validation.json
+            hdr-validation.txt
+          retention-days: 14
