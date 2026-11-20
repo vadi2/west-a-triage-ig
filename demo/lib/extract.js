@@ -65,10 +65,16 @@ function describe(outcome) {
  * @param {object} questionnaireResponse A response to it, with subject, encounter, author and authored
  * @returns {Promise<object>} A transaction Bundle that POSTs one Observation per answered vital
  *   sign (up to 7; the blood pressure is one Observation with two components)
- * @throws {Error} When extraction fails or reports any issue, since every issue means an
- *   Observation that is missing data
+ * @throws {Error} When the response has no subject or authored time, or when extraction fails
+ *   or reports any issue, since every issue means an Observation that is missing data
  */
 export async function extractVitals(questionnaire, questionnaireResponse) {
+  // The templates hold a placeholder time, which only the authored time replaces
+  for (const element of ['subject', 'authored']) {
+    if (!questionnaireResponse?.[element]) {
+      throw new Error(`The QuestionnaireResponse has no ${element}, which the Observations need`);
+    }
+  }
   const { inAppExtract, extractResultIsOperationOutcome } = await loadLibrary();
   const response = structuredClone(questionnaireResponse);
   response.item = answeredItems(response.item);

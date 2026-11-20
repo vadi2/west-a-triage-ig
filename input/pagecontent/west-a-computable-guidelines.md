@@ -103,15 +103,17 @@ The vital signs become Observations by [template-based extraction](https://hl7.o
 <tr><td><code>encounter</code></td><td><code>%resource.encounter</code></td><td>The emergency department visit</td></tr>
 <tr><td><code>performer</code></td><td><code>%resource.author</code></td><td>The triage nurse</td></tr>
 <tr><td><code>effectiveDateTime</code></td><td><code>%resource.authored</code></td><td>The time the form was filled in</td></tr>
-<tr><td><code>meta.profile</code>, the LOINC code of the five core vital signs</td><td>A string: the profile's canonical URL, the code</td><td>The template. They are FHIRPath strings so that the template, which has no measurement and no time, is not itself validated against the profile.</td></tr>
+<tr><td><code>meta.profile</code></td><td>A string, the profile's canonical URL</td><td>The template. It is a FHIRPath string so that the template, which has no measurement, is not itself validated against the profile.</td></tr>
 </tbody>
 </table>
+
+Two placeholders keep the templates valid, and the extraction replaces both. The templates have a placeholder time, because the validator checks every Observation with a vital signs code against the FHIR core vital signs profile, and its constraint vs-1 fails on a time without a value. The ACVPU template has a placeholder code, because a coded value needs a code. The ACVPU value takes only the code of the answer, not its display, which is in the language of the form.
 
 The blood pressure is one Observation with a systolic and a diastolic component. The systolic item points at its template, and the diastolic value comes from `%resource.repeat(item).where(linkId = 'diastolic').answer.value`.
 
 An unanswered vital sign gives no Observation. The [example triage form](QuestionnaireResponse-example-triage-questionnaire-response.html) (NEWS2 5) gives the same seven Observations as the [example vital signs](Observation-example-respiratory-rate.html).
 
-The demo app (`demo/lib/extract.js`) runs the extraction in the browser with [`@aehrc/sdc-template-extract`](https://www.npmjs.com/package/@aehrc/sdc-template-extract), the library of the CSIRO Smart Forms renderer. It drops the unanswered items first, and returns a transaction Bundle with the Observations. Every build extracts the Observations from the example form and validates each one against its WEST-A profile.
+The demo app (`demo/lib/extract.js`) runs the extraction in the browser with [`@aehrc/sdc-template-extract`](https://www.npmjs.com/package/@aehrc/sdc-template-extract), the library of the CSIRO Smart Forms renderer. It drops the unanswered items first, refuses a response without `subject` or `authored`, and returns a transaction Bundle with the Observations. Every build extracts the Observations from the example form and validates each one against its WEST-A profile.
 
 ### QA {#qa}
 

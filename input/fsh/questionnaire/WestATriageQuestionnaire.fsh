@@ -24,14 +24,18 @@ RuleSet: TemplateExtractValue(path, expression)
 * {path}.extension[=].valueString = "{expression}"
 
 // What every extracted vital sign Observation takes from the QuestionnaireResponse:
-// patient, visit, time and the nurse who recorded it. The profile is a FHIRPath string
-// literal, so that the template itself is not validated against the profile it lacks the
-// answers for.
+// patient, visit, time and the nurse who recorded it.
+// - The profile is a FHIRPath string literal, so that the template itself is not validated
+//   against the profile it lacks the answers for.
+// - The time has a placeholder value, which the extraction replaces with the time of the
+//   response: the validator checks every Observation with a vital signs code against the
+//   FHIR core vital signs profile, whose vs-1 fails on a time without a value.
 RuleSet: VitalSignTemplate(profile)
 * insert TemplateExtractValue(meta.profile[0], [['https://vadi2.github.io/west-a-triage-ig/StructureDefinition/{profile}']])
 * status = #final
 * insert TemplateExtractValue(subject, %resource.subject)
 * insert TemplateExtractValue(encounter, %resource.encounter)
+* effectiveDateTime = "2000-01-01"
 * insert TemplateExtractValue(effectiveDateTime, %resource.authored)
 * insert TemplateExtractValue(performer[0], %resource.author)
 
@@ -40,14 +44,6 @@ RuleSet: ExtractWith(template)
 * extension[+].url = $sdc-templateExtract
 * extension[=].extension[0].url = "template"
 * extension[=].extension[0].valueReference.reference = "#{template}"
-
-// The LOINC code that the FHIR core vital signs profile requires. The code is a FHIRPath
-// string literal, like the profile: the validator checks every Observation with a vital
-// signs LOINC code against the core profile, which the template, without a time, fails (vs-1).
-RuleSet: LoincCode(code, display)
-* code.coding[0].system = $loinc
-* insert TemplateExtractValue(code.coding[0].code, '{code}')
-* code.coding[0].display = "{display}"
 
 // A help text, shown behind a help button next to the question at the current path
 RuleSet: HelpText(linkId, text)
@@ -229,7 +225,7 @@ InstanceOf: Observation
 Usage: #inline
 * insert VitalSignTemplate(west-a-respiratory-rate)
 * category[0] = $observation-category#vital-signs "Vital Signs"
-* insert LoincCode(9279-1, Respiratory rate)
+* code.coding[0] = $loinc#9279-1 "Respiratory rate"
 * code.coding[+] = $sct#86290005 "Respiratory rate"
 * insert TemplateExtractValue(valueQuantity.value, answer.value)
 * valueQuantity.unit = "/min"
@@ -241,7 +237,7 @@ InstanceOf: Observation
 Usage: #inline
 * insert VitalSignTemplate(west-a-oxygen-saturation)
 * category[0] = $observation-category#vital-signs "Vital Signs"
-* insert LoincCode(2708-6, Oxygen saturation in Arterial blood)
+* code.coding[0] = $loinc#2708-6 "Oxygen saturation in Arterial blood"
 * code.coding[+] = $sct#431314004 "Peripheral oxygen saturation"
 * insert TemplateExtractValue(valueQuantity.value, answer.value)
 * valueQuantity.unit = "%"
@@ -266,7 +262,7 @@ InstanceOf: Observation
 Usage: #inline
 * insert VitalSignTemplate(west-a-blood-pressure)
 * category[0] = $observation-category#vital-signs "Vital Signs"
-* insert LoincCode(85354-9, Blood pressure panel with all children optional)
+* code.coding[0] = $loinc#85354-9 "Blood pressure panel with all children optional"
 * code.coding[+] = $sct#75367002 "Blood pressure"
 * component[0].code.coding[0] = $loinc#8480-6 "Systolic blood pressure"
 * component[0].code.coding[+] = $sct#271649006 "Systolic blood pressure"
@@ -286,7 +282,7 @@ InstanceOf: Observation
 Usage: #inline
 * insert VitalSignTemplate(west-a-heart-rate)
 * category[0] = $observation-category#vital-signs "Vital Signs"
-* insert LoincCode(8867-4, Heart rate)
+* code.coding[0] = $loinc#8867-4 "Heart rate"
 * code.coding[+] = $sct#364075005 "Heart rate"
 * insert TemplateExtractValue(valueQuantity.value, answer.value)
 * valueQuantity.unit = "/min"
@@ -299,10 +295,12 @@ Usage: #inline
 * insert VitalSignTemplate(west-a-consciousness)
 * category[0] = $observation-category#exam "Exam"
 * code = $sct#1104441000000107 "Alert Confusion Voice Pain Unresponsive scale score"
-// The code of the answer, in the edition of the WEST-A ACVPU value set. The display of the
-// answer is left out: it is in the language of the form, which the Observation may not share.
+// The code of the answer, in the edition of the WEST-A ACVPU value set, replacing the
+// placeholder code (alert). The display of the answer is left out: it is in the language of
+// the form, which the Observation may not share.
 * valueCodeableConcept.coding[0].system = $sct
 * valueCodeableConcept.coding[0].version = "http://snomed.info/sct/45991000052106"
+* valueCodeableConcept.coding[0].code = #248234008
 * insert TemplateExtractValue(valueCodeableConcept.coding[0].code, answer.value.code)
 
 Instance: body-temperature-template
@@ -310,7 +308,7 @@ InstanceOf: Observation
 Usage: #inline
 * insert VitalSignTemplate(west-a-body-temperature)
 * category[0] = $observation-category#vital-signs "Vital Signs"
-* insert LoincCode(8310-5, Body temperature)
+* code.coding[0] = $loinc#8310-5 "Body temperature"
 * code.coding[+] = $sct#386725007 "Body temperature"
 * insert TemplateExtractValue(valueQuantity.value, answer.value)
 * valueQuantity.unit = "°C"
