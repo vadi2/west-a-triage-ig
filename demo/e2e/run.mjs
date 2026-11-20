@@ -182,6 +182,16 @@ async function main() {
   check('scale 2: SpO2 95% on air scores 0, total 4, low', [scale2.news2.scores['Oxygen Saturation Scale 2 Score'], scale2.news2.total, scale2.news2.risk], [0, 4, 'low']);
   check('scale 2: proposed', scale2.proposedPriority?.code, '4');
 
+  // Warning symptoms (triage criteria) set the complaint priority. A single
+  // criterion is checked on its own: HAPI drops a list parameter sent once.
+  const proposedFor = async (triageCriteria, extra = {}) =>
+    (await runTriage(client, { ...context, triageCriteria, ...extra })).proposedPriority?.code ?? null;
+  check('criterion 15 (orange) alone: proposed', await proposedFor(['15']), '2');
+  check('criterion 74 (red) alone: proposed', await proposedFor(['74']), '1');
+  check('no warning symptoms (163), scale 2: proposed', await proposedFor(['163'], { scale2: true }), '4');
+  check('no warning symptoms and a need (159), scale 2: proposed', await proposedFor(['163', '159'], { scale2: true }), '3');
+  check('a need alone (159): nothing proposed', await proposedFor(['159'], { scale2: true }), null);
+
   // The nurse confirms the proposed priority and records NEWS2 and the triage
   const news2 = await client.create(news2Observation({
     news2: green.news2, patientId: PATIENT, encounterId: ENCOUNTER, performerId: PRACTITIONER, effectiveDateTime: now,
@@ -196,6 +206,7 @@ async function main() {
     encounterId: ENCOUNTER,
     performerId: PRACTITIONER,
     effectiveDateTime: now,
+    criteria: ['15'],
     note: 'Bröstsmärta, pågående med misstanke om AKS.',
   }));
   check('triage Observation recorded, derived from NEWS2', triage.derivedFrom?.[0]?.reference, `Observation/${news2.id}`);
