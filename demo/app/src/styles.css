@@ -720,6 +720,51 @@ label.prio-cell:hover:not(.is-closed):not(.is-selected) {
   box-shadow: inset 0 0 0 2px var(--ink);
 }
 
+/* Provisional: a parameter not measured yet is hatched and says so; NEWS2 so far is a hollow
+   pin; a priority so far is a dashed outline marked "at least", never a decided colour */
+.board-row.is-missing {
+  background: repeating-linear-gradient(-45deg, var(--ink-a12) 0 1px, transparent 1px 7px);
+}
+.board-row.is-missing .param-label {
+  font-style: italic;
+}
+.board-row.is-missing .param-score {
+  border-style: dashed;
+}
+.param-missing {
+  grid-column: 1;
+  font-size: 13px;
+  font-style: italic;
+}
+.pin.pin-hollow {
+  background: var(--paper);
+  border: 2px dashed var(--ink);
+}
+.board-lead {
+  margin: 0 0 10px;
+  padding: 6px 10px;
+  border: 1.5px solid var(--ink);
+  font-size: 14px;
+}
+.board-lead.is-floor {
+  border-style: dashed;
+}
+.is-preview .prio-cell.is-floor {
+  outline: 2px dashed var(--ink);
+  outline-offset: -2px;
+}
+
+.partial-saved {
+  margin-top: 14px;
+  padding: 8px 12px;
+  border: 1.5px dashed var(--ink);
+  background: var(--paper);
+  font-size: 14px;
+}
+.partial-saved p:last-child {
+  margin: 0;
+}
+
 /* ---------------------------------------------------------------- result */
 
 .result {
@@ -825,6 +870,12 @@ label.prio-cell:hover:not(.is-closed):not(.is-selected) {
 .strip-pin {
   fill: var(--ink);
 }
+.strip-pin.is-preliminary {
+  fill: var(--paper);
+  stroke: var(--ink);
+  stroke-width: 2;
+  stroke-dasharray: 3 2;
+}
 .strip-shadow {
   fill: rgba(15, 26, 51, 0.2);
 }
@@ -886,6 +937,16 @@ label.prio-cell:hover:not(.is-closed):not(.is-selected) {
 }
 .event-priority strong {
   font-size: 16px;
+}
+.event.is-preliminary .event-priority {
+  border-style: dashed;
+  background: transparent;
+}
+.event.is-preliminary .event-priority strong {
+  font-size: 13px;
+}
+.event.is-preliminary .prov-vitals {
+  border-left-style: dashed;
 }
 .event-body {
   font-size: 14px;

@@ -30,10 +30,25 @@ export interface TriageParams {
   triageCriteria?: CodeInput[];
 }
 
+/**
+ * What is known so far (WestANEWS2 and WestATriage, provisional definitions): lower bounds that
+ * can only rise as the vitals and warning symptoms come in, and equal the final results once
+ * NEWS2 is complete and the warning symptoms are assessed.
+ */
+export interface LibProvisional {
+  total: number | null;
+  risk: LibNews2['risk'];
+  /** The parameters not yet scored, by their component slices in the NEWS2 profile, in chart order. */
+  missing: string[];
+  /** The most urgent of what is known so far; a provisional green only means nothing more urgent is known yet. */
+  priority: Coding | null;
+}
+
 export interface TriageResult {
   news2: LibNews2;
   proposedPriority: Coding | null;
   vitalParameterPriority: Coding | null;
+  provisional: LibProvisional;
   summaries: string[];
   carePlan?: unknown;
 }
@@ -46,6 +61,8 @@ export interface LibClient {
 
 export interface News2ObservationArgs {
   news2: LibNews2;
+  /** The provisional result of runTriage: makes a preliminary NEWS2 of the scores known so far. */
+  provisional?: LibProvisional;
   patientId: string;
   encounterId?: string;
   performerId?: string;

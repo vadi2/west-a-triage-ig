@@ -6,7 +6,7 @@ import { CRITERION_SYSTEM } from '../services/criteria';
 import { clock, stamp } from '../components/format';
 import { client } from '../services/cds';
 import { entries } from '../services/fhirClient';
-import { acvpuLetter } from '../services/news2';
+import { acvpuLetter, PARAMETERS } from '../services/news2';
 import { patientName } from '../services/patients';
 import { priority } from '../services/priority';
 import { NURSE } from '../services/config';
@@ -39,6 +39,25 @@ const COMPONENT_OF: Record<string, string> = {
   '1104441000000107': '1104361000000100',
   '8310-5': '1104371000000107',
 };
+
+// The NEWS2 component of each parameter in chart order; SpO₂ by either scale
+const PARAMETER_COMPONENTS: [string, string[]][] = [
+  ['1104301000000104'],
+  ['1104311000000102', '1104321000000108'],
+  ['1104331000000105'],
+  ['1104341000000101'],
+  ['1104351000000103'],
+  ['1104361000000100'],
+  ['1104371000000107'],
+].map((codes, i) => [PARAMETERS[i].label, codes]);
+
+const isPreliminary = (o: Observation) => o.status === 'preliminary';
+
+/** The parameters a preliminary NEWS2 has no score for. */
+function missingOf(n2: Observation): string[] {
+  const have = new Set((n2.component ?? []).flatMap((c) => c.code.coding?.map((x) => x.code) ?? []));
+  return PARAMETER_COMPONENTS.filter(([, codes]) => !codes.some((c) => have.has(c))).map(([label]) => label);
+}
 
 const performer = (o: Observation) => {
   const p = o.performer?.[0];
@@ -125,7 +144,15 @@ export function RecordScreen({ patientId, highlightEncounter, go, onRetriage }: 
       {data.encounters.map((enc) => {
         const obs = data.observations.filter((o) => idOf(o.encounter?.reference) === enc.id);
         const triages = obs.filter((o) => has(o, TRIAGE));
+        // Triages and the preliminary NEWS2s recorded while vitals were missing, latest first
+        const events = obs.filter((o) => has(o, TRIAGE) || (has(o, NEWS2) && isPreliminary(o)));
         const used = new Set<string>();
+        events
+          .filter((o) => !has(o, TRIAGE))
+          .forEach((n2) => {
+            used.add(n2.id!);
+            n2.derivedFrom?.forEach((v) => used.add(idOf(v.reference)!));
+          });
         triages.forEach((t) =>
           t.derivedFrom?.forEach((r) => {
             const n2 = byId.get(idOf(r.reference)!);
@@ -152,8 +179,25 @@ export function RecordScreen({ patientId, highlightEncounter, go, onRetriage }: 
                 </button>
               </div>
             </div>
-            {triages.length === 0 && loose.length === 0 && <p className="quiet">Nothing recorded in this visit.</p>}
-            {triages.map((t) => {
+            {events.length === 0 && loose.length === 0 && <p className="quiet">Nothing recorded in this visit.</p>}
+            {events.map((t) => {
+              if (!has(t, TRIAGE)) {
+                return (
+                  <article key={t.id} className="event is-preliminary">
+                    <div className="event-priority state-none">
+                      <strong>Preliminary</strong>
+                      <span>{clock(t.effectiveDateTime)}</span>
+                    </div>
+                    <div className="event-body">
+                      <p>
+                        <strong>Vitals so far</strong> · saved before all seven were measured · {performer(t)}
+                      </p>
+                      <p className="event-criteria">Missing: {missingOf(t).join(', ') || 'none'}</p>
+                      <Provenance n2={t} byId={byId} />
+                    </div>
+                  </article>
+                );
+              }
               const p = priority(t.valueCodeableConcept?.coding?.[0]?.code);
               const n2 = t.derivedFrom?.map((r) => byId.get(idOf(r.reference)!)).find((o) => o && has(o, NEWS2));
               return (
@@ -178,35 +222,7 @@ export function RecordScreen({ patientId, highlightEncounter, go, onRetriage }: 
                       </p>
                     ))}
                     {n2 ? (
-                      <div className="prov">
-                        <p className="prov-news2">
-                          <span className="pin" aria-hidden="true" />
-                          NEWS2 <strong className="num">{n2.valueInteger ?? '–'}</strong> at {clock(n2.effectiveDateTime)} ·{' '}
-                          <span className="num">Observation/{n2.id}</span> · from
-                        </p>
-                        <ul className="prov-vitals">
-                          {(n2.derivedFrom ?? []).map((r) => {
-                            const v = byId.get(idOf(r.reference)!);
-                            return (
-                              <li key={r.reference}>
-                                <span className="pin" aria-hidden="true" />
-                                {v ? (
-                                  <>
-                                    <span className="prov-name">{vitalName(v)}</span>
-                                    <span className="num">{vitalValue(v)}</span>
-                                    <span className="num prov-pts">{points(n2, v) !== undefined ? `${points(n2, v)} p` : ''}</span>
-                                    <span className="num prov-ref">
-                                      {clock(v.effectiveDateTime)} · Observation/{v.id}
-                                    </span>
-                                  </>
-                                ) : (
-                                  <span className="num">{r.reference} (not found on the server)</span>
-                                )}
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      </div>
+                      <Provenance n2={n2} byId={byId} />
                     ) : (
                       <p className="quiet">No NEWS2 linked to this triage.</p>
                     )}
@@ -236,7 +252,47 @@ export function RecordScreen({ patientId, highlightEncounter, go, onRetriage }: 
   );
 }
 
-/** NEWS2 over time: one pin per score, the thread between them, bands at 5 and 7. */
+/** A NEWS2 hanging from the vital signs it was scored from; a preliminary one is hollow and says "≥". */
+function Provenance({ n2, byId }: { n2: Observation; byId: Map<string, Observation> }) {
+  const pre = isPreliminary(n2);
+  return (
+    <div className="prov">
+      <p className="prov-news2">
+        <span className={`pin ${pre ? 'pin-hollow' : ''}`} aria-hidden="true" />
+        {pre ? 'Preliminary NEWS2 ' : 'NEWS2 '}
+        <strong className="num">
+          {pre ? '≥ ' : ''}
+          {n2.valueInteger ?? '–'}
+        </strong>{' '}
+        at {clock(n2.effectiveDateTime)} ·{' '}
+        <span className="num">Observation/{n2.id}</span> · from
+      </p>
+      <ul className="prov-vitals">
+        {(n2.derivedFrom ?? []).map((r) => {
+          const v = byId.get(idOf(r.reference)!);
+          return (
+            <li key={r.reference}>
+              <span className="pin" aria-hidden="true" />
+              {v ? (
+                <>
+                  <span className="prov-name">{vitalName(v)}</span>
+                  <span className="num">{vitalValue(v)}</span>
+                  <span className="num prov-pts">{points(n2, v) !== undefined ? `${points(n2, v)} p` : ''}</span>
+                  <span className="num prov-ref">
+                    {clock(v.effectiveDateTime)} · Observation/{v.id}
+                  </span>
+                </>
+              ) : (
+                <span className="num">{r.reference} (not found on the server)</span>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
 /** The triage criteria (warning symptoms and needs) recorded as components of a triage. */
 function criteriaOf(t: Observation): string[] {
   return (t.component ?? [])
@@ -245,6 +301,7 @@ function criteriaOf(t: Observation): string[] {
     .map((c) => `${c!.code} ${c!.display ?? ''}`.trim());
 }
 
+/** NEWS2 over time: one pin per score, the thread between them, bands at 5 and 7; a preliminary NEWS2 is a hollow pin, "≥". */
 function News2Strip({ news2s, triageOf }: { news2s: Observation[]; triageOf: (o: Observation) => Observation | undefined }) {
   // On a phone the strip is drawn narrower, so its labels stay readable instead of shrinking with it
   const narrow = useNarrow();
@@ -260,7 +317,7 @@ function News2Strip({ news2s, triageOf }: { news2s: Observation[]; triageOf: (o:
     .join(' ');
   return (
     <figure className="strip">
-      <svg viewBox={`0 0 ${w} ${h}`} role="img" aria-label={`NEWS2 over time: ${news2s.map((o) => `${o.valueInteger} at ${stamp(o.effectiveDateTime)}`).join(', ')}`}>
+      <svg viewBox={`0 0 ${w} ${h}`} role="img" aria-label={`NEWS2 over time: ${news2s.map((o) => `${isPreliminary(o) ? 'at least ' : ''}${o.valueInteger} at ${stamp(o.effectiveDateTime)}`).join(', ')}`}>
         {[5, 7].map((v) => (
           <g key={v}>
             <line x1={pad.l} x2={w - pad.r} y1={y(v)} y2={y(v)} className="strip-band" />
@@ -280,9 +337,9 @@ function News2Strip({ news2s, triageOf }: { news2s: Observation[]; triageOf: (o:
           return (
             <g key={o.id}>
               <circle cx={px + 1.5} cy={py + 2.5} r={6} className="strip-shadow" />
-              <circle cx={px} cy={py} r={6} className="strip-pin" />
+              <circle cx={px} cy={py} r={6} className={isPreliminary(o) ? 'strip-pin is-preliminary' : 'strip-pin'} />
               <text x={px + 10} y={py - 9} className="strip-value">
-                {o.valueInteger}
+                {isPreliminary(o) ? `≥${o.valueInteger}` : o.valueInteger}
               </text>
               {p && <rect x={px - 9} y={h - pad.b + 8} width={18} height={10} className={`strip-swatch fill-${p.key}`} />}
               <text {...edgeLabel(px, i, pts.length)} y={h - 6} className="strip-label">
@@ -292,7 +349,7 @@ function News2Strip({ news2s, triageOf }: { news2s: Observation[]; triageOf: (o:
           );
         })}
       </svg>
-      <figcaption className="quiet">NEWS2 at each triage; the square under each is the priority recorded.</figcaption>
+      <figcaption className="quiet">NEWS2 at each triage; the square under each is the priority recorded. A hollow pin is a preliminary NEWS2, a lower bound.</figcaption>
     </figure>
   );
 }

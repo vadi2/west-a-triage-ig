@@ -25,16 +25,25 @@ interface Props {
   /** Without a choice the board is a preview: the thread is dashed and nothing is pressable. */
   choice?: Choice;
   caption: ReactNode;
+  /**
+   * The preview's priority so far, the most urgent of what is known. `final` once NEWS2 is
+   * complete and the warning symptoms are assessed; until then it is a lower bound ("at least").
+   */
+  lead?: { code: PriorityCode; final: boolean };
 }
 
 // Score columns 3, 2, 1, 0 sit over Röd, Orange, Gul, Grön: the patient's thread falls from
 // the vital parameters, through the points each one scores, into the colour NEWS2 gives.
 const SCORE_COLUMNS = [3, 2, 1, 0];
 
-export function Pinboard({ answers, news2, sources = [], choice, caption }: Props) {
+export function Pinboard({ answers, news2, sources = [], choice, caption, lead }: Props) {
   const board = useRef<HTMLDivElement>(null);
   const [path, setPath] = useState<{ d: string; w: number; h: number }>({ d: '', w: 0, h: 0 });
-  const riskPriority = news2.risk ? RISK_PRIORITY[news2.risk] : undefined;
+  // While parameters are missing, NEWS2 so far is a lower bound: its pin is hollow, its label "≥"
+  const partial = news2.total === null && news2.provisional.total !== null;
+  const risk = news2.risk ?? news2.provisional.risk;
+  const riskPriority = risk ? RISK_PRIORITY[risk] : undefined;
+  const missing = news2.provisional.missing.length;
 
   useLayoutEffect(() => {
     const el = board.current;
@@ -85,16 +94,17 @@ export function Pinboard({ answers, news2, sources = [], choice, caption }: Prop
           const score = news2.scores[param.key];
           const measured = typeof score === 'number';
           return (
-            <li key={param.key} className="board-row">
+            <li key={param.key} className={`board-row ${measured ? '' : 'is-missing'}`}>
               <span className="board-param">
                 <span className="param-label">{param.label}</span>
                 <span className="param-value num">
                   <ValueText text={displayValue(param.key, answers)} />
                   {param.unit && displayValue(param.key, answers) !== '–' ? ` ${param.unit}` : ''}
                 </span>
-                <span className="param-score num" aria-label={measured ? `${score} points` : 'not scored'}>
+                <span className="param-score num" aria-label={measured ? `${score} points` : 'not measured yet'}>
                   {measured ? score : '–'}
                 </span>
+                {!measured && <span className="param-missing">not yet</span>}
               </span>
               {SCORE_COLUMNS.map((s) => (
                 <span key={s} className={`board-col ${s > param.max ? 'out' : ''}`} aria-hidden="true">
@@ -106,8 +116,13 @@ export function Pinboard({ answers, news2, sources = [], choice, caption }: Prop
         })}
       </ul>
       <p className="board-total">
-        {news2.total === null ? (
-          <>NEWS2 needs all seven parameters</>
+        {news2.total === null && news2.provisional.total === null ? (
+          <>NEWS2 needs all seven parameters; none is measured yet</>
+        ) : partial ? (
+          <>
+            NEWS2 <strong className="num">≥ {news2.provisional.total}</strong> so far · at least {RISK_TEXT[news2.provisional.risk!]} clinical
+            risk · <span className="num">{missing}</span> of 7 parameters missing
+          </>
         ) : (
           <>
             NEWS2 <strong className="num">{news2.total}</strong> · {RISK_TEXT[news2.risk!]} clinical risk
@@ -115,10 +130,28 @@ export function Pinboard({ answers, news2, sources = [], choice, caption }: Prop
           </>
         )}
       </p>
+      {lead && !choice && (
+        <p className={`board-lead ${lead.final ? '' : 'is-floor'}`}>
+          {lead.final ? (
+            <>
+              By these rules: <strong>{PRIORITIES.find((p) => p.code === lead.code)!.name}</strong>
+            </>
+          ) : (
+            <>
+              So far: at least <strong>{PRIORITIES.find((p) => p.code === lead.code)!.name}</strong>
+              {lead.code === '1' || lead.code === '2'
+                ? ', and that holds: a red or orange patient is never lowered'
+                : ', a lower bound: what is still missing can only raise it'}
+            </>
+          )}
+        </p>
+      )}
       <PriorityRow
         choice={choice}
         riskPriority={riskPriority}
-        riskLabel={news2.total === null ? '' : `NEWS2 ${news2.total}`}
+        riskLabel={riskPriority === undefined ? '' : partial ? `NEWS2 ≥ ${news2.provisional.total} so far` : `NEWS2 ${news2.total}`}
+        partial={partial}
+        lead={lead}
         threadIndex={thread}
         sources={sources}
       />
@@ -135,12 +168,16 @@ function PriorityRow({
   choice,
   riskPriority,
   riskLabel,
+  partial,
+  lead,
   threadIndex,
   sources,
 }: {
   choice?: Choice;
   riskPriority?: PriorityCode;
   riskLabel: string;
+  partial: boolean;
+  lead?: { code: PriorityCode; final: boolean };
   threadIndex: number;
   sources: SourcePin[];
 }) {
@@ -148,7 +185,7 @@ function PriorityRow({
     <span className="prio-pins">
       {riskPriority === code && (
         <span className="prio-pin">
-          <span className="pin" data-thread={threadIndex} />
+          <span className={`pin ${partial ? 'pin-hollow' : ''}`} data-thread={threadIndex} />
           <span className="pin-label">{riskLabel}</span>
         </span>
       )}
@@ -167,12 +204,18 @@ function PriorityRow({
     return (
       <div className="prio" aria-hidden="true">
         <span className="prio-label">WEST-A priority</span>
-        {PRIORITIES.map((p) => (
-          <div key={p.code} className={`prio-cell state-${p.key} ${riskPriority === p.code ? 'is-on' : ''}`}>
-            <span className="prio-name">{p.name}</span>
-            {pins(p.code)}
-          </div>
-        ))}
+        {PRIORITIES.map((p) => {
+          // Without a lead, the colour NEWS2 gives once complete
+          const on = lead ? lead.final && lead.code === p.code : !partial && riskPriority === p.code;
+          const floor = !!lead && !lead.final && lead.code === p.code;
+          return (
+            <div key={p.code} className={`prio-cell state-${p.key} ${on ? 'is-on' : ''} ${floor ? 'is-floor' : ''}`}>
+              <span className="prio-name">{p.name}</span>
+              {floor && <span className="prio-note">at least</span>}
+              {pins(p.code)}
+            </div>
+          );
+        })}
       </div>
     );
   }

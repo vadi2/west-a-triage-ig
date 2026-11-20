@@ -123,7 +123,7 @@ export function ReportScreen({ patientId, encounterId, go }: Props) {
     <div className="summary-field">
       <label className="note">
         Hospital course (optional, goes into the report)
-        <textarea value={summary} onChange={(e) => setSummary(e.target.value)} rows={4} />
+        <textarea value={summary} onChange={(e) => setSummary(e.target.value)} rows={6} />
       </label>
       <Samples>
         <button type="button" onClick={fillSummary} disabled={busy} title="An invented Swedish hospital course, for the priority of the latest triage">

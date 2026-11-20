@@ -33,7 +33,8 @@ export interface TriageScenario {
   news2?: number;
   /** The proposed priority; none when the presenter still has to pick the complaint. */
   priority?: PriorityCode;
-  vitals: Vitals;
+  /** All seven parameters, or some of them to show the provisional NEWS2. */
+  vitals: Partial<Vitals>;
   complaint?: { code: string; display: string; criteria: Coding[] };
 }
 
@@ -101,6 +102,13 @@ export const TRIAGE_SCENARIOS: TriageScenario[] = [
     news2: 0,
     vitals: { respiratoryRate: 16, oxygenSaturation: 97, oxygenFlow: 0, systolic: 132, diastolic: 84, heartRate: 78, consciousness: 'A', temperature: 37.1 },
   },
+  {
+    id: 'partial',
+    label: 'Partial vitals',
+    title: 'Respiration rate, SpO₂ and pulse only: NEWS2 at least 6 so far, at least Orange, which already holds. Save the vitals so far, then add the rest',
+    // RR 24 (2), SpO₂ 93 (2), pulse 118 (2): provisional 6, medium
+    vitals: { respiratoryRate: 24, oxygenSaturation: 93, heartRate: 118 },
+  },
 ];
 
 const SCT = 'http://snomed.info/sct';
@@ -109,7 +117,7 @@ const SCT_SE = 'http://snomed.info/sct/45991000052106';
 /** A triage scenario as a QuestionnaireResponse for the renderer. */
 export function scenarioResponse(s: TriageScenario): QuestionnaireResponse {
   const v = s.vitals;
-  const acvpu = ACVPU.find((a) => a.letter === v.consciousness)!;
+  const acvpu = ACVPU.find((a) => a.letter === v.consciousness);
   const assessment: QuestionnaireResponseItem[] = [];
   if (s.complaint) {
     const none = s.complaint.criteria.filter((c) => c.code === NO_WARNING_SYMPTOMS);
@@ -134,16 +142,18 @@ export function scenarioResponse(s: TriageScenario): QuestionnaireResponse {
     item: [
       {
         linkId: 'vitals',
-        item: [
-          { linkId: 'respiratory-rate', answer: [{ valueInteger: v.respiratoryRate }] },
-          { linkId: 'oxygen-saturation', answer: [{ valueInteger: v.oxygenSaturation }] },
-          { linkId: 'oxygen-flow', answer: [{ valueDecimal: v.oxygenFlow }] },
-          { linkId: 'systolic', answer: [{ valueInteger: v.systolic }] },
-          { linkId: 'diastolic', answer: [{ valueInteger: v.diastolic }] },
-          { linkId: 'heart-rate', answer: [{ valueInteger: v.heartRate }] },
-          { linkId: 'consciousness', answer: [{ valueCoding: { system: SCT, version: SCT_SE, code: acvpu.code, display: acvpu.display } }] },
-          { linkId: 'temperature', answer: [{ valueDecimal: v.temperature }] },
-        ],
+        item: (
+          [
+            v.respiratoryRate !== undefined && { linkId: 'respiratory-rate', answer: [{ valueInteger: v.respiratoryRate }] },
+            v.oxygenSaturation !== undefined && { linkId: 'oxygen-saturation', answer: [{ valueInteger: v.oxygenSaturation }] },
+            v.oxygenFlow !== undefined && { linkId: 'oxygen-flow', answer: [{ valueDecimal: v.oxygenFlow }] },
+            v.systolic !== undefined && { linkId: 'systolic', answer: [{ valueInteger: v.systolic }] },
+            v.diastolic !== undefined && { linkId: 'diastolic', answer: [{ valueInteger: v.diastolic }] },
+            v.heartRate !== undefined && { linkId: 'heart-rate', answer: [{ valueInteger: v.heartRate }] },
+            acvpu && { linkId: 'consciousness', answer: [{ valueCoding: { system: SCT, version: SCT_SE, code: acvpu.code, display: acvpu.display } }] },
+            v.temperature !== undefined && { linkId: 'temperature', answer: [{ valueDecimal: v.temperature }] },
+          ] as (QuestionnaireResponseItem | false)[]
+        ).filter((i): i is QuestionnaireResponseItem => !!i),
       },
       { linkId: 'assessment', item: assessment },
     ],

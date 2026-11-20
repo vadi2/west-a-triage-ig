@@ -14,11 +14,13 @@ import { Pinboard } from '../components/Pinboard';
 import { Samples } from '../components/Samples';
 import { RendererTheme } from '../theme';
 import { readAnswers } from '../services/answers';
-import { client, runTriage } from '../services/cds';
+import { client, news2Observation, runTriage, type TriageResult } from '../services/cds';
 import { criteriaReasons, loadCriteria, NEED_CODES, NO_WARNING_SYMPTOMS, type Criteria } from '../services/criteria';
 import { MOCK, NURSE, QUESTIONNAIRE_ID, QUESTIONNAIRE_URL } from '../services/config';
 import { extractVitals } from '../services/extract';
-import { news2 } from '../services/news2';
+import { news2, sliceLabel } from '../services/news2';
+import { mostUrgent, priority, priorityOf, RISK_PRIORITY, RISK_TEXT } from '../services/priority';
+import { clock } from '../components/format';
 import { nowLocal } from '../services/patients';
 import { scenarioResponse, TRIAGE_SCENARIOS, type TriageScenario } from '../services/samples';
 import { withAnswerOptions } from '../services/terminology';
@@ -42,6 +44,10 @@ export function TriageFormScreen({ stay, onDone }: { stay: Stay; onDone: (s: Sta
   const [now, setNow] = useState(Date.now());
   const [error, setError] = useState<unknown>();
   const [incomplete, setIncomplete] = useState<string | undefined>();
+  // The vitals saved before all seven were known ("Save vitals so far"), and what the server said
+  const [partial, setPartial] = useState<SavedSoFar | undefined>();
+  const [partialBusy, setPartialBusy] = useState(false);
+  const [partialError, setPartialError] = useState<unknown>();
   // Bumped once a filled-in form has rendered, see fillScenario
   const [filled, setFilled] = useState(0);
 
@@ -82,6 +88,14 @@ export function TriageFormScreen({ stay, onDone }: { stay: Stay; onDone: (s: Sta
   );
   const preview = useMemo(() => news2(answers), [answers]);
   const reasons = useMemo(() => criteriaReasons(answers, criteria), [answers, criteria]);
+  // The priority so far, by the rules of WestATriage.cql ("Provisional Proposed Priority"): the
+  // most urgent of the NEWS2 colour so far, the warning symptoms and override, and yellow for a
+  // need. Final only once NEWS2 is complete and the warning symptoms are assessed.
+  const lead = useMemo(() => {
+    const vital = preview.provisional.risk ? RISK_PRIORITY[preview.provisional.risk] : undefined;
+    const code = mostUrgent(vital, ...reasons.symptoms.map((x) => x.priority), reasons.override, reasons.needs.length ? '3' : undefined);
+    return code ? { code, final: preview.total !== null && reasons.assessed } : undefined;
+  }, [preview, reasons]);
 
   async function build(q: Questionnaire, qr?: QuestionnaireResponse) {
     await buildForm({
@@ -97,15 +111,99 @@ export function TriageFormScreen({ stay, onDone }: { stay: Stay; onDone: (s: Sta
     });
   }
 
+  function readDraft() {
+    const raw = getResponse();
+    const draft = removeInternalIdsFromResponse(formQuestionnaire!, removeEmptyAnswersFromResponse(formQuestionnaire!, raw));
+    return { draft, a: readAnswers(draft) };
+  }
+
+  /**
+   * Saves the form and posts the vital signs it gives. After a save of the vitals so far, the
+   * same QuestionnaireResponse is updated, and a vital sign already posted with the same value
+   * is not posted again: the guideline takes the latest of each.
+   */
+  async function saveVitals(draft: QuestionnaireResponse, status: QuestionnaireResponse['status'], done: () => void) {
+    const qr: QuestionnaireResponse = {
+      ...draft,
+      ...(partial ? { id: partial.response.id } : {}),
+      questionnaire: `${QUESTIONNAIRE_URL}|${questionnaire!.version ?? '0.1.0'}`,
+      status,
+      subject: { reference: `Patient/${stay.patient.id}` },
+      encounter: { reference: `Encounter/${stay.encounter.id}` },
+      author: { reference: `Practitioner/${NURSE.id}` },
+      authored: nowLocal(),
+    };
+    const saved = partial ? await client.update(qr) : await client.create(qr);
+    done();
+
+    const bundle = await extractVitals(questionnaire!, saved);
+    if (bundle.type !== 'transaction' || !bundle.entry?.length) {
+      throw new Error(`extractVitals gave a ${bundle.type} Bundle with ${bundle.entry?.length ?? 0} entries; expected a transaction with the vital signs`);
+    }
+    const earlier = partial?.vitals ?? [];
+    const fresh: Bundle = {
+      ...bundle,
+      entry: bundle.entry.filter((e) => !earlier.some((o) => sameMeasurement(o, e.resource as Observation))),
+    };
+    done();
+
+    const posted = fresh.entry!.length ? await savedObservations(fresh, await client.transaction(fresh)) : [];
+    const vitals = [...earlier.filter((o) => !posted.some((n) => code(n) === code(o))), ...posted];
+    done();
+    return { saved, vitals, posted };
+  }
+
+  async function savePartial() {
+    if (!questionnaire || !formQuestionnaire) return;
+    const { draft, a } = readDraft();
+    const n = news2(a);
+    if (n.provisional.total === null || n.total !== null) return;
+    if (a.systolic !== undefined && a.diastolic === undefined) {
+      setIncomplete('Give the diastolic blood pressure with the systolic one, or clear the systolic one, before saving.');
+      return;
+    }
+    setIncomplete(undefined);
+    setPartialError(undefined);
+    setPartialBusy(true);
+    try {
+      const { saved, vitals, posted } = await saveVitals(draft, 'in-progress', () => {});
+      const result = await runTriage({
+        patientId: stay.patient.id!,
+        encounterId: stay.encounter.id!,
+        practitionerId: NURSE.id,
+        complaintPriority: a.complaintPriority ?? null,
+        scale2: a.scale2,
+        triageCriteria: a.triageCriteria,
+      });
+      // A preliminary NEWS2 of the scores known so far; none again when no vital sign changed
+      let n2 = partial?.news2;
+      if (result.provisional.total !== null && result.provisional.missing.length && (posted.length || !n2)) {
+        n2 = await client.create(
+          news2Observation({
+            news2: result.news2,
+            provisional: result.provisional,
+            patientId: stay.patient.id!,
+            encounterId: stay.encounter.id!,
+            performerId: NURSE.id,
+            effectiveDateTime: nowLocal(),
+          }),
+        );
+      }
+      setPartial({ response: saved, vitals, result, news2: n2, at: nowLocal() });
+    } catch (e) {
+      setPartialError(e);
+    } finally {
+      setPartialBusy(false);
+    }
+  }
+
   async function submit() {
     if (!questionnaire || !formQuestionnaire) return;
     setError(undefined);
-    const raw = getResponse();
-    const draft = removeInternalIdsFromResponse(formQuestionnaire, removeEmptyAnswersFromResponse(formQuestionnaire, raw));
-    const a = readAnswers(draft);
+    const { draft, a } = readDraft();
     const r = criteriaReasons(a, criteria);
     const missing = [
-      news2(a).total === null && 'all seven vital parameters',
+      news2(a).total === null && 'all seven vital parameters (or save the vitals so far)',
       a.systolic !== undefined && a.diastolic === undefined && 'the diastolic blood pressure (with the systolic one)',
       !a.chiefComplaint && 'the chief complaint',
       a.chiefComplaint && !r.assessed && 'its warning symptoms (tick them, or "No warning symptoms")',
@@ -136,27 +234,7 @@ export function TriageFormScreen({ stay, onDone }: { stay: Stay; onDone: (s: Sta
     setStartedAt(Date.now());
     let i = 0;
     try {
-      const qr: QuestionnaireResponse = {
-        ...draft,
-        questionnaire: `${QUESTIONNAIRE_URL}|${questionnaire.version ?? '0.1.0'}`,
-        status: 'completed',
-        subject: { reference: `Patient/${stay.patient.id}` },
-        encounter: { reference: `Encounter/${stay.encounter.id}` },
-        author: { reference: `Practitioner/${NURSE.id}` },
-        authored: nowLocal(),
-      };
-      const saved = await client.create(qr);
-      mark(i++, 'done');
-
-      const bundle = await extractVitals(questionnaire, saved);
-      if (bundle.type !== 'transaction' || !bundle.entry?.length) {
-        throw new Error(`extractVitals gave a ${bundle.type} Bundle with ${bundle.entry?.length ?? 0} entries; expected a transaction with the vital signs`);
-      }
-      mark(i++, 'done');
-
-      const result: Bundle = await client.transaction(bundle);
-      const vitals = await savedObservations(bundle, result);
-      mark(i++, 'done');
+      const { saved, vitals } = await saveVitals(draft, 'completed', () => mark(i++, 'done'));
 
       const triage = await runTriage({
         patientId: stay.patient.id!,
@@ -216,11 +294,22 @@ export function TriageFormScreen({ stay, onDone }: { stay: Stay; onDone: (s: Sta
             {incomplete}
           </p>
         )}
-        <div className="submit-row">
-          <button type="button" className="primary big" onClick={submit} disabled={!ready || (!!steps && !error)}>
+        <div className="submit-row row">
+          <button type="button" className="primary big" onClick={submit} disabled={!ready || (!!steps && !error) || partialBusy}>
             Save and run the guideline
           </button>
+          <button
+            type="button"
+            className="big"
+            onClick={savePartial}
+            disabled={!ready || !!steps || partialBusy || preview.total !== null || preview.provisional.total === null}
+            title="Save the vital signs measured so far and record a preliminary NEWS2"
+          >
+            {partialBusy ? 'Saving the vitals so far…' : 'Save vitals so far'}
+          </button>
         </div>
+        {partial && <PartialSaved partial={partial} />}
+        <ErrorNote error={partialError} what="Saving the vitals so far" />
         {steps && (
           <ol className="steps" aria-live="polite">
             {STEP_NAMES.map((name, n) => (
@@ -246,6 +335,7 @@ export function TriageFormScreen({ stay, onDone }: { stay: Stay; onDone: (s: Sta
         <Pinboard
           answers={answers}
           news2={preview}
+          lead={lead}
           sources={reasons.pins}
           caption={
             <>
@@ -255,8 +345,17 @@ export function TriageFormScreen({ stay, onDone }: { stay: Stay; onDone: (s: Sta
         />
       </aside>
       <p className="phone-tally" aria-live="polite">
-        NEWS2 so far: <strong className="num">{preview.total ?? '–'}</strong>
-        {preview.risk ? ` · ${preview.risk}` : ''}
+        {preview.total !== null ? (
+          <>
+            NEWS2: <strong className="num">{preview.total}</strong> · {RISK_TEXT[preview.risk!]}
+          </>
+        ) : (
+          <>
+            NEWS2 so far: <strong className="num">{preview.provisional.total === null ? '–' : `≥ ${preview.provisional.total}`}</strong>
+            {preview.provisional.risk ? ` · at least ${RISK_TEXT[preview.provisional.risk]}` : ''}
+          </>
+        )}
+        {lead && ` · ${lead.final ? '' : 'at least '}${priority(lead.code)!.name}`}
       </p>
     </div>
   );
@@ -275,4 +374,60 @@ async function savedObservations(sent: Bundle, result: Bundle): Promise<Observat
     }
   }
   return out;
+}
+
+interface SavedSoFar {
+  response: QuestionnaireResponse;
+  /** The vital signs posted so far, the latest of each. */
+  vitals: Observation[];
+  result: TriageResult;
+  /** The preliminary NEWS2 recorded, if the server scored anything. */
+  news2?: Observation;
+  at: string;
+}
+
+const code = (o: Observation) => o.code.coding?.[0]?.code;
+
+/** The same vital sign with the same value: posting it again would add nothing. */
+function sameMeasurement(a: Observation, b: Observation | undefined): boolean {
+  if (!b || code(a) !== code(b)) return false;
+  const value = (o: Observation) =>
+    JSON.stringify([
+      o.valueQuantity?.value,
+      o.valueQuantity?.code,
+      o.valueCodeableConcept?.coding?.[0]?.code,
+      o.component?.map((c) => [c.code.coding?.[0]?.code, c.valueQuantity?.value]),
+    ]);
+  return value(a) === value(b);
+}
+
+/** What the server said about the vitals saved so far: its provisional NEWS2 and priority. */
+function PartialSaved({ partial }: { partial: SavedSoFar }) {
+  const p = partial.result.provisional;
+  const code = priorityOf(p.priority);
+  return (
+    <div className="partial-saved" role="status">
+      <p>
+        <strong>Vitals saved so far</strong> at {clock(partial.at)} ({partial.vitals.length} vital signs). The guideline on the server: NEWS2{' '}
+        <strong className="num">{p.total === null ? '–' : `≥ ${p.total}`}</strong>
+        {p.risk && <> · at least {RISK_TEXT[p.risk]} clinical risk</>}
+        {code && (
+          <>
+            {' '}
+            · priority so far at least <strong>{priority(code)!.name}</strong>
+          </>
+        )}
+        .
+      </p>
+      {p.missing.length > 0 && <p>Still missing: {p.missing.map(sliceLabel).join(', ')}.</p>}
+      <p className="quiet">
+        {partial.news2 ? (
+          <>
+            Recorded as a preliminary NEWS2, <span className="num">Observation/{partial.news2.id}</span>.{' '}
+          </>
+        ) : null}
+        Fill in the rest and save the triage for the final NEWS2 and the proposed priority.
+      </p>
+    </div>
+  );
 }

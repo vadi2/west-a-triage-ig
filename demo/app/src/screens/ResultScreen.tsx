@@ -103,7 +103,7 @@ export function ResultScreen({ stay, onRecorded, go }: Props) {
   }
 
   const n = result.news2;
-  const board = useMemo(() => boardNews2(result.news2), [result.news2]);
+  const board = useMemo(() => boardNews2(result.news2, result.provisional), [result.news2, result.provisional]);
   const pv = priority(proposed);
 
   return (
@@ -194,7 +194,7 @@ export function ResultScreen({ stay, onRecorded, go }: Props) {
             )}
             <label className="note">
               Note {lowered ? '(needed when the priority is lowered)' : '(optional)'}
-              <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2} required={lowered} />
+              <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={3} required={lowered} />
             </label>
             <Samples>
               <button

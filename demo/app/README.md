@@ -11,8 +11,10 @@ Screens, in the order a nurse uses them:
    tagged `HTEST`). Starting a triage opens the patient's in-progress emergency Encounter,
    or creates one.
 2. **Triage** – the WEST-A Questionnaire in the renderer, with NEWS2 counted beside it while
-   you type. Saving stores the QuestionnaireResponse, extracts and posts the vital signs,
-   and runs the guideline on the server.
+   you type, provisionally until all seven parameters are in. Saving stores the
+   QuestionnaireResponse, extracts and posts the vital signs, and runs the guideline on the
+   server. *Save vitals so far* does the same before all seven are measured and records a
+   preliminary NEWS2.
 3. **Priority** – NEWS2 per parameter, the clinical risk, the proposed priority and why.
    The nurse records it or raises it; a red or orange patient is never lowered (WEST-A p. 8),
    whether the red or orange is proposed or comes from NEWS2 alone (nothing is proposed until
@@ -20,7 +22,8 @@ Screens, in the order a nurse uses them:
    for a need (pp. 46–48).
    Records the NEWS2 and triage Observations.
 4. **Record** – NEWS2 over time and every triage, each NEWS2 with the vital signs it came
-   from (`derivedFrom`) and the points each scored.
+   from (`derivedFrom`) and the points each scored. A preliminary NEWS2 is a hollow pin
+   marked "≥", with the parameters it lacks.
 5. **Discharge** – closes the stay and shows the HL7 Europe Hospital Discharge Report built
    for it, section by section from the Composition narratives, with the Bundle as JSON to
    download.
@@ -77,6 +80,60 @@ pins in the priority row: one per priority of the warning symptoms, *override* f
 without the diastolic one. When the nurse used the override, the triage note says so
 ("Manuell sökorsaksprioritet: Röd"), so the record explains the priority.
 
+## Provisional NEWS2 and priority
+
+The guideline scores what is known so far (`provisional` of `runTriage`, see
+`../README.md` and the *Provisional* sections of the computable guidelines page). The app
+follows the same rules:
+
+- **While typing**, the board scores in the browser (`src/services/news2.ts`, the
+  thresholds of `WestANEWS2.cql`): a parameter not measured yet is hatched and says
+  *not yet*, the NEWS2 pin is hollow and reads "NEWS2 ≥ 6 so far", and the line above the
+  priority row says "So far: at least Orange". The priority so far is the most urgent of the
+  NEWS2 colour so far, the warning symptoms, the override and yellow for a need
+  (`Provisional Proposed Priority`). It is a dashed outline marked *at least*, never a
+  filled colour, until NEWS2 is complete and the warning symptoms are assessed. A red or
+  orange so far is said to hold; a green so far only means nothing more urgent is known
+  yet. On scale 2 an SpO₂ of 93 % or more is not scored until oxygen is known, as in the CQL.
+- **Save vitals so far** (once at least one parameter scores, and before all seven do)
+  saves the form as `in-progress`, posts the vital signs extracted from it, runs the
+  guideline, shows the server's `provisional` result, and records a `preliminary` NEWS2
+  with `news2Observation({ news2, provisional, … })`. Saving again, or saving the whole
+  triage, updates the same QuestionnaireResponse and posts only the vital signs that are
+  new or changed; the guideline takes the latest of each. The full save then gives the
+  final NEWS2 and the proposal as before. What was saved so far is kept on the form screen
+  only: leaving it starts the next save afresh.
+- **Mock mode** returns the same `provisional` shape from `mockRunTriage`.
+
+## Sample data
+
+For a presenter, each screen where one would type has a quiet *Sample data* row
+(`src/components/Samples.tsx`, data in `src/services/samples.ts`). All of it is invented,
+and the free texts start with "Syntetisk exempeltext".
+
+- **Patients:** *Sample patient* fills the new-patient form with a random Swedish name,
+  birth date and gender; the reserve number is generated on save as before. The form
+  starts empty.
+- **Triage:** one scenario per WEST-A outcome, worked out from the NEWS2 chart and the
+  criterion code system and checked in mock mode:
+
+  | Button | Vitals | NEWS2 | Criteria | Proposed |
+  |---|---|---|---|---|
+  | Röd · sepsis | RR 26, SpO₂ 91, air, 95/55, pulse 125, C, 38.9 | 14, high | 16 Infektion: 74 (Röd) | Röd |
+  | Orange · chest pain | the guide's example | 5, medium | 4 Bröstsmärta: 15 (Orange) | Orange |
+  | Gul · vomiting | RR 18, SpO₂ 97, air, 118/74, pulse 112, A, 37.8 | 2, low | 7 Diarré/kräkningar: 20 (Gul) | Gul |
+  | Grön · limb | RR 14, SpO₂ 98, air, 128/78, pulse 72, A, 36.8 | 0, low | 9 Extremitetsproblem: 163 | Grön |
+  | Grön + need → Gul | RR 18, SpO₂ 96, air, 142/86, pulse 84, A, 36.0 | 1, low | 23 Ospecifik sjukdom: 163 and 159 | Gul |
+  | Vitals only | RR 16, SpO₂ 97, air, 132/84, pulse 78, A, 37.1 | 0, low | none: pick them live | none |
+  | Partial vitals | RR 24, SpO₂ 93, pulse 118 only | ≥ 6 so far, at least medium | none | at least Orange so far, which holds |
+
+- **Priority:** *Sample note* writes a Swedish note that fits the choice on the board
+  (raised, lowered or kept).
+- **Discharge:** a *Hospital course* field goes into the report (`dischargeSummary` of
+  `hdr.js`; it is not stored on the server). *Sample summary* writes one in Swedish, for an
+  admitted patient after a red or orange triage, else for one sent home. Once the report is
+  built, *Change the hospital course* rebuilds it.
+
 ## The design decision
 
 **The patient is a thread pinned across a board.** One pin per vital sign sits in the
@@ -111,4 +168,13 @@ criterion 15, NEWS2 5) proposes Orange, raised to Röd.
 `screenshots/form-desktop.jpg`, `screenshots/result-desktop.jpg`,
 `screenshots/record-desktop.jpg`, `screenshots/report-desktop.jpg` (1366 × 768) and
 `screenshots/form-phone.jpg`, `screenshots/result-phone.jpg`, `screenshots/record-phone.jpg`,
-`screenshots/report-phone.jpg` (390 × 844).
+`screenshots/report-phone.jpg` (390 × 844). These predate the sample data and the
+provisional NEWS2.
+
+Mock mode, with the sample data and the provisional NEWS2: `screenshots/patients-sample-desktop.jpg`
+(*Sample patient*), `screenshots/form-provisional-desktop.jpg` (*Partial vitals*: NEWS2 ≥ 6
+so far, at least Orange), `screenshots/form-partial-saved-desktop.jpg` (after *Save vitals
+so far*), `screenshots/record-preliminary-desktop.jpg` (the preliminary NEWS2 beside the
+final one), `screenshots/result-sample-note-desktop.jpg`,
+`screenshots/report-sample-summary-desktop.jpg` (1366 × 768) and
+`screenshots/form-samples-phone.jpg` (390 × 844).

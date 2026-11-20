@@ -1,7 +1,7 @@
 import type { Coding, Observation, Reference } from 'fhir/r4';
 import { FHIR_BASE, MOCK } from './config';
 import { entries, httpClient, type FhirClient } from './fhirClient';
-import { lib, type LibNews2, type News2ObservationArgs, type TriageObservationArgs, type TriageParams, type TriageResult } from './libs';
+import { lib, type LibNews2, type LibProvisional, type News2ObservationArgs, type TriageObservationArgs, type TriageParams, type TriageResult } from './libs';
 import { mockClient } from './mockServer';
 import { news2 as scoreNews2, type News2, type Scores } from './news2';
 import { criterionPriority, loadCriteria } from './criteria';
@@ -36,12 +36,19 @@ export function triageObservation(args: TriageObservationArgs): Observation {
 const SPO2 = ['Oxygen Saturation Scale 1 Score', 'Oxygen Saturation Scale 2 Score'];
 
 /** The NEWS2 of runTriage, keyed as the board draws it (one SpO₂ row for either scale). */
-export function boardNews2(n: LibNews2): News2 {
+export function boardNews2(n: LibNews2, provisional?: LibProvisional): News2 {
   const scores: Scores = {};
   for (const [key, value] of Object.entries(n.scores)) {
     (scores as Record<string, number | null>)[SPO2.includes(key) ? 'Oxygen Saturation Score' : key] = value;
   }
-  return { total: n.total, risk: n.risk, scores };
+  return {
+    total: n.total,
+    risk: n.risk,
+    scores,
+    provisional: provisional
+      ? { total: provisional.total, risk: provisional.risk, missing: provisional.missing }
+      : { total: n.total, risk: n.risk, missing: [] },
+  };
 }
 
 /* ------------------------------------------------------------------ mock mode */
@@ -92,6 +99,9 @@ async function mockRunTriage(p: TriageParams): Promise<TriageResult> {
   const floor: PriorityCode | undefined = p.yellowAsLowest || needs ? '3' : undefined;
   const vital = n.risk ? RISK_PRIORITY[n.risk] : undefined;
   const proposed = vital && complaint ? mostUrgent([vital, complaint, ...(floor ? [floor] : [])]) : undefined;
+  // What is known so far: the provisional NEWS2 colour, the warning symptoms and the needs
+  const provisionalVital = n.provisional.risk ? RISK_PRIORITY[n.provisional.risk] : undefined;
+  const provisional = mostUrgent([provisionalVital, complaint, floor].filter((x): x is PriorityCode => !!x));
 
   const summaries = [
     n.total === null ? 'NEWS2 not calculated: a vital parameter is missing' : `NEWS2 ${n.total}, clinical risk ${n.risk}`,
@@ -102,6 +112,12 @@ async function mockRunTriage(p: TriageParams): Promise<TriageResult> {
     news2: { total: n.total, risk: n.risk, scale2: !!p.scale2, scores, derivedFrom: used },
     proposedPriority: proposed ? priorityCoding(proposed) : null,
     vitalParameterPriority: vital ? priorityCoding(vital) : null,
+    provisional: {
+      total: n.provisional.total,
+      risk: n.provisional.risk,
+      missing: n.provisional.missing,
+      priority: provisional ? priorityCoding(provisional) : null,
+    },
     summaries,
   };
 }
