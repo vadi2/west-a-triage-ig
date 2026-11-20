@@ -5,6 +5,10 @@
   "type": "module",
   "engines": { "node": ">=20" },
   "scripts": {
-    "hdr-example": "node make-hdr-example.mjs"
+    "hdr-example": "node make-hdr-example.mjs",
+    "test-extract": "node extract.test.mjs"
+  },
+  "dependencies": {
+    "@aehrc/sdc-template-extract": "1.0.16"
   }
 }

@@ -97,6 +97,28 @@ jobs:
           npm install --no-package-lock --no-audit --no-fund
           node run.mjs ../../../output
 
+      - name: Extract and validate the vital signs of the example triage form
+        if: ${{ !cancelled() && hashFiles('output/package.tgz') != '' }}
+        run: |
+          # SDC template-based extraction of the example QuestionnaireResponse, with the
+          # library of the demo app (demo/lib/extract.js), then each extracted Observation
+          # is validated against the WEST-A profile in its meta.profile.
+          (cd demo/lib && npm install --no-package-lock --no-audit --no-fund \
+            && node extract.test.mjs ../../output --write ../../extracted)
+          status=0
+          for f in extracted/*.json; do
+            profile=$(jq -r '.meta.profile[0] // empty' "$f")
+            [ -n "$profile" ] || { echo "::error file=$f::no meta.profile"; status=1; continue; }
+            java -jar input-cache/validator_cli.jar "$f" -version 4.0.1 -sct se \
+              -ig output/package.tgz -profile "$profile" > "$f.txt" 2>&1 || true
+            sed -n '/^Validat\|Success\|\*FAILURE\*\|Error @\|Warning @/p' "$f.txt"
+            if ! grep -q "^Success" "$f.txt"; then
+              echo "::error file=$f::extracted Observation failed validation against $profile"; status=1
+            fi
+          done
+          [ "$(ls extracted/*.json | wc -l)" -eq 7 ] || { echo "::error::expected 7 extracted Observations"; status=1; }
+          exit $status
+
       - name: Job summary
         if: ${{ !cancelled() }}
         run: |
@@ -115,6 +137,7 @@ jobs:
           path: |
             output/
             page-json/
+            extracted/
           retention-days: 14
 
   # The WEST-A triage demo end to end: HAPI FHIR with clinical reasoning runs the

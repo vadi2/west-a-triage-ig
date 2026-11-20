@@ -16,6 +16,7 @@ The guideline proposes; the triage nurse decides. WEST-A gives the clinical asse
 <tr><td><a href="Library-WestANEWS2.html">WEST-A NEWS2 Logic</a> (Library, CQL)</td><td>The NEWS2 chart: parameter scores, total and clinical risk</td></tr>
 <tr><td><a href="Library-WestATriage.html">WEST-A Triage Logic</a> (Library, CQL)</td><td>The priority from the vital parameters, and the proposed priority</td></tr>
 <tr><td><a href="Library-FHIRHelpers.html">FHIRHelpers</a> (Library, CQL)</td><td>The standard library that converts FHIR R4 types to CQL types</td></tr>
+<tr><td><a href="Questionnaire-west-a-triage-questionnaire.html">WEST-A Triage Questionnaire</a> (Questionnaire)</td><td>The triage form: the vital signs, extracted as Observations, and the assessment that the guideline takes as input (see <a href="#questionnaire">triage form</a>)</td></tr>
 </tbody>
 </table>
 
@@ -88,9 +89,44 @@ The CQL lists the warning symptoms of each colour, since a terminology server ca
 
 The nurse then records the priority in a [WEST-A Triage Observation](StructureDefinition-west-a-triage-observation.html). The clinical assessment can raise it, but a red or orange patient is never given a lower priority (p. 8).
 
+### Triage form {#questionnaire}
+
+The [WEST-A Triage Questionnaire](Questionnaire-west-a-triage-questionnaire.html) is the form the triage nurse fills in. It conforms to the [SDC template-based extraction Questionnaire](https://hl7.org/fhir/uv/sdc/STU4/StructureDefinition-sdc-questionnaire-extr-template.html) profile of Structured Data Capture (SDC) 4.0.0, and has two groups:
+
+- **Vital parameters** (`vitals`): respiratory rate, oxygen saturation, supplemental oxygen (0 L/min for room air), systolic and diastolic blood pressure, heart rate or pulse, ACVPU and body temperature, each with its UCUM unit, a plausible range, and help text with its NEWS2 scores. None is required, so that a patient can be triaged before all are measured; the diastolic pressure is asked once the systolic one is answered, and is then required.
+- **Triage assessment** (`assessment`): the chief complaint (required), the triage criteria, an optional manual priority of the warning symptoms, the three needs that give yellow as the lowest priority (pp. 46-48), and scale 2 for the oxygen saturation.
+
+The triage criteria (`triage-criteria`) appear once the chief complaint is chosen. Each complaint with warning symptoms has its own item, `triage-criteria-` and the complaint code, enabled only when that complaint is chosen, which offers only the warning symptoms whose `complaint` property is that complaint, as check boxes. Gynaecology (`11`) and trauma (`30`) have a group instead, with an item per heading of the manual (such as `triage-criteria-30-aag`, *Traumalarm nivå 1*): the headings are the group codes of the code system, which cannot be answers. Complaints `2`, `14`, `18`, `19` and `25` have no warning symptoms of their own. Whatever the complaint, the form offers *Inga varningssymtom* (`triage-criteria-none`, `163`) and the needs and processes `159`-`162` (`triage-criteria-needs`). Every option is a code of the [WEST-A triage criterion value set](ValueSet-west-a-triage-criterion-vs.html), listed in the items themselves, since a value set cannot pick the criteria of one complaint; the items are generated from the code system by `input/fsh/questionnaire/generate-triage-criteria.mjs`.
+
+The answers become the CQL parameters of the guideline: all the answers of the items whose linkId starts with `triage-criteria` are `Triage Criteria`, `complaint-priority` is `Complaint Priority`, the three needs are `Yellow As Lowest Priority`, and `oxygen-scale-2` is `Use Oxygen Saturation Scale 2`. The manual priority is only for a warning symptom the criteria do not cover: the guideline takes the more urgent of it and the criteria.
+
+The vital signs become Observations by [template-based extraction](https://hl7.org/fhir/uv/sdc/STU4/extraction.html#template-based-extraction). The Questionnaire contains one Observation template per vital sign profile: the codes, category, units and status of the profile, without the measurement. Each vital sign item points at its template with the `templateExtract` extension, and FHIRPath expressions in `templateExtractValue` extensions fill in the template from the QuestionnaireResponse:
+
+<table class="grid">
+<thead>
+<tr><th>Observation</th><th>FHIRPath</th><th>From</th></tr>
+</thead>
+<tbody>
+<tr><td><code>valueQuantity.value</code>, <code>valueCodeableConcept.coding.code</code></td><td><code>answer.value</code>, <code>answer.value.code</code></td><td>The answer of the item that points at the template</td></tr>
+<tr><td><code>subject</code></td><td><code>%resource.subject</code></td><td>The patient</td></tr>
+<tr><td><code>encounter</code></td><td><code>%resource.encounter</code></td><td>The emergency department visit</td></tr>
+<tr><td><code>performer</code></td><td><code>%resource.author</code></td><td>The triage nurse</td></tr>
+<tr><td><code>effectiveDateTime</code></td><td><code>%resource.authored</code></td><td>The time the form was filled in</td></tr>
+<tr><td><code>meta.profile</code></td><td>A string, the profile's canonical URL</td><td>The template. It is a FHIRPath string so that the template, which has no measurement, is not itself validated against the profile.</td></tr>
+</tbody>
+</table>
+
+Two placeholders keep the templates valid, and the extraction replaces both. The templates have a placeholder time, because the validator checks every Observation with a vital signs code against the FHIR core vital signs profile, and its constraint vs-1 fails on a time without a value. The ACVPU template has a placeholder code, because a coded value needs a code. The ACVPU value takes only the code of the answer, not its display, which is in the language of the form.
+
+The blood pressure is one Observation with a systolic and a diastolic component. The systolic item points at its template, and the diastolic value comes from `%resource.repeat(item).where(linkId = 'diastolic').answer.value`.
+
+An unanswered vital sign gives no Observation. The [example triage form](QuestionnaireResponse-example-triage-questionnaire-response.html) (NEWS2 5, chest pain with warning symptom `15`) gives the same seven Observations as the [example vital signs](Observation-example-respiratory-rate.html).
+
+The demo app (`demo/lib/extract.js`) runs the extraction in the browser with [`@aehrc/sdc-template-extract`](https://www.npmjs.com/package/@aehrc/sdc-template-extract), the library of the CSIRO Smart Forms renderer. It drops the unanswered items first, refuses a response without `subject` or `authored`, and returns a transaction Bundle with the Observations. Every build extracts the Observations from the example form and validates each one against its WEST-A profile.
+
 ### QA {#qa}
 
-Every build checks the guideline in four ways:
+Every build checks the guideline in four ways, and the [triage form](#questionnaire) in a fifth:
 
 1. **Translation.** The IG Publisher translates the CQL into ELM and reports any CQL error as a QA error, which fails the build.
 2. **Conformance.** The PlanDefinitions and ActivityDefinitions are validated against the CPG profiles: [computable PlanDefinition](https://hl7.org/fhir/uv/cpg/StructureDefinition-cpg-computableplandefinition.html) and [record-inference activity](https://hl7.org/fhir/uv/cpg/StructureDefinition-cpg-recordinferenceactivity.html).
@@ -100,6 +136,7 @@ Every build checks the guideline in four ways:
    - scenarios in `cases.json`: the risk bands and their colours, an incomplete NEWS2, the warning symptoms and the needs that set the priority, several warning symptoms, a warning symptom together with `Complaint Priority`, no proposal before the warning symptoms are assessed, scale 2 through both libraries, rounding between the chart's steps, units, and which observation counts;
    - this guide's examples: the [example vital signs](Observation-example-respiratory-rate.html) must give the [example NEWS2](Observation-example-news2.html), score by score, and the triage criteria and NEWS2 of the [example triage](Observation-example-triage-chest-pain.html) must give its priority.
 4. **Invariants.** The NEWS2 profile itself checks that the total is the sum of the parameter scores (`westa-obs-2`), and the CI checks that an instance breaking it is rejected. It also checks that a triage criterion group cannot be recorded as a criterion.
+5. **Extraction.** The CI extracts the vital signs from the [example triage form](QuestionnaireResponse-example-triage-questionnaire-response.html) with `demo/lib/extract.js`, checks their codes, values and references (`demo/lib/extract.test.mjs`), and validates each extracted Observation against its WEST-A profile.
 
 To add a test, add a case to `cases.json`, giving the vital signs that differ from normal and the expected value of any CQL definition.
 
