@@ -41,6 +41,14 @@ RuleSet: ExtractWith(template)
 * extension[=].extension[0].url = "template"
 * extension[=].extension[0].valueReference.reference = "#{template}"
 
+// The LOINC code that the FHIR core vital signs profile requires. The code is a FHIRPath
+// string literal, like the profile: the validator checks every Observation with a vital
+// signs LOINC code against the core profile, which the template, without a time, fails (vs-1).
+RuleSet: LoincCode(code, display)
+* code.coding[0].system = $loinc
+* insert TemplateExtractValue(code.coding[0].code, '{code}')
+* code.coding[0].display = "{display}"
+
 // A help text, shown behind a help button next to the question at the current path
 RuleSet: HelpText(linkId, text)
 * item[+].linkId = "{linkId}"
@@ -140,7 +148,7 @@ Description: "Form for a WEST-A triage at the emergency department: the seven vi
 * item[=].item[+].linkId = "systolic"
 * item[=].item[=].type = #integer
 * item[=].item[=].text = "Systolic blood pressure"
-* item[=].item[=] insert Unit("mm[Hg]", mmHg)
+* item[=].item[=] insert Unit("mm[Hg]", mm[Hg])
 * item[=].item[=] insert IntegerRange(0, 300)
 * item[=].item[=] insert ExtractWith(blood-pressure-template)
 * item[=].item[=] insert HelpText(systolic-help, [[Systolic pressure in mmHg. NEWS2: 111-219 scores 0, 101-110 scores 1, 91-100 scores 2, 90 or less or 220 or more scores 3.]])
@@ -152,7 +160,7 @@ Description: "Form for a WEST-A triage at the emergency department: the seven vi
 * item[=].item[=].enableWhen[0].question = "systolic"
 * item[=].item[=].enableWhen[0].operator = #exists
 * item[=].item[=].enableWhen[0].answerBoolean = true
-* item[=].item[=] insert Unit("mm[Hg]", mmHg)
+* item[=].item[=] insert Unit("mm[Hg]", mm[Hg])
 * item[=].item[=] insert IntegerRange(0, 200)
 * item[=].item[=] insert HelpText(diastolic-help, [[Diastolic pressure in mmHg, measured together with the systolic pressure. NEWS2 does not score it.]])
 
@@ -175,7 +183,7 @@ Description: "Form for a WEST-A triage at the emergency department: the seven vi
 * item[=].item[+].linkId = "temperature"
 * item[=].item[=].type = #decimal
 * item[=].item[=].text = "Body temperature"
-* item[=].item[=] insert Unit(Cel, °C)
+* item[=].item[=] insert Unit(Cel, Cel)
 * item[=].item[=] insert DecimalRange(25, 45)
 * item[=].item[=] insert ExtractWith(body-temperature-template)
 * item[=].item[=] insert HelpText(temperature-help, [[Temperature in °C, to one decimal. NEWS2: 36.1-38.0 scores 0, 35.1-36.0 or 38.1-39.0 scores 1, 39.1 or more scores 2, 35.0 or less scores 3.]])
@@ -221,8 +229,8 @@ InstanceOf: Observation
 Usage: #inline
 * insert VitalSignTemplate(west-a-respiratory-rate)
 * category[0] = $observation-category#vital-signs "Vital Signs"
-* code.coding[0] = $loinc#9279-1 "Respiratory rate"
-* code.coding[+] = $sct-se#86290005 "andningsfrekvens"
+* insert LoincCode(9279-1, Respiratory rate)
+* code.coding[+] = $sct#86290005 "Respiratory rate"
 * insert TemplateExtractValue(valueQuantity.value, answer.value)
 * valueQuantity.unit = "/min"
 * valueQuantity.system = $ucum
@@ -233,8 +241,8 @@ InstanceOf: Observation
 Usage: #inline
 * insert VitalSignTemplate(west-a-oxygen-saturation)
 * category[0] = $observation-category#vital-signs "Vital Signs"
-* code.coding[0] = $loinc#2708-6 "Oxygen saturation in Arterial blood"
-* code.coding[+] = $sct-se#431314004 "perifer syremättnad"
+* insert LoincCode(2708-6, Oxygen saturation in Arterial blood)
+* code.coding[+] = $sct#431314004 "Peripheral oxygen saturation"
 * insert TemplateExtractValue(valueQuantity.value, answer.value)
 * valueQuantity.unit = "%"
 * valueQuantity.system = $ucum
@@ -245,7 +253,7 @@ InstanceOf: Observation
 Usage: #inline
 * insert VitalSignTemplate(west-a-supplemental-oxygen)
 * category[0] = $observation-category#therapy "Therapy"
-* code = $sct-se#427081008 "flöde för tillförd syrgas"
+* code = $sct#427081008 "Delivered oxygen flow rate"
 * insert TemplateExtractValue(valueQuantity.value, answer.value)
 * valueQuantity.unit = "L/min"
 * valueQuantity.system = $ucum
@@ -258,16 +266,16 @@ InstanceOf: Observation
 Usage: #inline
 * insert VitalSignTemplate(west-a-blood-pressure)
 * category[0] = $observation-category#vital-signs "Vital Signs"
-* code.coding[0] = $loinc#85354-9 "Blood pressure panel with all children optional"
-* code.coding[+] = $sct-se#75367002 "blodtryck"
+* insert LoincCode(85354-9, Blood pressure panel with all children optional)
+* code.coding[+] = $sct#75367002 "Blood pressure"
 * component[0].code.coding[0] = $loinc#8480-6 "Systolic blood pressure"
-* component[0].code.coding[+] = $sct-se#271649006 "systoliskt blodtryck"
+* component[0].code.coding[+] = $sct#271649006 "Systolic blood pressure"
 * insert TemplateExtractValue(component[0].valueQuantity.value, answer.value)
 * component[0].valueQuantity.unit = "mmHg"
 * component[0].valueQuantity.system = $ucum
 * component[0].valueQuantity.code = #mm[Hg]
 * component[1].code.coding[0] = $loinc#8462-4 "Diastolic blood pressure"
-* component[1].code.coding[+] = $sct-se#271650006 "diastoliskt blodtryck"
+* component[1].code.coding[+] = $sct#271650006 "Diastolic blood pressure"
 * insert TemplateExtractValue(component[1].valueQuantity.value, [[%resource.repeat(item).where(linkId = 'diastolic').answer.value]])
 * component[1].valueQuantity.unit = "mmHg"
 * component[1].valueQuantity.system = $ucum
@@ -278,8 +286,8 @@ InstanceOf: Observation
 Usage: #inline
 * insert VitalSignTemplate(west-a-heart-rate)
 * category[0] = $observation-category#vital-signs "Vital Signs"
-* code.coding[0] = $loinc#8867-4 "Heart rate"
-* code.coding[+] = $sct-se#364075005 "hjärtfrekvens"
+* insert LoincCode(8867-4, Heart rate)
+* code.coding[+] = $sct#364075005 "Heart rate"
 * insert TemplateExtractValue(valueQuantity.value, answer.value)
 * valueQuantity.unit = "/min"
 * valueQuantity.system = $ucum
@@ -290,16 +298,20 @@ InstanceOf: Observation
 Usage: #inline
 * insert VitalSignTemplate(west-a-consciousness)
 * category[0] = $observation-category#exam "Exam"
-* code = $sct-se#1104441000000107 "poäng enligt ACVPU-skalan (Alert Confusion Voice Pain Unresponsive)"
-* insert TemplateExtractValue(valueCodeableConcept.coding[0], answer.value)
+* code = $sct#1104441000000107 "Alert Confusion Voice Pain Unresponsive scale score"
+// The code of the answer, in the edition of the WEST-A ACVPU value set. The display of the
+// answer is left out: it is in the language of the form, which the Observation may not share.
+* valueCodeableConcept.coding[0].system = $sct
+* valueCodeableConcept.coding[0].version = "http://snomed.info/sct/45991000052106"
+* insert TemplateExtractValue(valueCodeableConcept.coding[0].code, answer.value.code)
 
 Instance: body-temperature-template
 InstanceOf: Observation
 Usage: #inline
 * insert VitalSignTemplate(west-a-body-temperature)
 * category[0] = $observation-category#vital-signs "Vital Signs"
-* code.coding[0] = $loinc#8310-5 "Body temperature"
-* code.coding[+] = $sct-se#386725007 "kroppstemperatur"
+* insert LoincCode(8310-5, Body temperature)
+* code.coding[+] = $sct#386725007 "Body temperature"
 * insert TemplateExtractValue(valueQuantity.value, answer.value)
 * valueQuantity.unit = "°C"
 * valueQuantity.system = $ucum

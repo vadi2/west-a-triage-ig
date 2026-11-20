@@ -98,12 +98,12 @@ The vital signs become Observations by [template-based extraction](https://hl7.o
 <tr><th>Observation</th><th>FHIRPath</th><th>From</th></tr>
 </thead>
 <tbody>
-<tr><td><code>valueQuantity.value</code>, <code>valueCodeableConcept.coding</code></td><td><code>answer.value</code></td><td>The answer of the item that points at the template</td></tr>
+<tr><td><code>valueQuantity.value</code>, <code>valueCodeableConcept.coding.code</code></td><td><code>answer.value</code>, <code>answer.value.code</code></td><td>The answer of the item that points at the template</td></tr>
 <tr><td><code>subject</code></td><td><code>%resource.subject</code></td><td>The patient</td></tr>
 <tr><td><code>encounter</code></td><td><code>%resource.encounter</code></td><td>The emergency department visit</td></tr>
 <tr><td><code>performer</code></td><td><code>%resource.author</code></td><td>The triage nurse</td></tr>
 <tr><td><code>effectiveDateTime</code></td><td><code>%resource.authored</code></td><td>The time the form was filled in</td></tr>
-<tr><td><code>meta.profile</code></td><td>A string, the profile's canonical URL</td><td>The template, so that the template is not itself validated against the profile</td></tr>
+<tr><td><code>meta.profile</code>, the LOINC code of the five core vital signs</td><td>A string: the profile's canonical URL, the code</td><td>The template. They are FHIRPath strings so that the template, which has no measurement and no time, is not itself validated against the profile.</td></tr>
 </tbody>
 </table>
 
