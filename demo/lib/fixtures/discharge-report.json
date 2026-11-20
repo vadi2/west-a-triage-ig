@@ -147,7 +147,7 @@
                 {
                   "system": "http://loinc.org",
                   "code": "8648-8",
-                  "display": "Hospital course Narrative"
+                  "display": "Hospital course note"
                 }
               ]
             },
@@ -163,7 +163,7 @@
                 {
                   "system": "http://loinc.org",
                   "code": "8650-4",
-                  "display": "Hospital discharge disposition Narrative"
+                  "display": "Hospital discharge disposition note"
                 }
               ]
             },
@@ -179,7 +179,7 @@
                 {
                   "system": "http://loinc.org",
                   "code": "75311-1",
-                  "display": "Hospital discharge medications Narrative"
+                  "display": "Discharge medications note"
                 }
               ]
             },
@@ -283,13 +283,12 @@
         },
         "reasonCode": [
           {
-            "coding": [
-              {
-                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
-                "code": "4",
-                "display": "Bröstsmärta"
-              }
-            ]
+            "text": "Bröstsmärta"
+          }
+        ],
+        "reasonReference": [
+          {
+            "reference": "urn:uuid:539d86f5-430a-89d9-af2f-cc36f530a3c8"
           }
         ]
       }

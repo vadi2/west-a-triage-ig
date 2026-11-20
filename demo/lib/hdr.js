@@ -24,9 +24,9 @@ const DATA_ABSENT = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason'
 const SECTIONS = {
   admissionEvaluation: { code: '67851-6', display: 'Admission evaluation note', sv: 'Bedömning vid ankomst', en: 'Admission evaluation' },
   vitalSigns: { code: '8716-3', display: 'Vital signs note', sv: 'Vitalparametrar vid triage', en: 'Vital signs at triage' },
-  hospitalCourse: { code: '8648-8', display: 'Hospital course Narrative', sv: 'Vårdförlopp', en: 'Hospital course' },
-  dischargeDetails: { code: '8650-4', display: 'Hospital discharge disposition Narrative', sv: 'Utskrivning', en: 'Discharge details' },
-  dischargeMedications: { code: '75311-1', display: 'Hospital discharge medications Narrative', sv: 'Läkemedel vid utskrivning', en: 'Discharge medications' },
+  hospitalCourse: { code: '8648-8', display: 'Hospital course note', sv: 'Vårdförlopp', en: 'Hospital course' },
+  dischargeDetails: { code: '8650-4', display: 'Hospital discharge disposition note', sv: 'Utskrivning', en: 'Discharge details' },
+  dischargeMedications: { code: '75311-1', display: 'Discharge medications note', sv: 'Läkemedel vid utskrivning', en: 'Discharge medications' },
 };
 
 const LABELS = {
@@ -203,13 +203,14 @@ export function dischargeReport(input) {
   const vitalObs = vitals.map(clone);
   const news2Obs = clone(news2);
   const triageObs = clone(triage);
+  for (const r of [pat, practitioner, organization, ...vitalObs, news2Obs, triageObs]) r.id ??= randomUuid();
   const role = practitionerRole(practitioner, organization, ctx);
   const enc = mapEncounter(clone(encounter), { organization, triage: triageObs, dischargeDate });
+  enc.id ??= randomUuid();
 
   const resources = [pat, enc, role, practitioner, organization, ...vitalObs, news2Obs, triageObs];
   const fullUrls = new Map();
   for (const r of resources) {
-    if (!r.id) r.id = randomUuid();
     const key = `${r.resourceType}/${r.id}`;
     if (fullUrls.has(key)) throw new Error(`dischargeReport: ${key} is given twice`);
     fullUrls.set(key, `urn:uuid:${uuidFrom(key)}`);
@@ -318,8 +319,13 @@ function mapEncounter(e, { organization, triage, dischargeDate }) {
   if (!e.priority && e.class?.code === 'EMER') {
     e.priority = { coding: [{ system: 'http://terminology.hl7.org/CodeSystem/v3-ActPriority', code: 'EM', display: 'emergency' }] };
   }
+  // The reason is the chief complaint, coded in the triage Observation. Only its text goes in
+  // reasonCode: the WEST-A codes are not in the HDR condition value set, which is preferred.
   const complaint = chiefComplaint(triage);
-  if (!e.reasonCode?.length && complaint) e.reasonCode = [clone(complaint)];
+  if (!e.reasonCode?.length && !e.reasonReference?.length && complaint) {
+    e.reasonCode = [{ text: display(complaint) }];
+    e.reasonReference = [{ reference: `Observation/${triage.id}` }];
+  }
   return e;
 }
 
