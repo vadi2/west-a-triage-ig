@@ -1,0 +1,571 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "west-a-triage-questionnaire",
+  "meta": {
+    "profile": [
+      "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-render"
+    ]
+  },
+  "url": "https://vadi2.github.io/west-a-triage-ig/Questionnaire/west-a-triage-questionnaire",
+  "version": "0.1.0",
+  "name": "WestATriageQuestionnaire",
+  "title": "WEST-A triage",
+  "status": "draft",
+  "experimental": true,
+  "subjectType": [
+    "Patient"
+  ],
+  "description": "Mock-mode stand-in for the guide's WEST-A triage Questionnaire, with the linkIds of the demo contract. The real one, with template-based extraction, lives in input/fsh/questionnaire.",
+  "item": [
+    {
+      "linkId": "vitals",
+      "text": "Vital parameters",
+      "type": "group",
+      "item": [
+        {
+          "linkId": "respiratory-rate",
+          "text": "Respiratory rate",
+          "type": "integer",
+          "required": true,
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-unit",
+              "valueCoding": {
+                "system": "http://unitsofmeasure.org",
+                "code": "/min",
+                "display": "/min"
+              }
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+              "valueInteger": 0
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
+              "valueInteger": 80
+            }
+          ]
+        },
+        {
+          "linkId": "oxygen-saturation",
+          "text": "SpO₂",
+          "type": "integer",
+          "required": true,
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-unit",
+              "valueCoding": {
+                "system": "http://unitsofmeasure.org",
+                "code": "%",
+                "display": "%"
+              }
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+              "valueInteger": 40
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
+              "valueInteger": 100
+            }
+          ]
+        },
+        {
+          "linkId": "oxygen-flow",
+          "text": "Supplemental oxygen (0 for room air)",
+          "type": "decimal",
+          "required": true,
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-unit",
+              "valueCoding": {
+                "system": "http://unitsofmeasure.org",
+                "code": "L/min",
+                "display": "L/min"
+              }
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+              "valueDecimal": 0
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
+              "valueDecimal": 60
+            }
+          ],
+          "initial": [
+            {
+              "valueDecimal": 0
+            }
+          ]
+        },
+        {
+          "linkId": "systolic",
+          "text": "Systolic blood pressure",
+          "type": "integer",
+          "required": true,
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-unit",
+              "valueCoding": {
+                "system": "http://unitsofmeasure.org",
+                "code": "mm[Hg]",
+                "display": "mmHg"
+              }
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+              "valueInteger": 30
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
+              "valueInteger": 300
+            }
+          ]
+        },
+        {
+          "linkId": "diastolic",
+          "text": "Diastolic blood pressure",
+          "type": "integer",
+          "required": false,
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-unit",
+              "valueCoding": {
+                "system": "http://unitsofmeasure.org",
+                "code": "mm[Hg]",
+                "display": "mmHg"
+              }
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+              "valueInteger": 10
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
+              "valueInteger": 200
+            }
+          ]
+        },
+        {
+          "linkId": "heart-rate",
+          "text": "Heart rate (pulse)",
+          "type": "integer",
+          "required": true,
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-unit",
+              "valueCoding": {
+                "system": "http://unitsofmeasure.org",
+                "code": "/min",
+                "display": "/min"
+              }
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+              "valueInteger": 10
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
+              "valueInteger": 250
+            }
+          ]
+        },
+        {
+          "linkId": "consciousness",
+          "text": "Consciousness (ACVPU)",
+          "type": "choice",
+          "required": true,
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+              "valueCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://hl7.org/fhir/questionnaire-item-control",
+                    "code": "radio-button"
+                  }
+                ]
+              }
+            }
+          ],
+          "answerOption": [
+            {
+              "valueCoding": {
+                "system": "http://snomed.info/sct",
+                "code": "248234008",
+                "display": "A · Mentally alert"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "http://snomed.info/sct",
+                "code": "130987000",
+                "display": "C · Acute confusion"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "http://snomed.info/sct",
+                "code": "300202002",
+                "display": "V · Responds to voice"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "http://snomed.info/sct",
+                "code": "450847001",
+                "display": "P · Responds to pain"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "http://snomed.info/sct",
+                "code": "422768004",
+                "display": "U · Unresponsive"
+              }
+            }
+          ]
+        },
+        {
+          "linkId": "temperature",
+          "text": "Body temperature",
+          "type": "decimal",
+          "required": true,
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-unit",
+              "valueCoding": {
+                "system": "http://unitsofmeasure.org",
+                "code": "Cel",
+                "display": "°C"
+              }
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+              "valueDecimal": 25
+            },
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
+              "valueDecimal": 45
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "linkId": "assessment",
+      "text": "Triage assessment",
+      "type": "group",
+      "item": [
+        {
+          "linkId": "chief-complaint",
+          "text": "Chief complaint (sökorsak)",
+          "type": "choice",
+          "required": true,
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+              "valueCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://hl7.org/fhir/questionnaire-item-control",
+                    "code": "drop-down"
+                  }
+                ]
+              }
+            }
+          ],
+          "answerOption": [
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+                "code": "1",
+                "display": "Allergi"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+                "code": "2",
+                "display": "Blodtryck"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+                "code": "3",
+                "display": "Blödning/anemi"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+                "code": "4",
+                "display": "Bröstsmärta"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+                "code": "5",
+                "display": "Buksmärta"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+                "code": "6",
+                "display": "Diabetes"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+                "code": "7",
+                "display": "Diarré/kräkningar"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+                "code": "8",
+                "display": "Dyspné"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+                "code": "9",
+                "display": "Extremitetsproblem"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+                "code": "10",
+                "display": "Graviditet fr.o.m. 18+0/post partum"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+                "code": "11",
+                "display": "Gynekologiska sökorsaker"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+                "code": "12",
+                "display": "Hjärtrytm"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+                "code": "13",
+                "display": "Hjärtstopp/luftvägshinder"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+                "code": "14",
+                "display": "Hud"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+                "code": "15",
+                "display": "Huvudvärk"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+                "code": "16",
+                "display": "Infektion/feber/sepsis"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+                "code": "17",
+                "display": "Intox"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+                "code": "18",
+                "display": "Komplikation operation/gips"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+                "code": "19",
+                "display": "Leversjukdom"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+                "code": "20",
+                "display": "Ljumske"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+                "code": "21",
+                "display": "Medvetandepåverkan"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+                "code": "22",
+                "display": "Neuro/yrsel/kramper"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+                "code": "23",
+                "display": "Ospecifik sjukdom"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+                "code": "24",
+                "display": "Psykiska besvär"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+                "code": "25",
+                "display": "Rektala besvär"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+                "code": "26",
+                "display": "Ryggsmärta"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+                "code": "27",
+                "display": "Svimning"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+                "code": "28",
+                "display": "Underlivsbesvär män"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+                "code": "29",
+                "display": "Urinvägsbesvär"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+                "code": "30",
+                "display": "Trauma/skador"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
+                "code": "31",
+                "display": "Ögon och öron"
+              }
+            }
+          ]
+        },
+        {
+          "linkId": "complaint-priority",
+          "text": "Most urgent warning symptom of the complaint algorithm (Grön when none)",
+          "type": "choice",
+          "required": true,
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+              "valueCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://hl7.org/fhir/questionnaire-item-control",
+                    "code": "radio-button"
+                  }
+                ]
+              }
+            }
+          ],
+          "answerOption": [
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+                "code": "1",
+                "display": "Röd"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+                "code": "2",
+                "display": "Orange"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+                "code": "3",
+                "display": "Gul"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+                "code": "4",
+                "display": "Grön"
+              }
+            }
+          ]
+        },
+        {
+          "linkId": "frail-elderly",
+          "text": "Frail elderly (p. 46)",
+          "type": "boolean"
+        },
+        {
+          "linkId": "likely-admission",
+          "text": "Likely to be admitted (p. 47)",
+          "type": "boolean"
+        },
+        {
+          "linkId": "violence-or-assault",
+          "text": "Violence or sexual assault (p. 48)",
+          "type": "boolean"
+        },
+        {
+          "linkId": "oxygen-scale-2",
+          "text": "SpO₂ scale 2, on a physician's order",
+          "type": "boolean"
+        }
+      ]
+    }
+  ]
+}
