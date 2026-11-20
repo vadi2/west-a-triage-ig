@@ -10,6 +10,14 @@ on:
         description: Path or URL of the WEST-A IG package.tgz
         required: false
         default: https://build.fhir.org/ig/vadi2/west-a-triage-ig/package.tgz
+  # A workflow is only dispatchable once GitHub has seen it run, and it is not on main yet
+  push:
+    branches: [demo-hdr]
+    paths:
+      - demo/lib/hdr.js
+      - demo/lib/make-hdr-example.mjs
+      - demo/lib/fixtures/discharge-report.json
+      - .github/workflows/hdr.yml
   pull_request:
     paths:
       - demo/lib/hdr.js
