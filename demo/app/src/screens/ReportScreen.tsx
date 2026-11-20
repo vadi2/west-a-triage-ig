@@ -1,0 +1,187 @@
+import { useCallback, useEffect, useState } from 'react';
+import type { Bundle, Composition, CompositionSection, Encounter, Observation, Organization, Patient, Practitioner } from 'fhir/r4';
+import type { Route } from '../App';
+import { ErrorNote } from '../components/ErrorNote';
+import { clock, stamp } from '../components/format';
+import { Narrative } from '../components/Narrative';
+import { client } from '../services/cds';
+import { NURSE } from '../services/config';
+import { entries } from '../services/fhirClient';
+import { dischargeReport } from '../services/hdr';
+import { nowLocal, patientName } from '../services/patients';
+
+interface Props {
+  patientId: string;
+  encounterId?: string;
+  go: (r: Route) => void;
+}
+
+// The emergency department that keeps the report. Not on the server: the HAPI load brings no
+// Organization, so the app supplies this one to the report.
+const ORGANIZATION: Organization = {
+  resourceType: 'Organization',
+  id: 'west-a-demo-ed',
+  active: true,
+  name: 'Akutmottagningen (demo), Västra Götalandsregionen',
+  type: [{ coding: [{ system: 'http://terminology.hl7.org/CodeSystem/organization-type', code: 'prov', display: 'Healthcare Provider' }] }],
+  address: [{ country: 'SE' }],
+};
+
+const has = (o: Observation, code: string) => !!o.code.coding?.some((c) => c.code === code);
+
+export function ReportScreen({ patientId, encounterId, go }: Props) {
+  const [patient, setPatient] = useState<Patient>();
+  const [encounter, setEncounter] = useState<Encounter>();
+  const [report, setReport] = useState<Bundle>();
+  const [error, setError] = useState<unknown>();
+  const [what, setWhat] = useState('Loading the visit');
+  const [busy, setBusy] = useState(false);
+
+  const build = useCallback(
+    async (p: Patient, enc: Encounter) => {
+      setBusy(true);
+      setWhat('Building the discharge report');
+      setError(undefined);
+      try {
+        const [author, obs] = await Promise.all([
+          client.read<Practitioner>('Practitioner', NURSE.id),
+          client.search<Observation>('Observation', { subject: `Patient/${p.id}`, encounter: `Encounter/${enc.id}`, _sort: 'date', _count: '500' }),
+        ]);
+        const all = entries(obs);
+        const triage = all.filter((o) => has(o, '425705009'));
+        const news2 = all.filter((o) => has(o, '1104051000000101'));
+        const vitals = all.filter((o) => !triage.includes(o) && !news2.includes(o));
+        setReport(await dischargeReport({ patient: p, encounter: enc, author, organization: ORGANIZATION, vitals, news2, triage }));
+      } catch (e) {
+        setError(e);
+      } finally {
+        setBusy(false);
+      }
+    },
+    [],
+  );
+
+  useEffect(() => {
+    let live = true;
+    (async () => {
+      try {
+        const p = await client.read<Patient>('Patient', patientId);
+        let enc: Encounter | undefined;
+        if (encounterId) enc = await client.read<Encounter>('Encounter', encounterId);
+        else {
+          const found = entries(await client.search<Encounter>('Encounter', { subject: `Patient/${patientId}` }));
+          enc = found.sort((a, b) => (b.period?.start ?? '').localeCompare(a.period?.start ?? ''))[0];
+        }
+        if (!live) return;
+        setPatient(p);
+        setEncounter(enc);
+        if (enc && enc.status !== 'in-progress') void build(p, enc);
+      } catch (e) {
+        if (live) setError(e);
+      }
+    })();
+    return () => {
+      live = false;
+    };
+  }, [patientId, encounterId, build]);
+
+  async function closeStay() {
+    if (!patient || !encounter) return;
+    setBusy(true);
+    setWhat('Closing the stay (Encounter update)');
+    setError(undefined);
+    try {
+      const closed = await client.update<Encounter>({
+        ...encounter,
+        status: 'finished',
+        period: { ...encounter.period, end: nowLocal() },
+      });
+      setEncounter(closed);
+      await build(patient, closed);
+    } catch (e) {
+      setError(e);
+      setBusy(false);
+    }
+  }
+
+  function download() {
+    if (!report) return;
+    const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/fhir+json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `hdr-${patientId}-${(encounter?.period?.end ?? nowLocal()).slice(0, 10)}.json`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  }
+
+  const composition = report?.entry?.[0]?.resource as Composition | undefined;
+
+  return (
+    <div className="report">
+      <header className="report-head">
+        <h1>Hospital Discharge Report{patient ? `: ${patientName(patient)}` : ''}</h1>
+        <p className="quiet">HL7 Europe HDR 1.0.0, a FHIR document Bundle for the EHDS.</p>
+      </header>
+
+      {encounter?.status === 'in-progress' && !report && (
+        <div className="close-stay">
+          <p>
+            The visit that started {stamp(encounter.period?.start)} is still open. Closing it sets the end time to now ({clock(nowLocal())})
+            and status to finished.
+          </p>
+          <div className="row">
+            <button type="button" className="primary big" onClick={closeStay} disabled={busy}>
+              {busy ? 'Closing…' : 'Close the stay and build the report'}
+            </button>
+            <button type="button" onClick={() => go({ screen: 'record', patientId })}>
+              Back to the record
+            </button>
+          </div>
+        </div>
+      )}
+      {!encounter && !error && patient && <p className="quiet">This patient has no visit to report on.</p>}
+      {busy && !report && <p className="quiet">{what}…</p>}
+      <ErrorNote error={error} what={what} />
+
+      {report && composition && (
+        <article className="document">
+          <div className="doc-meta">
+            <p>
+              <strong>{composition.title}</strong> · {composition.type.coding?.[0]?.display ?? composition.type.text} ·{' '}
+              {composition.status}
+            </p>
+            <p>
+              Written {stamp(composition.date)} · {report.entry?.length ?? 0} resources in the Bundle · visit{' '}
+              {stamp(encounter?.period?.start)} – {clock(encounter?.period?.end)}
+            </p>
+            <div className="row">
+              <button type="button" className="primary" onClick={download}>
+                Download the Bundle (JSON)
+              </button>
+              <button type="button" onClick={() => go({ screen: 'record', patientId, encounterId: encounter?.id })}>
+                Back to the record
+              </button>
+            </div>
+          </div>
+          {(composition.section ?? []).map((s, i) => (
+            <DocSection key={i} section={s} depth={0} />
+          ))}
+        </article>
+      )}
+      {report && !composition && (
+        <ErrorNote error={new Error('The report Bundle does not start with a Composition')} what="Reading the report" />
+      )}
+    </div>
+  );
+}
+
+function DocSection({ section, depth }: { section: CompositionSection; depth: number }) {
+  const H = depth === 0 ? 'h2' : 'h3';
+  return (
+    <section className={`doc-section depth-${depth}`}>
+      <H>{section.title ?? section.code?.coding?.[0]?.display ?? 'Section'}</H>
+      {(section.text || !section.section?.length) && <Narrative xhtml={section.text?.div} />}
+      {section.section?.map((sub, i) => <DocSection key={i} section={sub} depth={depth + 1} />)}
+    </section>
+  );
+}
