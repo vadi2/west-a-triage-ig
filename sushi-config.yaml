@@ -46,3 +46,5 @@ menu:
 parameters:
   path-expansion-params: '../../expansion-params.json'  # SNOMED CT Swedish edition
   path-binary: input/cql  # the CQL sources of the Library resources
+  # keep the versions set in FSH: FHIRHelpers is 4.0.1, which the CQL includes ask for
+  apply-version: false
