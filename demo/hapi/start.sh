@@ -34,12 +34,11 @@ else
   "${PODMAN[@]}" volume exists "${VOLUME}" || "${PODMAN[@]}" volume create "${VOLUME}" >/dev/null
   "${PODMAN[@]}" run -d --name "${NAME}" "${RUN_AS[@]}" \
     -m 2g --memory-swap 2g \
-    -p "${PORT}:8080" \
+    -p "127.0.0.1:${PORT}:8080" \
     -v "${VOLUME}:/data" \
     -e JAVA_TOOL_OPTIONS="-Xmx1300m -Xss512k -XX:MaxMetaspaceSize=320m -XX:ReservedCodeCacheSize=128m -XX:+UseSerialGC" \
     -e HAPI_FHIR_FHIR_VERSION=R4 \
     -e HAPI_FHIR_CR_ENABLED=true \
-    -e HAPI_FHIR_CORS_ALLOWED_ORIGIN_0='*' \
     -e HAPI_FHIR_ALLOW_EXTERNAL_REFERENCES=true \
     -e SPRING_AI_MCP_SERVER_ENABLED=false \
     -e SPRING_DATASOURCE_URL="jdbc:h2:file:/data/h2" \

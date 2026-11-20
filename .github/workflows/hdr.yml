@@ -13,14 +13,6 @@ on:
       ig-run:
         description: Id of a Build IG run whose ig-output package.tgz to use instead
         required: false
-  # A workflow is only dispatchable once GitHub has seen it run, and it is not on main yet
-  push:
-    branches: [demo-hdr]
-    paths:
-      - demo/lib/hdr.js
-      - demo/lib/make-hdr-example.mjs
-      - demo/lib/fixtures/discharge-report.json
-      - .github/workflows/hdr.yml
   pull_request:
     paths:
       - demo/lib/hdr.js
