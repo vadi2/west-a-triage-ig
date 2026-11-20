@@ -13,6 +13,9 @@
 export const IG = 'https://vadi2.github.io/west-a-triage-ig';
 export const PRIORITY_SYSTEM = `${IG}/CodeSystem/west-a-triage-priority-cs`;
 export const CHIEF_COMPLAINT_SYSTEM = `${IG}/CodeSystem/west-a-chief-complaint-cs`;
+// The triage criteria (warning symptoms) and the guide's own observation codes
+export const CRITERION_SYSTEM = `${IG}/CodeSystem/west-a-triage-criterion-cs`;
+export const OBSERVATION_CODE_SYSTEM = `${IG}/CodeSystem/west-a-observation-code-cs`;
 export const NEWS2_PROFILE = `${IG}/StructureDefinition/west-a-news2-observation`;
 export const TRIAGE_PROFILE = `${IG}/StructureDefinition/west-a-triage-observation`;
 const SCT = 'http://snomed.info/sct';
@@ -132,6 +135,13 @@ export function priorityCoding(priority) {
   return { system: PRIORITY_SYSTEM, code, display: PRIORITY_DISPLAY[code] };
 }
 
+/** A Coding of the WEST-A triage criterion code system, from a code or a Coding */
+export function criterionCoding(criterion) {
+  if (criterion === null || criterion === undefined || criterion === '') return null;
+  if (typeof criterion === 'object') return { system: CRITERION_SYSTEM, ...criterion };
+  return { system: CRITERION_SYSTEM, code: String(criterion) };
+}
+
 /** A Coding of the WEST-A chief complaint code system, from a code or a Coding */
 export function chiefComplaintCoding(complaint) {
   if (complaint === null || complaint === undefined || complaint === '') return null;
@@ -158,7 +168,7 @@ function outputs(parameters) {
 }
 
 // The CQL parameters of the WEST-A libraries, as a Parameters resource
-function cqlParameters({ complaintPriority, yellowAsLowest, scale2 }) {
+function cqlParameters({ complaintPriority, yellowAsLowest, scale2, triageCriteria }) {
   const parameter = [
     { name: 'Yellow As Lowest Priority', valueBoolean: !!yellowAsLowest },
     { name: 'Use Oxygen Saturation Scale 2', valueBoolean: !!scale2 },
@@ -166,6 +176,10 @@ function cqlParameters({ complaintPriority, yellowAsLowest, scale2 }) {
   const complaint = priorityCoding(complaintPriority);
   // Not yet assessed: leave the parameter out, so it is null and no priority is proposed
   if (complaint) parameter.unshift({ name: 'Complaint Priority', valueCoding: complaint });
+  // A list parameter of CQL: one entry per element, and none at all when not given
+  for (const criterion of (triageCriteria ?? []).map(criterionCoding).filter(Boolean)) {
+    parameter.push({ name: 'Triage Criteria', valueCoding: criterion });
+  }
   return { resourceType: 'Parameters', parameter };
 }
 
@@ -216,6 +230,9 @@ function walkCarePlan(carePlan, plan = 'PlanDefinition/west-a-triage') {
  *   symptoms of the chief complaint, a code '1'-'4' or a Coding; null when not assessed
  * @param {boolean} [options.yellowAsLowest]  frail elderly, likely admission, violence
  * @param {boolean} [options.scale2]  NEWS2 SpO2 scale 2
+ * @param {Array<string|object>} [options.triageCriteria]  the triage criteria (warning
+ *   symptoms) the nurse found, codes or Codings of the WEST-A triage criterion code system;
+ *   passed as the CQL parameter `Triage Criteria` only when given
  * @returns {Promise<{
  *   news2: { total: number|null, risk: string|null, scale2: boolean,
  *            scores: Object<string, number|null>, derivedFrom: {reference: string}[] },
@@ -224,10 +241,11 @@ function walkCarePlan(carePlan, plan = 'PlanDefinition/west-a-triage') {
  */
 export async function runTriage(client, {
   patientId, encounterId, practitionerId, complaintPriority = null, yellowAsLowest = false, scale2 = false,
+  triageCriteria,
 } = {}) {
   if (!patientId) throw new Error('runTriage needs a patientId');
   const subject = reference('Patient', patientId).reference;
-  const parameters = cqlParameters({ complaintPriority, yellowAsLowest, scale2 });
+  const parameters = cqlParameters({ complaintPriority, yellowAsLowest, scale2, triageCriteria });
 
   const applyParameters = {
     resourceType: 'Parameters',
@@ -346,11 +364,13 @@ export function news2Observation({
  * @param {string} [options.effectiveDateTime]  default now
  * @param {string} [options.note]
  * @param {Array<string|object>} [options.derivedFrom]  more observations the priority is based on
+ * @param {Array<string|object>} [options.criteria]  the triage criteria found, codes or
+ *   Codings of the WEST-A triage criterion code system: one component each
  * @param {string} [options.id]
  */
 export function triageObservation({
   priority, chiefComplaint, news2, proposedPriority, patientId, encounterId, performerId,
-  effectiveDateTime = new Date().toISOString(), note, derivedFrom = [], id,
+  effectiveDateTime = new Date().toISOString(), note, derivedFrom = [], criteria = [], id,
 }) {
   const value = priorityCoding(priority);
   if (!value) throw new Error('triageObservation needs the confirmed priority');
@@ -381,9 +401,15 @@ export function triageObservation({
     valueCodeableConcept: { coding: [value] },
     ...(note ? { note: [{ text: note }] } : {}),
     ...(sources.length ? { derivedFrom: sources } : {}),
-    component: [{
-      code: { coding: [sctSe('1269489004', 'sökorsak')] },
-      valueCodeableConcept: { coding: [complaint] },
-    }],
+    component: [
+      {
+        code: { coding: [sctSe('1269489004', 'sökorsak')] },
+        valueCodeableConcept: { coding: [complaint] },
+      },
+      ...criteria.map(criterionCoding).filter(Boolean).map((criterion) => ({
+        code: { coding: [{ system: OBSERVATION_CODE_SYSTEM, code: '1' }] },
+        valueCodeableConcept: { coding: [criterion] },
+      })),
+    ],
   };
 }
