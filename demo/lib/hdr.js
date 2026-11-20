@@ -45,6 +45,7 @@ const LABELS = {
     priority: 'Prioritet',
     complaint: 'Sökorsak',
     note: 'Anteckning',
+    criteria: 'Varningssymtom',
     news2: 'NEWS2',
     news2Total: 'NEWS2 totalpoäng',
     risk: 'klinisk risk',
@@ -88,6 +89,7 @@ const LABELS = {
     priority: 'Priority',
     complaint: 'Chief complaint',
     note: 'Note',
+    criteria: 'Warning symptoms',
     news2: 'NEWS2',
     news2Total: 'NEWS2 total score',
     risk: 'clinical risk',
@@ -147,6 +149,28 @@ const PRIORITY = {
   '4': { en: 'Green', colour: '#2e7d32', text: '#fff' },
 };
 const CHIEF_COMPLAINT = '1269489004';
+const CRITERION = { system: 'https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-observation-code-cs', code: '1' };
+
+// Names of the 7 WEST-A vital signs, matched on the profile or the code: the LOINC displays are
+// English, and the Swedish SNOMED CT displays are not always present
+const VITAL_NAMES = [
+  { profile: 'west-a-respiratory-rate', codes: ['86290005', '9279-1'], sv: 'Andningsfrekvens', en: 'Respiratory rate' },
+  { profile: 'west-a-oxygen-saturation', codes: ['431314004', '2708-6', '59408-5'], sv: 'Syremättnad', en: 'Oxygen saturation' },
+  { profile: 'west-a-supplemental-oxygen', codes: ['427081008'], sv: 'Tillförd syrgas', en: 'Supplemental oxygen' },
+  { profile: 'west-a-blood-pressure', codes: ['75367002', '85354-9'], sv: 'Blodtryck', en: 'Blood pressure' },
+  { profile: 'west-a-heart-rate', codes: ['364075005', '8867-4'], sv: 'Puls', en: 'Heart rate' },
+  { profile: 'west-a-consciousness', codes: ['1104441000000107'], sv: 'Medvetandegrad (ACVPU)', en: 'Level of consciousness (ACVPU)' },
+  { profile: 'west-a-body-temperature', codes: ['386725007', '8310-5'], sv: 'Kroppstemperatur', en: 'Body temperature' },
+];
+
+// The ACVPU levels (WEST-A ACVPU value set, SNOMED CT), for codings without a display
+const ACVPU = {
+  '248234008': { sv: 'psykiskt klar', en: 'Alert' },
+  '130987000': { sv: 'akut konfusion', en: 'New confusion' },
+  '300202002': { sv: 'reagerar på röst', en: 'Responds to voice' },
+  '450847001': { sv: 'reagerar på smärta', en: 'Responds to pain' },
+  '422768004': { sv: 'reagerar inte', en: 'Unresponsive' },
+};
 
 /**
  * Builds an HL7 Europe Hospital Discharge Report document Bundle.
@@ -416,6 +440,7 @@ function triageTable(triage, news2, ctx) {
   return table([
     [L.priority, { html: priorityBadge(triage, ctx) }],
     [L.complaint, display(chiefComplaint(triage))],
+    [L.criteria, listHtml(criteria(triage))],
     [L.news2Total, news2Summary(news2, ctx)],
     ...(triage.note ?? []).map((n) => [L.note, n.text]),
   ]);
@@ -433,7 +458,7 @@ function news2Table(news2, ctx) {
 function vitalsTable(vitals, ctx) {
   const { L } = ctx;
   return `<table><thead><tr><th>${esc(L.parameter)}</th><th>${esc(L.value)}</th><th>${esc(L.time)}</th></tr></thead><tbody>`
-    + vitals.map((o) => `<tr><td>${esc(codeName(o.code, ctx))}</td><td>${esc(observationValue(o, ctx))}</td>`
+    + vitals.map((o) => `<tr><td>${esc(vitalName(o, ctx))}</td><td>${esc(observationValue(o, ctx))}</td>`
       + `<td>${esc(dateTime(o.effectiveDateTime))}</td></tr>`).join('')
     + `</tbody></table>`;
 }
@@ -463,7 +488,7 @@ function resourceHtml(r, ctx, names) {
       return table([[L.practitioner, names.practitioner], [L.role, (r.code ?? []).map(display).join(', ')],
         [L.organization, names.organization]]);
     case 'Observation':
-      return table([[codeName(r.code, ctx), observationValue(r, ctx)], [L.time, dateTime(r.effectiveDateTime)]]);
+      return table([[vitalName(r, ctx), observationValue(r, ctx)], [L.time, dateTime(r.effectiveDateTime)]]);
     default:
       return `<p>${esc(r.resourceType)}</p>`;
   }
@@ -471,6 +496,12 @@ function resourceHtml(r, ctx, names) {
 
 function narrative(html, language, status = 'generated') {
   return { status, div: `<div xmlns="${XHTML}" lang="${esc(language)}" xml:lang="${esc(language)}">${html}</div>` };
+}
+
+// A list for a table cell: '' for none, the text for one, else a <ul>
+function listHtml(items) {
+  if (items.length < 2) return items[0] ?? '';
+  return { html: `<ul>${items.map((i) => `<li>${esc(i)}</li>`).join('')}</ul>` };
 }
 
 // Two-column table of [label, value] rows; a value is text, or { html } that is already escaped
@@ -515,7 +546,7 @@ function observationValue(o, ctx) {
     const q = quantity(o.valueQuantity);
     return o.valueQuantity.code === 'L/min' && o.valueQuantity.value === 0 ? `${q} (${ctx.L.roomAir})` : q;
   }
-  if (o.valueCodeableConcept) return display(o.valueCodeableConcept);
+  if (o.valueCodeableConcept) return codedValue(o.valueCodeableConcept, ctx);
   if (o.valueInteger != null) return String(o.valueInteger);
   if (o.valueString) return o.valueString;
   const comps = o.component ?? [];
@@ -530,6 +561,35 @@ function quantity(q) {
 }
 
 // Readable name of an observation or component code in the narrative language
+// Value of a coded observation; the ACVPU levels in the narrative language when there is no text
+function codedValue(cc, { L }) {
+  const acvpu = ACVPU[cc.coding?.find((c) => c.system === SCT && ACVPU[c.code])?.code];
+  if (acvpu && !cc.text) {
+    if (L === LABELS.sv) return cc.coding.find((c) => c.system === SCT && c.display)?.display ?? acvpu.sv;
+    return acvpu.en;
+  }
+  return display(cc);
+}
+
+// Name of a WEST-A vital sign Observation, then of its code
+function vitalName(o, ctx) {
+  const codes = (o.code?.coding ?? []).map((c) => c.code);
+  const vital = VITAL_NAMES.find((v) => (o.meta?.profile ?? []).some((p) => p.endsWith(`/StructureDefinition/${v.profile}`)))
+    ?? VITAL_NAMES.find((v) => v.codes.some((c) => codes.includes(c)));
+  if (vital) return ctx.L === LABELS.sv ? vital.sv : vital.en;
+  return o.code?.text ?? codeName(o.code, ctx);
+}
+
+function criteria(triage) {
+  return (triage.component ?? [])
+    .filter((c) => c.code?.coding?.some((cd) => cd.system === CRITERION.system && cd.code === CRITERION.code))
+    .map((c) => {
+      const coding = c.valueCoding ?? c.valueCodeableConcept?.coding?.[0];
+      return c.valueCodeableConcept?.text ?? coding?.display ?? coding?.code;
+    })
+    .filter(Boolean);
+}
+
 function codeName(cc, { L }, short = false) {
   const codings = cc?.coding ?? [];
   const sct = codings.find((c) => c.system === SCT);

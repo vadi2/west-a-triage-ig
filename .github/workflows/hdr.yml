@@ -10,6 +10,9 @@ on:
         description: Path or URL of the WEST-A IG package.tgz
         required: false
         default: https://build.fhir.org/ig/vadi2/west-a-triage-ig/package.tgz
+      ig-run:
+        description: Id of a Build IG run whose ig-output package.tgz to use instead
+        required: false
   # A workflow is only dispatchable once GitHub has seen it run, and it is not on main yet
   push:
     branches: [demo-hdr]
@@ -24,6 +27,10 @@ on:
       - demo/lib/make-hdr-example.mjs
       - demo/lib/fixtures/discharge-report.json
       - .github/workflows/hdr.yml
+
+permissions:
+  contents: read
+  actions: read  # to download the package from another run
 
 env:
   HDR_PROFILE: http://hl7.eu/fhir/hdr/StructureDefinition/bundle-eu-hdr
@@ -44,10 +51,24 @@ jobs:
           distribution: temurin
           java-version: "17"
 
+      - name: Download the package of a Build IG run
+        if: ${{ inputs.ig-run }}
+        uses: actions/download-artifact@v5
+        with:
+          name: ig-output
+          path: ${{ runner.temp }}/ig-output
+          run-id: ${{ inputs.ig-run }}
+          github-token: ${{ github.token }}
+
       - name: Get the WEST-A package
         env:
+          IG_RUN: ${{ inputs.ig-run }}
           PACKAGE: ${{ inputs.package || 'https://build.fhir.org/ig/vadi2/west-a-triage-ig/package.tgz' }}
         run: |
+          if [ -n "$IG_RUN" ]; then
+            cp "$RUNNER_TEMP/ig-output/output/package.tgz" "$RUNNER_TEMP/west-a.tgz"
+            exit 0
+          fi
           case "$PACKAGE" in
             http://*|https://*) curl -fsSL -o "$RUNNER_TEMP/west-a.tgz" "$PACKAGE" ;;
             *) cp "$PACKAGE" "$RUNNER_TEMP/west-a.tgz" ;;

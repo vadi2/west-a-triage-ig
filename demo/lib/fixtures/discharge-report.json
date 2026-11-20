@@ -88,7 +88,7 @@
             },
             "text": {
               "status": "generated",
-              "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"sv\" xml:lang=\"sv\"><p>Triagerad 2026-11-19 08:42 +01:00 av Anna Berg.</p><table><tbody><tr><th>Prioritet</th><td><span style=\"background-color: #ef6c00; color: #fff; padding: 0 0.4em; font-weight: bold\">Orange</span></td></tr><tr><th>Sökorsak</th><td>Bröstsmärta</td></tr><tr><th>NEWS2 totalpoäng</th><td>5 (klinisk risk: medelhög)</td></tr><tr><th>Anteckning</th><td>Bröstsmärta, pågående med misstanke om AKS.</td></tr></tbody></table><table><thead><tr><th>NEWS2: Parameter</th><th>Poäng</th></tr></thead><tbody><tr><td>Andningsfrekvens</td><td>2</td></tr><tr><td>Syremättnad 1</td><td>1</td></tr><tr><td>Tillförd syrgas</td><td>0</td></tr><tr><td>Systoliskt blodtryck</td><td>1</td></tr><tr><td>Pulsfrekvens</td><td>1</td></tr><tr><td>Medvetandegrad</td><td>0</td></tr><tr><td>Temperatur</td><td>0</td></tr></tbody></table></div>"
+              "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"sv\" xml:lang=\"sv\"><p>Triagerad 2026-11-19 08:42 +01:00 av Anna Berg.</p><table><tbody><tr><th>Prioritet</th><td><span style=\"background-color: #ef6c00; color: #fff; padding: 0 0.4em; font-weight: bold\">Orange</span></td></tr><tr><th>Sökorsak</th><td>Bröstsmärta</td></tr><tr><th>Varningssymtom</th><td>Bröstsmärta, pågående med misstanke om AKS eller annan allvarlig orsak</td></tr><tr><th>NEWS2 totalpoäng</th><td>5 (klinisk risk: medelhög)</td></tr></tbody></table><table><thead><tr><th>NEWS2: Parameter</th><th>Poäng</th></tr></thead><tbody><tr><td>Andningsfrekvens</td><td>2</td></tr><tr><td>Syremättnad 1</td><td>1</td></tr><tr><td>Tillförd syrgas</td><td>0</td></tr><tr><td>Systoliskt blodtryck</td><td>1</td></tr><tr><td>Pulsfrekvens</td><td>1</td></tr><tr><td>Medvetandegrad</td><td>0</td></tr><tr><td>Temperatur</td><td>0</td></tr></tbody></table></div>"
             },
             "entry": [
               {
@@ -112,7 +112,7 @@
                 },
                 "text": {
                   "status": "generated",
-                  "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"sv\" xml:lang=\"sv\"><table><thead><tr><th>Parameter</th><th>Värde</th><th>Tid</th></tr></thead><tbody><tr><td>Andningsfrekvens</td><td>22 /min</td><td>2026-11-19 08:38 +01:00</td></tr><tr><td>Perifer syremättnad</td><td>95 %</td><td>2026-11-19 08:38 +01:00</td></tr><tr><td>Flöde för tillförd syrgas</td><td>0 L/min (luft)</td><td>2026-11-19 08:38 +01:00</td></tr><tr><td>Blodtryck</td><td>105/70 mmHg</td><td>2026-11-19 08:38 +01:00</td></tr><tr><td>Hjärtfrekvens</td><td>95 /min</td><td>2026-11-19 08:38 +01:00</td></tr><tr><td>Medvetandegrad (ACVPU)</td><td>psykiskt klar</td><td>2026-11-19 08:38 +01:00</td></tr><tr><td>Kroppstemperatur</td><td>37.5 °C</td><td>2026-11-19 08:38 +01:00</td></tr></tbody></table></div>"
+                  "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"sv\" xml:lang=\"sv\"><table><thead><tr><th>Parameter</th><th>Värde</th><th>Tid</th></tr></thead><tbody><tr><td>Andningsfrekvens</td><td>22 /min</td><td>2026-11-19 08:38 +01:00</td></tr><tr><td>Syremättnad</td><td>95 %</td><td>2026-11-19 08:38 +01:00</td></tr><tr><td>Tillförd syrgas</td><td>0 L/min (luft)</td><td>2026-11-19 08:38 +01:00</td></tr><tr><td>Blodtryck</td><td>105/70 mmHg</td><td>2026-11-19 08:38 +01:00</td></tr><tr><td>Puls</td><td>95 /min</td><td>2026-11-19 08:38 +01:00</td></tr><tr><td>Medvetandegrad (ACVPU)</td><td>psykiskt klar</td><td>2026-11-19 08:38 +01:00</td></tr><tr><td>Kroppstemperatur</td><td>37.5 °C</td><td>2026-11-19 08:38 +01:00</td></tr></tbody></table></div>"
                 },
                 "entry": [
                   {
@@ -1040,7 +1040,7 @@
         "language": "sv",
         "text": {
           "status": "generated",
-          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"sv\" lang=\"sv\"><p class=\"res-header-id\"><b>Generated Narrative: Observation example-triage-chest-pain</b></p><a name=\"example-triage-chest-pain\"> </a><a name=\"hcexample-triage-chest-pain\"> </a><div style=\"display: inline-block; background-color: #fbffeb; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Language: sv</p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-west-a-triage-observation.html\">WEST-A Triage Observation</a></p></div><p><b>status</b>: Final</p><p><b>category</b>: <span title=\"Codes:{http://terminology.hl7.org/CodeSystem/observation-category survey}\">Survey</span></p><p><b>code</b>: <span title=\"Codes:{http://snomed.info/sct 425705009}\">triagering</span></p><p><b>subject</b>: <a href=\"Patient-example-patient-personnummer.html\">Maria Ljungberg(official) Female, DoB: 1961-01-18 ( http://electronichealth.se/identifier/personnummer#PersonnummerNS#196101182803)</a></p><p><b>encounter</b>: <a href=\"Encounter-example-encounter-emergency.html\">Encounter: status = in-progress; class = emergency (ActCode#EMER); period = 2026-11-19 08:30:00+0100 --&gt; (ongoing)</a></p><p><b>effective</b>: 2026-11-19 08:42:00+0100</p><p><b>performer</b>: <a href=\"Practitioner-example-practitioner-triage-nurse.html\">Anna Berg</a></p><p><b>value</b>: <span title=\"Codes:{https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs 2}\">Orange</span></p><p><b>note</b>: </p><blockquote><div><p>Bröstsmärta, pågående med misstanke om AKS.</p>\n</div></blockquote><p><b>derivedFrom</b>: <a href=\"Observation-example-news2.html\">Observation poäng enligt Royal College of Physicians NEWS2 (National Early Warning Score 2), totalpoäng</a></p><h3>Components</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Code</b></td><td><b>Value[x]</b></td></tr><tr><td style=\"display: none\">*</td><td><span title=\"Codes:{http://snomed.info/sct 1269489004}\">sökorsak</span></td><td><span title=\"Codes:{https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs 4}\">Bröstsmärta</span></td></tr></table></div>"
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"sv\" lang=\"sv\"><p class=\"res-header-id\"><b>Generated Narrative: Observation example-triage-chest-pain</b></p><a name=\"example-triage-chest-pain\"> </a><a name=\"hcexample-triage-chest-pain\"> </a><div style=\"display: inline-block; background-color: #fbffeb; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Language: sv</p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-west-a-triage-observation.html\">WEST-A Triage Observation</a></p></div><p><b>status</b>: Final</p><p><b>category</b>: <span title=\"Codes:{http://terminology.hl7.org/CodeSystem/observation-category survey}\">Survey</span></p><p><b>code</b>: <span title=\"Codes:{http://snomed.info/sct 425705009}\">triagering</span></p><p><b>subject</b>: <a href=\"Patient-example-patient-personnummer.html\">Maria Ljungberg(official) Female, DoB: 1961-01-18 ( http://electronichealth.se/identifier/personnummer#PersonnummerNS#196101182803)</a></p><p><b>encounter</b>: <a href=\"Encounter-example-encounter-emergency.html\">Encounter: status = in-progress; class = emergency (ActCode#EMER); period = 2026-11-19 08:30:00+0100 --&gt; (ongoing)</a></p><p><b>effective</b>: 2026-11-19 08:42:00+0100</p><p><b>performer</b>: <a href=\"Practitioner-example-practitioner-triage-nurse.html\">Anna Berg</a></p><p><b>value</b>: <span title=\"Codes:{https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs 2}\">Orange</span></p><p><b>derivedFrom</b>: <a href=\"Observation-example-news2.html\">Observation poäng enligt Royal College of Physicians NEWS2 (National Early Warning Score 2), totalpoäng</a></p><blockquote><p><b>component</b></p><p><b>code</b>: <span title=\"Codes:{http://snomed.info/sct 1269489004}\">sökorsak</span></p><p><b>value</b>: <span title=\"Codes:{https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs 4}\">Bröstsmärta</span></p></blockquote><blockquote><p><b>component</b></p><p><b>code</b>: <span title=\"Codes:{https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-observation-code-cs 1}\">Triagekriterium</span></p><p><b>value</b>: <span title=\"Codes:{https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-criterion-cs 15}\">Bröstsmärta, pågående med misstanke om AKS eller annan allvarlig orsak</span></p></blockquote></div>"
         },
         "status": "final",
         "category": [
@@ -1085,11 +1085,6 @@
             }
           ]
         },
-        "note": [
-          {
-            "text": "Bröstsmärta, pågående med misstanke om AKS."
-          }
-        ],
         "derivedFrom": [
           {
             "reference": "urn:uuid:aa6a185c-ecdf-83b5-973d-b0922ab48d3f"
@@ -1113,6 +1108,26 @@
                   "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-chief-complaint-cs",
                   "code": "4",
                   "display": "Bröstsmärta"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-observation-code-cs",
+                  "code": "1",
+                  "display": "Triagekriterium"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-criterion-cs",
+                  "code": "15",
+                  "display": "Bröstsmärta, pågående med misstanke om AKS eller annan allvarlig orsak"
                 }
               ]
             }
