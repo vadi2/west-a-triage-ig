@@ -3,18 +3,197 @@ name: Build IG
 # All IG builds run here, not locally: SUSHI, the IG Publisher (which also translates
 # the CQL in input/cql), its QA report, validation of the hand-written JSON on the
 # profile pages, the negative tests, and the CQL test cases.
+#
+# The build job builds the IG, or reuses the IG built from the same sources by the same
+# SUSHI and IG Publisher versions, and checks its QA report. Then the checks, cql and
+# e2e jobs run in parallel on the ig-output artifact.
 
 on:
   push:
     branches: [main]
   pull_request:
   workflow_dispatch:
+    inputs:
+      rebuild:
+        description: Build the IG even if one built from the same sources can be reused
+        type: boolean
+        default: false
+
+# A new push to a pull request cancels its older runs; other runs are never cancelled
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: true
+
+env:
+  JAVA_TOOL_OPTIONS: "-Xmx6g"
+  # Bump to rebuild the IG when the way it is built changes, rather than its sources
+  IG_CACHE_VERSION: "1"
+  # The FHIR package cache, without the #current and #dev packages, which change
+  FHIR_PACKAGES: |
+    ~/.fhir/packages
+    !~/.fhir/packages/*#current
+    !~/.fhir/packages/*#dev
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      JAVA_TOOL_OPTIONS: "-Xmx6g"
+    outputs:
+      validator: ${{ steps.tools.outputs.validator }}
+      month: ${{ steps.tools.outputs.month }}
+      package: ${{ steps.package.outputs.built }}
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Find the latest SUSHI, IG Publisher and validator
+        id: tools
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          sushi=$(npm view fsh-sushi version)
+          publisher=$(gh api repos/HL7/fhir-ig-publisher/releases/latest --jq .tag_name)
+          validator=$(gh api repos/hapifhir/org.hl7.fhir.core/releases/latest --jq .tag_name)
+          [ -n "$sushi" ] && [ -n "$publisher" ] && [ -n "$validator" ]
+          echo "SUSHI $sushi, IG Publisher $publisher, validator $validator" | tee ig-build.txt
+          {
+            echo "sushi=$sushi"
+            echo "publisher=$publisher"
+            echo "validator=$validator"
+            echo "month=$(date -u +%Y-%m)"
+          } >> "$GITHUB_OUTPUT"
+
+      # The IG is built only from input/ and the files below: a change elsewhere, such as
+      # in demo/, reuses the IG (and its QA report) built from the same sources by the
+      # same SUSHI and IG Publisher. It is kept only when its QA report has no errors.
+      - name: Reuse the IG built from the same sources
+        id: ig-cache
+        if: ${{ !inputs.rebuild }}
+        uses: actions/cache/restore@v6
+        with:
+          path: output
+          key: ig-output-${{ env.IG_CACHE_VERSION }}-${{ steps.tools.outputs.publisher }}-${{ steps.tools.outputs.sushi }}-${{ hashFiles('input/**', 'sushi-config.yaml', 'ig.ini', 'expansion-params.json') }}
+
+      - uses: actions/setup-node@v5
+        if: steps.ig-cache.outputs.cache-hit != 'true'
+        with:
+          node-version: "20"
+
+      - uses: ruby/setup-ruby@v1
+        if: steps.ig-cache.outputs.cache-hit != 'true'
+        with:
+          ruby-version: "3.3"
+
+      - name: Find the Ruby version
+        id: ruby
+        if: steps.ig-cache.outputs.cache-hit != 'true'
+        run: echo "version=$(ruby -e 'print RUBY_VERSION')" >> "$GITHUB_OUTPUT"
+
+      # Jekyll builds native extensions, which takes most of its install time
+      - name: Cache Jekyll
+        if: steps.ig-cache.outputs.cache-hit != 'true'
+        uses: actions/cache@v6
+        with:
+          path: ~/.jekyll-gems
+          key: jekyll-${{ runner.os }}-ruby-${{ steps.ruby.outputs.version }}-${{ steps.tools.outputs.month }}
+
+      - name: Install SUSHI and Jekyll
+        if: steps.ig-cache.outputs.cache-hit != 'true'
+        run: |
+          npm install -g "fsh-sushi@${{ steps.tools.outputs.sushi }}"
+          echo "GEM_HOME=$HOME/.jekyll-gems" >> "$GITHUB_ENV"
+          echo "$HOME/.jekyll-gems/bin" >> "$GITHUB_PATH"
+          GEM_HOME=$HOME/.jekyll-gems gem install --conservative --no-document jekyll
+
+      - name: Restore the FHIR package cache
+        id: fhir-cache
+        if: steps.ig-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/restore@v6
+        with:
+          path: ${{ env.FHIR_PACKAGES }}
+          key: fhir-packages-${{ steps.tools.outputs.month }}-
+          restore-keys: fhir-packages-${{ steps.tools.outputs.month }}-
+
+      - name: Run SUSHI
+        if: steps.ig-cache.outputs.cache-hit != 'true'
+        run: sushi .
+
+      - name: Download IG Publisher
+        if: steps.ig-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p input-cache
+          curl -fsSL -o input-cache/publisher.jar \
+            "https://github.com/HL7/fhir-ig-publisher/releases/download/${{ steps.tools.outputs.publisher }}/publisher.jar"
+
+      # -no-sushi: SUSHI already ran in its own step
+      - name: Build IG
+        if: steps.ig-cache.outputs.cache-hit != 'true'
+        run: java -jar input-cache/publisher.jar -ig . -no-sushi
+
+      - name: Check QA report
+        id: qa
+        run: python3 .github/scripts/check_qa.py output/qa.json
+
+      - name: Keep the IG for builds from the same sources
+        if: ${{ steps.ig-cache.outputs.cache-hit != 'true' && !inputs.rebuild }}
+        uses: actions/cache/save@v6
+        with:
+          path: output
+          key: ${{ steps.ig-cache.outputs.cache-primary-key }}
+
+      - name: List the FHIR packages
+        id: fhir-packages
+        if: ${{ !cancelled() && steps.ig-cache.outputs.cache-hit != 'true' }}
+        run: |
+          du -sh ~/.fhir/packages || true
+          echo "key=fhir-packages-${{ steps.tools.outputs.month }}-$(ls ~/.fhir/packages | grep -v '#current$\|#dev$' | sort | sha256sum | cut -c1-16)" >> "$GITHUB_OUTPUT"
+
+      - name: Save the FHIR package cache
+        if: ${{ !cancelled() && steps.fhir-packages.outputs.key && steps.fhir-packages.outputs.key != steps.fhir-cache.outputs.cache-matched-key }}
+        uses: actions/cache/save@v6
+        with:
+          path: ${{ env.FHIR_PACKAGES }}
+          key: ${{ steps.fhir-packages.outputs.key }}
+
+      - name: Check that the package was built
+        id: package
+        if: ${{ !cancelled() }}
+        run: echo "built=${{ hashFiles('output/package.tgz') != '' }}" >> "$GITHUB_OUTPUT"
+
+      - name: Job summary
+        if: ${{ !cancelled() }}
+        run: |
+          if [ "${{ steps.ig-cache.outputs.cache-hit }}" = true ]; then
+            echo "Reused the IG built from the same sources by the same tools" >> ig-build.txt
+          fi
+          cat qa-summary.txt >> ig-build.txt 2>/dev/null || echo "No QA summary" >> ig-build.txt
+          {
+            echo "### IG build"
+            cat ig-build.txt
+            echo
+            echo "Download the **ig-output** artifact and open \`output/qa.html\` for details."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload built IG
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v5
+        with:
+          name: ig-output
+          path: |
+            output/
+            ig-build.txt
+          retention-days: 14
+
+  # Validation of the JSON on the profile pages, of the negative tests and of the
+  # Observations extracted from the example triage form
+  checks:
+    needs: build
+    if: ${{ !cancelled() && needs.build.outputs.package == 'true' }}
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v5
@@ -28,74 +207,33 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - uses: ruby/setup-ruby@v1
+      - name: Download built IG
+        uses: actions/download-artifact@v5
         with:
-          ruby-version: "3.3"
+          name: ig-output
 
-      - name: Install SUSHI and Jekyll
-        run: |
-          npm install -g fsh-sushi
-          gem install jekyll
+      - name: Restore the FHIR package cache
+        id: fhir-cache
+        uses: actions/cache/restore@v6
+        with:
+          path: ${{ env.FHIR_PACKAGES }}
+          key: fhir-packages-${{ needs.build.outputs.month }}-
+          restore-keys: fhir-packages-${{ needs.build.outputs.month }}-
 
-      - name: Run SUSHI
-        run: sushi .
-
-      - name: Download IG Publisher and validator
+      - name: Download validator
         run: |
           mkdir -p input-cache
-          curl -fsSL -o input-cache/publisher.jar \
-            https://github.com/HL7/fhir-ig-publisher/releases/latest/download/publisher.jar
           curl -fsSL -o input-cache/validator_cli.jar \
-            https://github.com/hapifhir/org.hl7.fhir.core/releases/latest/download/validator_cli.jar
+            "https://github.com/hapifhir/org.hl7.fhir.core/releases/download/${{ needs.build.outputs.validator }}/validator_cli.jar"
 
-      - name: Build IG
-        run: java -jar input-cache/publisher.jar -ig .
-
-      - name: Check QA report
-        id: qa
-        run: python3 .github/scripts/check_qa.py output/qa.json
-
-      - name: Validate JSON examples on profile pages
+      # In one validator run, which takes about 20 s to start
+      - name: Validate JSON examples on profile pages, and check that invalid test instances are rejected
         if: ${{ !cancelled() && hashFiles('output/package.tgz') != '' }}
         run: |
           python3 .github/scripts/extract_page_json.py input/pagecontent page-json
           # Validate each file against the profile in its meta.profile, so a
           # missing or unresolvable profile fails instead of falling back to base FHIR.
-          status=0
-          for f in page-json/*.json; do
-            [ -e "$f" ] || continue
-            profile=$(jq -r '.meta.profile[0] // empty' "$f")
-            [ -n "$profile" ] || { echo "::error file=$f::no meta.profile"; status=1; continue; }
-            java -jar input-cache/validator_cli.jar "$f" -version 4.0.1 -sct se \
-              -ig output/package.tgz -profile "$profile" > "$f.txt" 2>&1 || true
-            sed -n '/^Validat\|Success\|\*FAILURE\*\|Error @\|Warning @/p' "$f.txt"
-            if ! grep -q "^Success" "$f.txt"; then
-              echo "::error file=$f::failed validation against $profile"; status=1
-            fi
-          done
-          exit $status
-
-      - name: Check that invalid test instances are rejected
-        if: ${{ !cancelled() && hashFiles('output/package.tgz') != '' }}
-        run: |
-          status=0
-          for f in .github/tests/invalid/*.json; do
-            profile=$(jq -r '.meta.profile[0]' "$f")
-            java -jar input-cache/validator_cli.jar "$f" -version 4.0.1 -sct se \
-              -ig output/package.tgz -profile "$profile" > "$f.txt" 2>&1 || true
-            sed -n '/Success\|\*FAILURE\*\|Error @/p' "$f.txt"
-            if grep -q "^Success" "$f.txt"; then
-              echo "::error file=$f::expected validation to fail, but it passed"; status=1
-            fi
-          done
-          exit $status
-
-      - name: Run the CQL test cases
-        if: ${{ !cancelled() && hashFiles('output/package.tgz') != '' }}
-        working-directory: .github/tests/cql
-        run: |
-          npm install --no-package-lock --no-audit --no-fund
-          node run.mjs ../../../output
+          python3 .github/scripts/validate.py page-json/*.json --invalid .github/tests/invalid/*.json
 
       - name: Extract and validate the vital signs of the example triage form
         if: ${{ !cancelled() && hashFiles('output/package.tgz') != '' }}
@@ -106,45 +244,63 @@ jobs:
           (cd demo/lib && npm install --no-package-lock --no-audit --no-fund \
             && node extract.test.mjs ../../output --write ../../extracted)
           status=0
-          for f in extracted/*.json; do
-            profile=$(jq -r '.meta.profile[0] // empty' "$f")
-            [ -n "$profile" ] || { echo "::error file=$f::no meta.profile"; status=1; continue; }
-            java -jar input-cache/validator_cli.jar "$f" -version 4.0.1 -sct se \
-              -ig output/package.tgz -profile "$profile" > "$f.txt" 2>&1 || true
-            sed -n '/^Validat\|Success\|\*FAILURE\*\|Error @\|Warning @/p' "$f.txt"
-            if ! grep -q "^Success" "$f.txt"; then
-              echo "::error file=$f::extracted Observation failed validation against $profile"; status=1
-            fi
-          done
+          python3 .github/scripts/validate.py extracted/*.json || status=1
           [ "$(ls extracted/*.json | wc -l)" -eq 7 ] || { echo "::error::expected 7 extracted Observations"; status=1; }
           exit $status
 
-      - name: Job summary
+      - name: List the FHIR packages
+        id: fhir-packages
         if: ${{ !cancelled() }}
-        run: |
-          {
-            echo "### IG build"
-            cat qa-summary.txt 2>/dev/null || echo "No QA summary"
-            echo
-            echo "Download the **ig-output** artifact and open \`qa.html\` for details."
-          } >> "$GITHUB_STEP_SUMMARY"
+        run: echo "key=fhir-packages-${{ needs.build.outputs.month }}-$(ls ~/.fhir/packages | grep -v '#current$\|#dev$' | sort | sha256sum | cut -c1-16)" >> "$GITHUB_OUTPUT"
 
-      - name: Upload built IG
+      - name: Save the FHIR package cache
+        if: ${{ !cancelled() && steps.fhir-packages.outputs.key != steps.fhir-cache.outputs.cache-matched-key }}
+        uses: actions/cache/save@v6
+        with:
+          path: ${{ env.FHIR_PACKAGES }}
+          key: ${{ steps.fhir-packages.outputs.key }}
+
+      - name: Upload the validated files
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v5
         with:
-          name: ig-output
+          name: ig-checks
           path: |
-            output/
             page-json/
             extracted/
+            .github/tests/invalid/
           retention-days: 14
+
+  cql:
+    needs: build
+    if: ${{ !cancelled() && needs.build.outputs.package == 'true' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "20"
+
+      - name: Download built IG
+        uses: actions/download-artifact@v5
+        with:
+          name: ig-output
+
+      - name: Run the CQL test cases
+        if: ${{ !cancelled() && hashFiles('output/package.tgz') != '' }}
+        working-directory: .github/tests/cql
+        run: |
+          npm install --no-package-lock --no-audit --no-fund
+          node run.mjs ../../../output
 
   # The WEST-A triage demo end to end: HAPI FHIR with clinical reasoning runs the
   # guideline from the package just built (demo/hapi/load.mjs, demo/e2e/run.mjs), and the
   # NEWS2 and triage Observations it records are validated against their profiles.
   e2e:
     needs: build
+    if: ${{ !cancelled() && needs.build.outputs.package == 'true' }}
     runs-on: ubuntu-latest
     services:
       hapi:
@@ -185,11 +341,25 @@ jobs:
             npm install --no-package-lock --no-audit --no-fund
           fi
 
+      # Before waiting for HAPI, which starts meanwhile
+      - name: Restore the FHIR package cache
+        id: fhir-cache
+        uses: actions/cache/restore@v6
+        with:
+          path: ${{ env.FHIR_PACKAGES }}
+          key: fhir-packages-${{ needs.build.outputs.month }}-
+          restore-keys: fhir-packages-${{ needs.build.outputs.month }}-
+
+      - name: Download validator
+        run: |
+          curl -fsSL -o validator_cli.jar \
+            "https://github.com/hapifhir/org.hl7.fhir.core/releases/download/${{ needs.build.outputs.validator }}/validator_cli.jar"
+
       - name: Wait for HAPI
         run: |
-          for i in $(seq 1 120); do
+          for i in $(seq 1 300); do
             curl -fs -o /dev/null http://localhost:8080/fhir/metadata && { echo "HAPI is up"; exit 0; }
-            sleep 5
+            sleep 2
           done
           echo "::error::HAPI did not start"; exit 1
 
@@ -199,25 +369,22 @@ jobs:
       - name: Run the end-to-end test
         run: node demo/e2e/run.mjs --base http://localhost:8080/fhir --out e2e-output
 
-      - name: Download validator
-        run: |
-          curl -fsSL -o validator_cli.jar \
-            https://github.com/hapifhir/org.hl7.fhir.core/releases/latest/download/validator_cli.jar
-
       - name: Validate the recorded NEWS2 and triage Observations
         run: |
-          status=0
-          for f in e2e-output/news2.json e2e-output/triage.json; do
-            profile=$(jq -r '.meta.profile[0] // empty' "$f")
-            [ -n "$profile" ] || { echo "::error file=$f::no meta.profile"; status=1; continue; }
-            java -jar validator_cli.jar "$f" -version 4.0.1 -sct se \
-              -ig output/package.tgz -profile "$profile" > "$f.txt" 2>&1 || true
-            sed -n '/^Validat\|Success\|\*FAILURE\*\|Error @\|Warning @\|Information @/p' "$f.txt"
-            if ! grep -q "^Success" "$f.txt"; then
-              echo "::error file=$f::failed validation against $profile"; status=1
-            fi
-          done
-          exit $status
+          python3 .github/scripts/validate.py --info --validator validator_cli.jar \
+            e2e-output/news2.json e2e-output/triage.json
+
+      - name: List the FHIR packages
+        id: fhir-packages
+        if: ${{ !cancelled() }}
+        run: echo "key=fhir-packages-${{ needs.build.outputs.month }}-$(ls ~/.fhir/packages | grep -v '#current$\|#dev$' | sort | sha256sum | cut -c1-16)" >> "$GITHUB_OUTPUT"
+
+      - name: Save the FHIR package cache
+        if: ${{ !cancelled() && steps.fhir-packages.outputs.key != steps.fhir-cache.outputs.cache-matched-key }}
+        uses: actions/cache/save@v6
+        with:
+          path: ${{ env.FHIR_PACKAGES }}
+          key: ${{ steps.fhir-packages.outputs.key }}
 
       - name: Upload the end-to-end output
         if: ${{ !cancelled() }}

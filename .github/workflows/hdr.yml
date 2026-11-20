@@ -24,9 +24,19 @@ permissions:
   contents: read
   actions: read  # to download the package from another run
 
+# A new push to a pull request cancels its older runs; other runs are never cancelled
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: true
+
 env:
   HDR_PROFILE: http://hl7.eu/fhir/hdr/StructureDefinition/bundle-eu-hdr
   JAVA_TOOL_OPTIONS: "-Xmx6g"
+  # The FHIR package cache, shared with build.yml, without the #current and #dev packages
+  FHIR_PACKAGES: |
+    ~/.fhir/packages
+    !~/.fhir/packages/*#current
+    !~/.fhir/packages/*#dev
 
 jobs:
   validate:
@@ -42,6 +52,18 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
+
+      - name: Find the month of the FHIR package cache
+        id: month
+        run: echo "month=$(date -u +%Y-%m)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore the FHIR package cache
+        id: fhir-cache
+        uses: actions/cache/restore@v6
+        with:
+          path: ${{ env.FHIR_PACKAGES }}
+          key: fhir-packages-${{ steps.month.outputs.month }}-
+          restore-keys: fhir-packages-${{ steps.month.outputs.month }}-
 
       - name: Download the package of a Build IG run
         if: ${{ inputs.ig-run }}
@@ -101,6 +123,18 @@ jobs:
           if count["fatal"] + count["error"]:
               raise SystemExit("validation errors")
           EOF
+
+      - name: List the FHIR packages
+        id: fhir-packages
+        if: ${{ !cancelled() }}
+        run: echo "key=fhir-packages-${{ steps.month.outputs.month }}-$(ls ~/.fhir/packages | grep -v '#current$\|#dev$' | sort | sha256sum | cut -c1-16)" >> "$GITHUB_OUTPUT"
+
+      - name: Save the FHIR package cache
+        if: ${{ !cancelled() && steps.fhir-packages.outputs.key != steps.fhir-cache.outputs.cache-matched-key }}
+        uses: actions/cache/save@v6
+        with:
+          path: ${{ env.FHIR_PACKAGES }}
+          key: ${{ steps.fhir-packages.outputs.key }}
 
       - name: Upload the report and its validation
         if: ${{ !cancelled() }}
