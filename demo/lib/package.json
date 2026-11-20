@@ -1,0 +1,7 @@
+{
+  "name": "west-a-demo-lib",
+  "private": true,
+  "description": "Plain ES modules shared by the WEST-A demo app and its end-to-end test",
+  "type": "module",
+  "engines": { "node": ">=20" }
+}
