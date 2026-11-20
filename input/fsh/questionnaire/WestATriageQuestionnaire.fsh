@@ -76,7 +76,7 @@ RuleSet: ItemControl(code)
 * extension[+].url = $questionnaire-itemControl
 * extension[=].valueCodeableConcept = $questionnaire-item-control#{code}
 
-// A yes/no need or order, answered "no" until the nurse changes it
+// A yes/no order, answered "no" until the nurse changes it
 RuleSet: BooleanItem(linkId, text)
 * item[+].linkId = "{linkId}"
 * item[=].type = #boolean
@@ -219,12 +219,6 @@ Description: "Form for a WEST-A triage at the emergency department: the seven vi
 * item[=].item[=] insert ItemControl(radio-button)
 * item[=].item[=] insert HelpText(complaint-priority-help, [[Optional. Choose a colour only when the triage criteria above do not express the urgency of the warning symptoms, such as for a warning symptom that is not coded: the guideline takes the more urgent of this colour and the triage criteria, so it never lowers their priority.]])
 
-* item[=] insert BooleanItem(frail-elderly, Frail elderly)
-* item[=].item[=] insert HelpText(frail-elderly-help, [[Frail elderly patient (sköra äldre, WEST-A p. 46): gives yellow (Gul) as the lowest priority.]])
-* item[=] insert BooleanItem(likely-admission, Likely admission)
-* item[=].item[=] insert HelpText(likely-admission-help, [[The patient will probably be admitted (trolig inläggning, WEST-A p. 47): gives yellow (Gul) as the lowest priority.]])
-* item[=] insert BooleanItem(violence-or-assault, Violence or sexual assault)
-* item[=].item[=] insert HelpText(violence-or-assault-help, [[The patient has been exposed to violence or sexual assault (WEST-A p. 48): gives yellow (Gul) as the lowest priority.]])
 * item[=] insert BooleanItem(oxygen-scale-2, Use oxygen saturation scale 2)
 * item[=].item[=] insert HelpText(oxygen-scale-2-help, [[Only for a patient with known respiratory failure (hypercapnia), on a physician's order: NEWS2 then scores the oxygen saturation on scale 2, where 88-92% scores 0.]])
 
@@ -364,11 +358,5 @@ Description: "WEST-A triage form filled in by the triage nurse for the example p
 * item[=].item[+].linkId = "triage-criteria"
 * item[=].item[=].item[+].linkId = "triage-criteria-4"
 * item[=].item[=].item[=].answer[0].valueCoding = $west-a-triage-criterion#15 "Bröstsmärta, pågående med misstanke om AKS eller annan allvarlig orsak"
-* item[=].item[+].linkId = "frail-elderly"
-* item[=].item[=].answer[0].valueBoolean = false
-* item[=].item[+].linkId = "likely-admission"
-* item[=].item[=].answer[0].valueBoolean = false
-* item[=].item[+].linkId = "violence-or-assault"
-* item[=].item[=].answer[0].valueBoolean = false
 * item[=].item[+].linkId = "oxygen-scale-2"
 * item[=].item[=].answer[0].valueBoolean = false

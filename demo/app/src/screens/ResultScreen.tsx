@@ -4,13 +4,12 @@ import type { Route, Stay } from '../App';
 import { ErrorNote } from '../components/ErrorNote';
 import { clock } from '../components/format';
 import { Pinboard } from '../components/Pinboard';
-import { yellowAsLowest } from '../services/answers';
 import { boardNews2, client, news2Observation, triageObservation } from '../services/cds';
 import { criteriaReasons, loadCriteria, recordedCriteria, type Criteria } from '../services/criteria';
 import { NURSE } from '../services/config';
 import { uuid } from '../services/libs';
 import { nowLocal } from '../services/patients';
-import { allowed, priority, priorityCoding, priorityOf, RISK_PRIORITY, RISK_TEXT, type PriorityCode } from '../services/priority';
+import { allowed, mostUrgent, priority, priorityCoding, priorityOf, RISK_PRIORITY, RISK_TEXT, type PriorityCode } from '../services/priority';
 
 interface Props {
   stay: Stay;
@@ -25,26 +24,23 @@ export function ResultScreen({ stay, onRecorded, go }: Props) {
   useEffect(() => {
     loadCriteria(client).then(setCriteria, () => setCriteria(undefined));
   }, []);
-  const reasons = useMemo(() => criteriaReasons(answers, criteria, yellowAsLowest(answers)), [answers, criteria]);
+  const reasons = useMemo(() => criteriaReasons(answers, criteria), [answers, criteria]);
   const proposed = priorityOf(result.proposedPriority);
   const vital = priorityOf(result.vitalParameterPriority);
-  // Yellow as lowest priority: a need or process ticked in the form, or a need criterion (159-162)
-  const floor = yellowAsLowest(answers) || reasons.needs.length > 0;
-  const closed = useMemo(() => allowed(proposed, floor), [proposed, floor]);
+  // Yellow as lowest priority: a need or process among the criteria (159-162)
+  const floor = reasons.needs.length > 0;
+  // Never below a red or orange from the proposal or, without a proposal, from NEWS2 alone
+  const guard = mostUrgent(proposed, vital);
+  const closed = useMemo(() => allowed(guard, floor), [guard, floor]);
   const [selected, setSelected] = useState<PriorityCode | undefined>(stay.recorded?.priority ?? proposed);
   const [note, setNote] = useState('');
   const [error, setError] = useState<unknown>();
   const [saving, setSaving] = useState(false);
   const recorded = stay.recorded;
 
-  const needs = [
-    answers.frailElderly && 'frail elderly (p. 46)',
-    answers.likelyAdmission && 'likely admission (p. 47)',
-    answers.violenceOrAssault && 'violence or sexual assault (p. 48)',
-    ...reasons.needs,
-  ].filter(Boolean);
+  const needs = reasons.needs;
   const complaint = answers.chiefComplaint?.display ?? answers.chiefComplaint?.code ?? '–';
-  const lowered = !!(proposed && selected && selected > proposed);
+  const lowered = !!(guard && selected && selected > guard);
   const closedNames = Object.entries(closed).filter(([, why]) => why);
 
   async function save() {
@@ -63,15 +59,18 @@ export function ResultScreen({ stay, onRecorded, go }: Props) {
       const news2Url = uuid();
       // The note is part of the Swedish triage Observation (language 'sv')
       const notes = [
+        reasons.override ? `Manuell sökorsaksprioritet: ${priority(reasons.override)!.name}.` : '',
         selected !== proposed && proposed
           ? `Klinisk bedömning: ${priority(selected)!.name}, föreslagen ${priority(proposed)!.name}.`
           : '',
+        !proposed && vital ? `Ingen föreslagen prioritet; vitalparametrar: ${priority(vital)!.name}.` : '',
         note.trim(),
       ].filter(Boolean);
       const triage = triageObservation({
         ...who,
         priority: priorityCoding(selected),
         proposedPriority: result.proposedPriority,
+        vitalParameterPriority: result.vitalParameterPriority,
         chiefComplaint: answers.chiefComplaint,
         criteria: recordedCriteria(answers.triageCriteria, await loadCriteria(client)),
         news2: { reference: news2Url },

@@ -44,17 +44,22 @@ export const RISK_TEXT: Record<Risk, string> = {
   low: 'low',
 };
 
+/** The most urgent of some priorities (1 is the most urgent), or undefined. */
+export function mostUrgent(...ps: (PriorityCode | undefined)[]): PriorityCode | undefined {
+  return ps.filter((p): p is PriorityCode => !!p).sort()[0];
+}
+
 /**
- * Which priorities the nurse may record against the proposed one. The clinical assessment can
- * raise the priority; a red or orange patient is never lowered (WEST-A p. 8), and yellow as
- * lowest priority for a need or process (pp. 46-48) is a floor too.
+ * Which priorities the nurse may record. The clinical assessment can raise the priority; a red
+ * or orange patient is never lowered (WEST-A p. 8): `guard` is the most urgent of the proposed
+ * priority and the priority from the vital parameters, so a red NEWS2 counts even when nothing
+ * is proposed. Yellow as lowest priority for a need or process (pp. 46-48) is a floor too.
  */
-export function allowed(proposed: PriorityCode | undefined, yellowFloor: boolean): Record<PriorityCode, string | null> {
+export function allowed(guard: PriorityCode | undefined, yellowFloor: boolean): Record<PriorityCode, string | null> {
   const out = { '1': null, '2': null, '3': null, '4': null } as Record<PriorityCode, string | null>;
-  if (!proposed) return out;
   for (const p of PRIORITIES) {
-    if (p.code <= proposed) continue;
-    if (proposed === '1' || proposed === '2') {
+    if (guard && p.code <= guard) continue;
+    if (guard === '1' || guard === '2') {
       out[p.code] = 'the clinical assessment never lowers a red or orange patient (WEST-A p. 8)';
     } else if (yellowFloor && p.code === '4') {
       out[p.code] = 'Gul is the lowest priority for this need or process (WEST-A pp. 46–48)';

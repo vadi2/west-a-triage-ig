@@ -12,9 +12,9 @@ import type { Stay } from '../App';
 import { ErrorNote } from '../components/ErrorNote';
 import { Pinboard } from '../components/Pinboard';
 import { RendererTheme } from '../theme';
-import { readAnswers, yellowAsLowest } from '../services/answers';
+import { readAnswers } from '../services/answers';
 import { client, runTriage } from '../services/cds';
-import { CRITERION_SYSTEM, criteriaReasons, loadCriteria, type Criteria } from '../services/criteria';
+import { CRITERION_SYSTEM, criteriaReasons, loadCriteria, NEED_CODES, NO_WARNING_SYMPTOMS, type Criteria } from '../services/criteria';
 import { IG, MOCK, NURSE, QUESTIONNAIRE_ID, QUESTIONNAIRE_URL } from '../services/config';
 import { extractVitals } from '../services/extract';
 import { news2 } from '../services/news2';
@@ -79,7 +79,7 @@ export function TriageFormScreen({ stay, onDone }: { stay: Stay; onDone: (s: Sta
     [response, formQuestionnaire, filled],
   );
   const preview = useMemo(() => news2(answers), [answers]);
-  const reasons = useMemo(() => criteriaReasons(answers, criteria, yellowAsLowest(answers)), [answers, criteria]);
+  const reasons = useMemo(() => criteriaReasons(answers, criteria), [answers, criteria]);
 
   async function build(q: Questionnaire, qr?: QuestionnaireResponse) {
     await buildForm({
@@ -101,12 +101,21 @@ export function TriageFormScreen({ stay, onDone }: { stay: Stay; onDone: (s: Sta
     const raw = getResponse();
     const draft = removeInternalIdsFromResponse(formQuestionnaire, removeEmptyAnswersFromResponse(formQuestionnaire, raw));
     const a = readAnswers(draft);
-    const r = criteriaReasons(a, criteria, yellowAsLowest(a));
+    const r = criteriaReasons(a, criteria);
     const missing = [
       news2(a).total === null && 'all seven vital parameters',
+      a.systolic !== undefined && a.diastolic === undefined && 'the diastolic blood pressure (with the systolic one)',
       !a.chiefComplaint && 'the chief complaint',
       a.chiefComplaint && !r.assessed && 'its warning symptoms (tick them, or "No warning symptoms")',
     ].filter(Boolean);
+    // "No warning symptoms" (163) with a warning symptom contradicts itself; needs may go with it
+    const symptoms = a.triageCriteria.filter((c) => c.code !== NO_WARNING_SYMPTOMS && !NEED_CODES.includes(c.code ?? ''));
+    if (symptoms.length && a.triageCriteria.some((c) => c.code === NO_WARNING_SYMPTOMS)) {
+      setIncomplete(
+        `"No warning symptoms" is ticked together with ${symptoms.length > 1 ? `${symptoms.length} warning symptoms` : 'a warning symptom'}. Untick one or the other.`,
+      );
+      return;
+    }
     if (missing.length) {
       setIncomplete(`The guideline needs ${missing.join(', ')} before it can propose a priority.`);
       useQuestionnaireResponseStore.getState().highlightRequiredItems();
@@ -152,7 +161,6 @@ export function TriageFormScreen({ stay, onDone }: { stay: Stay; onDone: (s: Sta
         encounterId: stay.encounter.id!,
         practitionerId: NURSE.id,
         complaintPriority: a.complaintPriority ?? null,
-        yellowAsLowest: yellowAsLowest(a),
         scale2: a.scale2,
         triageCriteria: a.triageCriteria,
       });
@@ -303,9 +311,6 @@ function exampleResponse(): QuestionnaireResponse {
               },
             ],
           },
-          { linkId: 'frail-elderly', answer: [{ valueBoolean: false }] },
-          { linkId: 'likely-admission', answer: [{ valueBoolean: false }] },
-          { linkId: 'violence-or-assault', answer: [{ valueBoolean: false }] },
           { linkId: 'oxygen-scale-2', answer: [{ valueBoolean: false }] },
         ],
       },

@@ -70,9 +70,6 @@ const ANSWERS = {
   temperature: { valueDecimal: 37.5 },
   'chief-complaint': { valueCoding: { system: CHIEF_COMPLAINT_SYSTEM, code: '4', display: 'Bröstsmärta' } },
   'complaint-priority': { valueCoding: priorityCoding('4') },
-  'frail-elderly': { valueBoolean: false },
-  'likely-admission': { valueBoolean: false },
-  'violence-or-assault': { valueBoolean: false },
   'oxygen-scale-2': { valueBoolean: false },
 };
 

@@ -16,15 +16,33 @@ export async function findPatients(text: string): Promise<Patient[]> {
   return entries(await client.search<Patient>('Patient', params));
 }
 
-/** The latest triage of each patient in the list, by patient id. */
-export async function latestTriages(): Promise<Map<string, Observation>> {
-  const found = entries(await client.search<Observation>('Observation', { code: TRIAGE_CODE, _sort: '-date', _count: '200' }));
-  const out = new Map<string, Observation>();
-  for (const o of found) {
-    const id = o.subject?.reference?.split('/').pop();
-    if (id && !out.has(id)) out.set(id, o);
-  }
-  return out;
+/** The latest triage of a patient, or of one visit when encounterId is given, and how many there are. */
+export async function latestTriage(patientId: string, encounterId?: string): Promise<{ triage?: Observation; count: number }> {
+  // One per page, newest first: a server caps the page size, so a long list sorted the other
+  // way would not reach the newest
+  const bundle = await client.search<Observation>('Observation', {
+    subject: `Patient/${patientId}`,
+    ...(encounterId ? { encounter: `Encounter/${encounterId}` } : {}),
+    code: TRIAGE_CODE,
+    _sort: '-date',
+    _count: '1',
+  });
+  const triage = entries(bundle)[0];
+  return { triage, count: bundle.total ?? (triage ? 1 : 0) };
+}
+
+/** The latest triage of each of the patients, by patient id. */
+export async function latestTriages(patients: Patient[]): Promise<Map<string, Observation>> {
+  const found = await Promise.all(patients.map(async (p) => [p.id!, (await latestTriage(p.id!)).triage] as const));
+  return new Map(found.filter((f): f is readonly [string, Observation] => !!f[1]));
+}
+
+/** The Observations a resource refers to in derivedFrom, in its order. */
+export async function derivedFrom(o: Observation): Promise<Observation[]> {
+  const ids = (o.derivedFrom ?? []).map((r) => r.reference?.match(/^Observation\/([^/]+)/)?.[1]).filter((id): id is string => !!id);
+  if (!ids.length) return [];
+  const found = entries(await client.search<Observation>('Observation', { _id: ids.join(','), _count: String(ids.length) }));
+  return ids.map((id) => found.find((f) => f.id === id)).filter((f): f is Observation => !!f);
 }
 
 const FIRST_F = ['Elin', 'Saga', 'Aisha', 'Ingrid', 'Malin', 'Leyla', 'Britt', 'Hanna', 'Sofia', 'Gunilla'];

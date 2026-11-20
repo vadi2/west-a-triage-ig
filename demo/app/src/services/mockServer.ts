@@ -4,7 +4,7 @@ import { seedResources } from '../fixtures/seed';
 
 // An in-memory FHIR server for mock mode, seeded with the guide's examples. It keeps what the
 // app writes in this browser's localStorage, so a reload keeps the demo where it was.
-const KEY = 'west-a-mock-db-v2';
+const KEY = 'west-a-mock-db-v3';
 
 type Db = Record<string, Record<string, Resource>>;
 
@@ -124,11 +124,13 @@ export function mockClient(): FhirClient {
         const desc = _sort.startsWith('-');
         found.sort((a, b) => (desc ? -1 : 1) * when(a).localeCompare(when(b)));
       }
+      // total counts every match, as on a server, though _count limits the page
+      const total = found.length;
       if (_count) found = found.slice(0, Number(_count));
       const bundle: Bundle = {
         resourceType: 'Bundle',
         type: 'searchset',
-        total: found.length,
+        total,
         entry: found.map((resource) => ({ fullUrl: `mock/${type}/${resource.id}`, resource: resource as FhirResource, search: { mode: 'match' } })),
       };
       return later(bundle as any);

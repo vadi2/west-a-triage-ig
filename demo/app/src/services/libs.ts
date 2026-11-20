@@ -23,6 +23,7 @@ export interface TriageParams {
   practitionerId?: string;
   /** Manual override of the warning symptom priority; null leaves it out. */
   complaintPriority?: PriorityInput | null;
+  /** For a client that does not pass the needs (159-162) as triage criteria; the app does. */
   yellowAsLowest?: boolean;
   scale2?: boolean;
   /** Codes or Codings of the WEST-A triage criterion code system. */
@@ -58,8 +59,10 @@ export interface TriageObservationArgs {
   chiefComplaint: CodeInput;
   /** The NEWS2 Observation, or a Reference to it (a urn:uuid inside a transaction). */
   news2?: Observation | Reference | string;
-  /** When given, lowering a proposed red or orange is refused. */
+  /** When given, a priority below a proposed red or orange is refused. */
   proposedPriority?: PriorityInput | null;
+  /** When given, a priority below a red or orange from NEWS2 is refused. */
+  vitalParameterPriority?: PriorityInput | null;
   patientId: string;
   encounterId?: string;
   performerId?: string;

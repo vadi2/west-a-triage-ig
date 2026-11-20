@@ -52,11 +52,8 @@ and the example Patient, Practitioner and Encounter.
 | `triage-criteria-<n>` | coding, repeats | Warning symptoms of chief complaint `<n>`, enabled only when `chief-complaint` is `<n>`; codes from the WEST-A triage criterion value set (none for complaints 2, 14, 18, 19, 25) |
 | `triage-criteria-11`, `triage-criteria-30` | group | Gynaecology and trauma: one repeating coding item per heading of the manual, `triage-criteria-11-aaa` … `-aaf` and `triage-criteria-30-aag` … `-aaj` |
 | `triage-criteria-none` | coding, repeats | `163` *Inga varningssymtom*, offered for every complaint |
-| `triage-criteria-needs` | coding, repeats | Needs and processes `159`-`162`, offered for every complaint |
+| `triage-criteria-needs` | coding, repeats | Needs and processes `159`-`162` (frail elderly, likely admission, sexual assault, intimate partner violence), offered for every complaint: each gives yellow as the lowest priority (pp. 46-48) |
 | `complaint-priority` | coding | Optional manual override: priority of the warning symptoms, from the WEST-A triage priority value set |
-| `frail-elderly` | boolean | Yellow as lowest priority (p. 46) |
-| `likely-admission` | boolean | Yellow as lowest priority (p. 47) |
-| `violence-or-assault` | boolean | Yellow as lowest priority (p. 48) |
 | `oxygen-scale-2` | boolean | NEWS2 SpO2 scale 2, on a physician's order |
 
 The QuestionnaireResponse carries `subject` (Patient), `encounter` (Encounter), `author`
@@ -80,7 +77,10 @@ Plain ES modules for the browser and Node 20. `extract.js` needs its dependency 
     `PlanDefinition/west-a-triage/$apply` and `Library/WestANEWS2` and `Library/WestATriage`
     `$evaluate`. Takes 1–15 s on HAPI, so show progress.
     - `complaintPriority`: `'1'`–`'4'`, a Coding, or `null` (left out: the override is optional).
-    - `triageCriteria`: codes or Codings of the WEST-A triage criterion code system (below).
+    - `triageCriteria`: codes or Codings of the WEST-A triage criterion code system (below),
+      the needs `159`-`162` among them.
+    - `yellowAsLowest`: only for a client that does not pass the needs as criteria; the app
+      and the form do not use it.
     - `news2`: `{ total, risk, scale2, scores, derivedFrom }`. `scores` is keyed by the CQL
       definitions: `Respiration Rate Score`, `Oxygen Saturation Scale 1 Score` *or*
       `Oxygen Saturation Scale 2 Score`, `Supplemental Oxygen Score`, `Systolic Blood Pressure Score`,
@@ -91,10 +91,11 @@ Plain ES modules for the browser and Node 20. `extract.js` needs its dependency 
       symptoms are assessed (a symptom, `163`, or `complaintPriority`).
   - `news2Observation({ news2, patientId, encounterId, performerId, effectiveDateTime, derivedFrom?, id? })`
     → a WEST-A NEWS2 Observation; `derivedFrom` defaults to `news2.derivedFrom`.
-  - `triageObservation({ priority, chiefComplaint, news2?, proposedPriority?, patientId, encounterId, performerId, effectiveDateTime, note?, derivedFrom, criteria, id? })`
+  - `triageObservation({ priority, chiefComplaint, news2?, proposedPriority?, vitalParameterPriority?, patientId, encounterId, performerId, effectiveDateTime, note?, derivedFrom, criteria, id? })`
     → a WEST-A Triage Observation, each criterion a component. `news2` may be the
     Observation, an id, or a Reference (a `urn:uuid` inside a transaction). Throws when
-    `priority` is lower than a proposed red or orange (WEST-A p. 8).
+    `priority` is lower than a red or orange `proposedPriority` or `vitalParameterPriority`
+    (WEST-A p. 8): a red NEWS2 counts even when nothing is proposed.
   - The builders write `language: 'sv'`; give Swedish displays (the code system displays)
     or none.
 - `hdr.js`: `dischargeReport({ patient, encounter, author, organization?, vitals, news2, triage, dischargeDate?, dischargeSummary?, language?, fhirBase? })`

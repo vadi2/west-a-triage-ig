@@ -15,7 +15,9 @@ Screens, in the order a nurse uses them:
    and runs the guideline on the server.
 3. **Priority** – NEWS2 per parameter, the clinical risk, the proposed priority and why.
    The nurse records it or raises it; a red or orange patient is never lowered (WEST-A p. 8),
-   and Grön is closed when yellow is the lowest priority for a need (pp. 46–48).
+   whether the red or orange is proposed or comes from NEWS2 alone (nothing is proposed until
+   the warning symptoms are assessed), and Grön is closed when yellow is the lowest priority
+   for a need (pp. 46–48).
    Records the NEWS2 and triage Observations.
 4. **Record** – NEWS2 over time and every triage, each NEWS2 with the vital signs it came
    from (`derivedFrom`) and the points each scored.
@@ -34,7 +36,7 @@ VITE_MOCK=1 npm run build && npm run preview   # http://localhost:4173
 ```
 
 Mock mode keeps an in-memory FHIR store in the browser (saved in `localStorage` under
-`west-a-mock-db-v2`), seeded with the guide's example patients, two synthetic test patients
+`west-a-mock-db-v3`), seeded with the guide's example patients, two synthetic test patients
 with earlier triages, the nurse, the built Questionnaire (`src/fixtures/questionnaire.json`,
 from the IG package) and the value sets and code systems it uses. Extraction, the
 Observations and the discharge report come from the real `demo/lib` modules in both modes;
@@ -70,7 +72,10 @@ published.
 criterion (`src/services/answers.ts`). They go to `runTriage` and onto the triage
 Observation (with the Swedish displays of the code system), and the board shows them as
 pins in the priority row: one per priority of the warning symptoms, *override* for
-`complaint-priority`, *lowest for need* for a need (159–162) or a yellow-floor answer.
+`complaint-priority`, *lowest for need* for a need (159–162). The form refuses
+*Inga varningssymtom* (163) together with a warning symptom, and a systolic pressure
+without the diastolic one. When the nurse used the override, the triage note says so
+("Manuell sökorsaksprioritet: Röd"), so the record explains the priority.
 
 ## The design decision
 

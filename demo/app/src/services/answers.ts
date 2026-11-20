@@ -12,13 +12,11 @@ export interface TriageAnswers {
   temperature?: number;
   chiefComplaint?: Coding;
   /** Every answer of the items whose linkId starts with triage-criteria: the warning
-   * symptoms, "No warning symptoms" (163) and the needs and processes (159-162). */
+   * symptoms, "No warning symptoms" (163) and the needs and processes (159-162), which
+   * give yellow as the lowest priority. */
   triageCriteria: Coding[];
   /** Optional manual override of the warning symptom priority. */
   complaintPriority?: Coding;
-  frailElderly: boolean;
-  likelyAdmission: boolean;
-  violenceOrAssault: boolean;
   scale2: boolean;
 }
 
@@ -59,11 +57,7 @@ export function readAnswers(qr: QuestionnaireResponse | undefined): TriageAnswer
     chiefComplaint: a('chief-complaint')?.valueCoding,
     triageCriteria: collectCriteria(qr?.item),
     complaintPriority: a('complaint-priority')?.valueCoding,
-    frailElderly: a('frail-elderly')?.valueBoolean === true,
-    likelyAdmission: a('likely-admission')?.valueBoolean === true,
-    violenceOrAssault: a('violence-or-assault')?.valueBoolean === true,
     scale2: a('oxygen-scale-2')?.valueBoolean === true,
   };
 }
 
-export const yellowAsLowest = (a: TriageAnswers) => a.frailElderly || a.likelyAdmission || a.violenceOrAssault;

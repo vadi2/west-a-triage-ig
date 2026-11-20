@@ -43,7 +43,17 @@ export function Wristband({ screen, patient, encounter, recorded, stay, go }: Pr
 
   return (
     <header className={`band ${p ? `state-${p.key}` : 'state-none'}`}>
-      <a className="skip" href="#main">
+      {/* The hash is the app's route, so the link moves focus itself instead of following #main */}
+      <a
+        className="skip"
+        href="#main"
+        onClick={(e) => {
+          e.preventDefault();
+          const main = document.getElementById('main');
+          main?.focus();
+          main?.scrollIntoView();
+        }}
+      >
         Skip to content
       </a>
       <div className="band-who">

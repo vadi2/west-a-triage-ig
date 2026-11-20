@@ -8,7 +8,7 @@ import { client } from '../services/cds';
 import { absoluteBase, NURSE } from '../services/config';
 import { entries } from '../services/fhirClient';
 import { dischargeReport } from '../services/hdr';
-import { nowLocal, patientName } from '../services/patients';
+import { derivedFrom, latestTriage, nowLocal, patientName } from '../services/patients';
 
 interface Props {
   patientId: string;
@@ -43,21 +43,13 @@ export function ReportScreen({ patientId, encounterId, go }: Props) {
       setWhat('Building the discharge report');
       setError(undefined);
       try {
-        const [author, obs] = await Promise.all([
-          client.read<Practitioner>('Practitioner', NURSE.id),
-          client.search<Observation>('Observation', { subject: `Patient/${p.id}`, encounter: `Encounter/${enc.id}`, _sort: 'date', _count: '500' }),
-        ]);
-        const all = entries(obs);
-        const triages = all.filter((o) => has(o, '425705009'));
-        const news2s = all.filter((o) => has(o, '1104051000000101'));
-        const triage = triages.at(-1);
+        const [author, latest] = await Promise.all([client.read<Practitioner>('Practitioner', NURSE.id), latestTriage(p.id!, enc.id)]);
+        const { triage, count } = latest;
         if (!triage) throw new Error('This visit has no triage to report on. Record one first.');
-        const linked = triage.derivedFrom?.map((r) => r.reference?.split('/').at(-1));
-        const news2 = news2s.find((o) => linked?.includes(o.id)) ?? news2s.at(-1);
-        if (!news2) throw new Error('This visit has no NEWS2 to report on. Record a triage first.');
-        const scored = new Set(news2.derivedFrom?.map((r) => r.reference?.split('/').at(-1)));
-        const vitals = all.filter((o) => o.id && scored.has(o.id));
-        setBasis({ triage, news2, vitals, triages: triages.length });
+        const news2 = (await derivedFrom(triage)).find((o) => has(o, '1104051000000101'));
+        if (!news2) throw new Error(`Triage Observation/${triage.id} refers to no NEWS2 (derivedFrom), so there is nothing to report the scores from.`);
+        const vitals = await derivedFrom(news2);
+        setBasis({ triage, news2, vitals, triages: count });
         setReport(dischargeReport({ patient: p, encounter: enc, author, vitals, news2, triage, fhirBase: absoluteBase() }));
       } catch (e) {
         setError(e);

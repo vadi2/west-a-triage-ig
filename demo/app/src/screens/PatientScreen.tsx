@@ -32,9 +32,9 @@ export function PatientScreen({ onStart, onRecord }: Props) {
   async function search(text: string) {
     setError(undefined);
     try {
-      const [found, latest] = await Promise.all([findPatients(text), latestTriages()]);
+      const found = await findPatients(text);
       setPatients(found);
-      setTriages(latest);
+      setTriages(await latestTriages(found));
     } catch (e) {
       setError(e);
       setPatients([]);

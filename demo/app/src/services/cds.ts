@@ -71,9 +71,6 @@ async function mockRunTriage(p: TriageParams): Promise<TriageResult> {
     consciousness: latest('1104441000000107')?.valueCodeableConcept?.coding?.[0],
     temperature: q('8310-5'),
     triageCriteria: [],
-    frailElderly: false,
-    likelyAdmission: false,
-    violenceOrAssault: false,
     scale2: !!p.scale2,
   };
   const used = ['9279-1', '2708-6', '427081008', '85354-9', '8867-4', '1104441000000107', '8310-5']

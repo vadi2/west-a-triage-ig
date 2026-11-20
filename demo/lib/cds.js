@@ -362,6 +362,9 @@ export function news2Observation({
  *   id or reference), which goes in derivedFrom
  * @param {object|string} [options.proposedPriority]  when given, a priority less urgent
  *   than a proposed red or orange is refused (WEST-A p. 8)
+ * @param {object|string} [options.vitalParameterPriority]  when given, a priority less
+ *   urgent than a red or orange from the vital parameters (NEWS2) is refused, also when
+ *   nothing is proposed
  * @param {string} options.patientId
  * @param {string} [options.encounterId]
  * @param {string} [options.performerId]  the triage nurse
@@ -373,7 +376,7 @@ export function news2Observation({
  * @param {string} [options.id]
  */
 export function triageObservation({
-  priority, chiefComplaint, news2, proposedPriority, patientId, encounterId, performerId,
+  priority, chiefComplaint, news2, proposedPriority, vitalParameterPriority, patientId, encounterId, performerId,
   effectiveDateTime = new Date().toISOString(), note, derivedFrom = [], criteria = [], id,
 }) {
   const value = priorityCoding(priority);
@@ -381,9 +384,12 @@ export function triageObservation({
   const complaint = chiefComplaintCoding(chiefComplaint);
   if (!complaint) throw new Error('triageObservation needs the chief complaint');
   if (!patientId) throw new Error('triageObservation needs a patientId');
-  const proposed = priorityCoding(proposedPriority);
-  if (proposed && Number(proposed.code) <= 2 && Number(value.code) > Number(proposed.code)) {
-    throw new Error(`${proposed.display} is proposed, and a red or orange patient is never given a lower priority (WEST-A p. 8)`);
+  // Never below a red or orange from the proposal or from NEWS2, which counts even when
+  // nothing is proposed (the warning symptoms not yet assessed)
+  for (const [guard, what] of [[priorityCoding(proposedPriority), 'proposed'], [priorityCoding(vitalParameterPriority), 'the priority from the vital parameters']]) {
+    if (guard && Number(guard.code) <= 2 && Number(value.code) > Number(guard.code)) {
+      throw new Error(`${guard.display} is ${what}, and a red or orange patient is never given a lower priority (WEST-A p. 8)`);
+    }
   }
   const news2Reference = !news2 ? null
     : typeof news2 === 'string' ? reference('Observation', news2)

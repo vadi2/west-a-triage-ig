@@ -82,7 +82,6 @@ export interface CriteriaReasons {
 export function criteriaReasons(
   answers: { triageCriteria: { code?: string; display?: string }[]; complaintPriority?: { system?: string; code?: string } },
   criteria: Criteria | undefined,
-  yellowFloor: boolean,
 ): CriteriaReasons {
   const symptoms: CriteriaReasons['symptoms'] = [];
   const needs: string[] = [];
@@ -101,6 +100,6 @@ export function criteriaReasons(
     pins.push({ priority, label: noneOnly ? 'no warning symptom' : n > 1 ? `${n} warning symptoms` : 'warning symptom' });
   }
   if (override) pins.push({ priority: override, label: 'override' });
-  if (yellowFloor || needs.length) pins.push({ priority: '3', label: 'lowest for need' });
+  if (needs.length) pins.push({ priority: '3', label: 'lowest for need' });
   return { pins, symptoms, needs, override, assessed: symptoms.some((s) => s.priority) || !!override };
 }
