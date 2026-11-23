@@ -31,7 +31,9 @@ const one = (list, what) => {
 };
 
 const triage = one(withProfile(WESTA + 'west-a-triage-observation'), 'triage Observation');
-const news2 = one(withProfile(WESTA + 'west-a-news2-observation'), 'NEWS2 Observation');
+// A triage reports the final score; the package also has a preliminary one, from vital signs saved before the triage
+const news2 = one(withProfile(WESTA + 'west-a-news2-observation').filter((o) => o.status !== 'preliminary'),
+  'final NEWS2 Observation');
 const vitals = VITALS.map((url) => one(withProfile(url), url));
 const encounter = byReference(triage.encounter);
 const patient = byReference(triage.subject);
