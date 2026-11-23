@@ -2,7 +2,10 @@
 
 The web app of the WEST-A demo (see `../README.md` for the whole demo and its contracts).
 Vite, React and TypeScript (strict), the CSIRO AEHRC Smart Forms renderer
-(`@aehrc/smart-forms-renderer` 1.5.0) and plain `fetch` to a FHIR R4 server.
+(`@aehrc/smart-forms-renderer` 1.5.0), plain `fetch` to a FHIR R4 server, and the CQF CQL
+engine (`cql-execution` 3.3.2, `cql-exec-fhir` 2.2.0) for running the guideline in the
+browser. Where the data lives (the public HAPI sandbox, this browser, or another server) is
+chosen at runtime: see *Where the data lives* in `../README.md`.
 
 Screens, in the order a nurse uses them:
 
@@ -12,8 +15,8 @@ Screens, in the order a nurse uses them:
    or creates one.
 2. **Triage** – the WEST-A Questionnaire in the renderer, with NEWS2 counted beside it while
    you type, provisionally until all seven parameters are in. Saving stores the
-   QuestionnaireResponse, extracts and posts the vital signs, and runs the guideline on the
-   server. *Save vitals so far* does the same before all seven are measured and records a
+   QuestionnaireResponse, extracts and posts the vital signs, and runs the guideline (on
+   the server, or in the browser). *Save vitals so far* does the same before all seven are measured and records a
    preliminary NEWS2.
 3. **Priority** – NEWS2 per parameter, the clinical risk, the proposed priority and why.
    The nurse records it or raises it; a red or orange patient is never lowered (WEST-A p. 8),
@@ -28,25 +31,35 @@ Screens, in the order a nurse uses them:
    for it, section by section from the Composition narratives, with the Bundle as JSON to
    download.
 
-## Run it in mock mode (no server)
+## Run it without a server of your own
 
 ```sh
 (cd ../lib && npm install)     # extract.js's dependency, which the build imports
-npm install
-npm run dev:mock          # http://localhost:5173
-# or, lighter on memory:
-VITE_MOCK=1 npm run build && npm run preview   # http://localhost:4173
+npm ci
+npm run build:pages && npm run preview         # the public HAPI sandbox, http://localhost:4173
+VITE_MOCK=1 npm run build && npm run preview   # this browser only
+npm run dev:mock                               # this browser only, with hot reload (more memory)
 ```
 
-Mock mode keeps an in-memory FHIR store in the browser (saved in `localStorage` under
-`west-a-mock-db-v3`), seeded with the guide's example patients, two synthetic test patients
-with earlier triages, the nurse, the built Questionnaire (`src/fixtures/questionnaire.json`,
-from the IG package) and the value sets and code systems it uses. Extraction, the
-Observations and the discharge report come from the real `demo/lib` modules in both modes;
-only the guideline is applied in the browser (`mockRunTriage` in `src/services/cds.ts`:
-NEWS2, the priority of each triage criterion from the code system's `priority` property,
-the override, the needs as a yellow floor, the most urgent wins). The header says
-"MOCK SERVER". To start over, clear the site's storage.
+**The public sandbox** (`https://hapi.fhir.org/baseR4`) is what the published demo uses.
+Everything the app writes there is tagged, and the patient list shows only tagged patients;
+see `../README.md` for what that means and why to enter synthetic data only.
+
+**This browser only** keeps an in-memory FHIR store in the browser (saved in
+`localStorage` under `west-a-mock-db-v3`), seeded with the guide's example patients, two
+synthetic test patients with earlier triages, the nurse, the built Questionnaire
+(`src/fixtures/questionnaire.json`) and the value sets and code systems it uses. To start
+over, clear the site's storage.
+
+In both, extraction, the Observations and the discharge report come from the real
+`demo/lib` modules, and the guideline is the guide's own CQL, run in the browser
+(`src/services/guideline.ts`, loaded on first use: about 320 kB compressed): the ELM in
+`src/fixtures/guideline/` executed against the patient's Observations, and the
+PlanDefinitions and ActivityDefinitions walked the way `$apply` does. The header says where
+the data is and where the CQL ran ("public sandbox · CQL in browser").
+
+The CQL engine was written for Node: `vite.config.ts` points the Node built-ins it imports
+at `src/shims/node.ts` and leaves out the FHIR model infos other than 4.0.1.
 
 ## Run it against HAPI
 
@@ -59,6 +72,12 @@ HAPI_URL=http://otherhost:8080 npm run preview  # another server, still proxied
 VITE_FHIR_BASE=https://example.org/fhir npm run build   # call a server directly (needs CORS)
 ```
 
+Any build can also be pointed at a server from the patient list (*Where the data lives*,
+*another FHIR R4 server*) or with `?server=<FHIR base URL>` in the page URL. The guideline
+runs on the server when its CapabilityStatement offers `Library/$evaluate` and
+`PlanDefinition/$apply` and it holds `PlanDefinition/west-a-triage`; otherwise in the
+browser, as above.
+
 The app loads `../lib/extract.js`, `../lib/cds.js` and `../lib/hdr.js` with
 `import.meta.glob`; when one is missing, the step that needs it fails with a plain message
 naming the file. The adapters in `src/services/` are the only code that touches them:
@@ -67,7 +86,8 @@ naming the file. The adapters in `src/services/` are the only code that touches 
 **Value sets are expanded in the browser.** HAPI's `$expand` fails for a value set that
 includes a whole code system (Hibernate Search is off in the starter: `HSEARCH800001`), and
 its ACVPU expansion has no displays. So `src/services/terminology.ts` reads each
-`answerValueSet`'s ValueSet and CodeSystem from the server and hands the renderer a copy of
+`answerValueSet`'s ValueSet and CodeSystem (from the server when it has them, else the
+copies built into the app: `src/services/conformance.ts`) and hands the renderer a copy of
 the Questionnaire with `answerOption`s. Extraction still gets the Questionnaire as
 published.
 
@@ -97,13 +117,13 @@ follows the same rules:
   yet. On scale 2 an SpO₂ of 93 % or more is not scored until oxygen is known, as in the CQL.
 - **Save vitals so far** (once at least one parameter scores, and before all seven do)
   saves the form as `in-progress`, posts the vital signs extracted from it, runs the
-  guideline, shows the server's `provisional` result, and records a `preliminary` NEWS2
+  guideline, shows its `provisional` result, and records a `preliminary` NEWS2
   with `news2Observation({ news2, provisional, … })`. Saving again, or saving the whole
   triage, updates the same QuestionnaireResponse and posts only the vital signs that are
   new or changed; the guideline takes the latest of each. The full save then gives the
   final NEWS2 and the proposal as before. What was saved so far is kept on the form screen
   only: leaving it starts the next save afresh.
-- **Mock mode** returns the same `provisional` shape from `mockRunTriage`.
+- **The guideline in the browser** returns the same `provisional` shape, from the same CQL.
 
 ## Sample data
 
@@ -115,7 +135,7 @@ and the free texts start with "Syntetisk exempeltext".
   birth date and gender; the reserve number is generated on save as before. The form
   starts empty.
 - **Triage:** one scenario per WEST-A outcome, worked out from the NEWS2 chart and the
-  criterion code system and checked in mock mode:
+  criterion code system and checked in the browser:
 
   | Button | Vitals | NEWS2 | Criteria | Proposed |
   |---|---|---|---|---|

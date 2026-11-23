@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import type { Encounter, Observation, Patient } from 'fhir/r4';
+import { BackendPicker } from '../components/BackendPicker';
 import { ErrorNote } from '../components/ErrorNote';
 import { Samples } from '../components/Samples';
 import { stamp } from '../components/format';
@@ -75,7 +76,7 @@ export function PatientScreen({ onStart, onRecord }: Props) {
             <button type="submit">Search</button>
           </div>
         </form>
-        <ErrorNote error={error} what="Talking to the FHIR server" />
+        <ErrorNote error={error} what="Talking to the FHIR store" />
         {patients === undefined ? (
           <p className="quiet">Loading patients…</p>
         ) : patients.length === 0 ? (
@@ -128,7 +129,10 @@ export function PatientScreen({ onStart, onRecord }: Props) {
           </ol>
         )}
       </section>
-      <NewPatient onCreated={(p) => void start(p)} />
+      <div className="patients-side">
+        <NewPatient onCreated={(p) => void start(p)} />
+        <BackendPicker />
+      </div>
     </div>
   );
 }

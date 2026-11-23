@@ -16,7 +16,9 @@ import { RendererTheme } from '../theme';
 import { readAnswers } from '../services/answers';
 import { client, news2Observation, runTriage, type TriageResult } from '../services/cds';
 import { criteriaReasons, loadCriteria, NEED_CODES, NO_WARNING_SYMPTOMS, type Criteria } from '../services/criteria';
-import { MOCK, NURSE, QUESTIONNAIRE_ID, QUESTIONNAIRE_URL } from '../services/config';
+import { ENGINE_TEXT, useEngine } from '../services/backend';
+import { NURSE, QUESTIONNAIRE_ID, QUESTIONNAIRE_URL } from '../services/config';
+import { conformance } from '../services/conformance';
 import { extractVitals } from '../services/extract';
 import { news2, sliceLabel } from '../services/news2';
 import { mostUrgent, priority, priorityOf, RISK_PRIORITY, RISK_TEXT } from '../services/priority';
@@ -32,6 +34,7 @@ const STEP_NAMES = [
   'Save the vital sign Observations',
   'Run the WEST-A guideline (PlanDefinition/$apply, Library/$evaluate)',
 ] as const;
+const BROWSER_STEP = 'Run the WEST-A guideline (its CQL, in this browser)';
 
 export function TriageFormScreen({ stay, onDone }: { stay: Stay; onDone: (s: Stay) => void }) {
   const [questionnaire, setQuestionnaire] = useState<Questionnaire | undefined>(stay.questionnaire);
@@ -50,6 +53,7 @@ export function TriageFormScreen({ stay, onDone }: { stay: Stay; onDone: (s: Sta
   const [partialError, setPartialError] = useState<unknown>();
   // Bumped once a filled-in form has rendered, see fillScenario
   const [filled, setFilled] = useState(0);
+  const engine = useEngine();
 
   useEffect(() => {
     let live = true;
@@ -57,8 +61,8 @@ export function TriageFormScreen({ stay, onDone }: { stay: Stay; onDone: (s: Sta
       try {
         // The Questionnaire as published (with its extraction templates), and the same with
         // its value sets expanded for the renderer (see services/terminology.ts)
-        const q = stay.questionnaire ?? (await client.read<Questionnaire>('Questionnaire', QUESTIONNAIRE_ID));
-        const [formQ, crit] = await Promise.all([withAnswerOptions(q, client), loadCriteria(client)]);
+        const q = stay.questionnaire ?? (await conformance.read<Questionnaire>('Questionnaire', QUESTIONNAIRE_ID));
+        const [formQ, crit] = await Promise.all([withAnswerOptions(q, conformance), loadCriteria(conformance)]);
         if (!live) return;
         setQuestionnaire(q);
         setFormQuestionnaire(formQ);
@@ -312,7 +316,7 @@ export function TriageFormScreen({ stay, onDone }: { stay: Stay; onDone: (s: Sta
         <ErrorNote error={partialError} what="Saving the vitals so far" />
         {steps && (
           <ol className="steps" aria-live="polite">
-            {STEP_NAMES.map((name, n) => (
+            {STEP_NAMES.map((step, n) => [n === 3 && engine === 'browser' ? BROWSER_STEP : step, n] as const).map(([name, n]) => (
               <li key={name} className={`step-${steps[n]}`}>
                 <span className="step-mark" aria-hidden="true">
                   {steps[n] === 'done' ? '✓' : steps[n] === 'failed' ? '✕' : steps[n] === 'running' ? '…' : '·'}
@@ -321,7 +325,7 @@ export function TriageFormScreen({ stay, onDone }: { stay: Stay; onDone: (s: Sta
                 {steps[n] === 'running' && n === 3 && (
                   <span className="num step-time">
                     {' '}
-                    {seconds} s{MOCK ? '' : ' (the server takes 5–15 s)'}
+                    {seconds} s{engine === 'server' ? ' (the server takes 5–15 s)' : ''}
                   </span>
                 )}
                 <span className="sr-only"> — {steps[n]}</span>
@@ -339,7 +343,8 @@ export function TriageFormScreen({ stay, onDone }: { stay: Stay; onDone: (s: Sta
           sources={reasons.pins}
           caption={
             <>
-              <strong>While you type</strong> · counted here in the browser. The guideline on the server gives the priority.
+              <strong>While you type</strong> · counted here in the browser. The {engine ? ENGINE_TEXT[engine] : 'guideline'} gives the
+              priority.
             </>
           }
         />
@@ -381,7 +386,7 @@ interface SavedSoFar {
   /** The vital signs posted so far, the latest of each. */
   vitals: Observation[];
   result: TriageResult;
-  /** The preliminary NEWS2 recorded, if the server scored anything. */
+  /** The preliminary NEWS2 recorded, if the guideline scored anything. */
   news2?: Observation;
   at: string;
 }
@@ -401,14 +406,15 @@ function sameMeasurement(a: Observation, b: Observation | undefined): boolean {
   return value(a) === value(b);
 }
 
-/** What the server said about the vitals saved so far: its provisional NEWS2 and priority. */
+/** What the guideline said about the vitals saved so far: its provisional NEWS2 and priority. */
 function PartialSaved({ partial }: { partial: SavedSoFar }) {
   const p = partial.result.provisional;
   const code = priorityOf(p.priority);
   return (
     <div className="partial-saved" role="status">
       <p>
-        <strong>Vitals saved so far</strong> at {clock(partial.at)} ({partial.vitals.length} vital signs). The guideline on the server: NEWS2{' '}
+        <strong>Vitals saved so far</strong> at {clock(partial.at)} ({partial.vitals.length} vital signs). The {partial.result.engine === 'server' ? 'guideline on the server' : 'guideline in this browser'}:
+        NEWS2{' '}
         <strong className="num">{p.total === null ? '–' : `≥ ${p.total}`}</strong>
         {p.risk && <> · at least {RISK_TEXT[p.risk]} clinical risk</>}
         {code && (

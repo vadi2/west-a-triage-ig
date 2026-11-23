@@ -50,7 +50,10 @@ export interface TriageResult {
   vitalParameterPriority: Coding | null;
   provisional: LibProvisional;
   summaries: string[];
+  /** The CarePlan of PlanDefinition/$apply (built in the browser as $apply does, there). */
   carePlan?: unknown;
+  /** Where the guideline ran (set by the app, not by cds.js). */
+  engine?: 'server' | 'browser';
 }
 
 /** The FHIR client of cds.js (only what runTriage needs). */
@@ -93,6 +96,8 @@ export interface TriageObservationArgs {
 export interface CdsModule {
   fhir(base: string): LibClient;
   runTriage(client: LibClient, params: TriageParams): Promise<TriageResult>;
+  /** A Coding of the WEST-A triage priority code system, with its Swedish display. */
+  priorityCoding(priority: PriorityInput | null | undefined): Coding | null;
   news2Observation(args: News2ObservationArgs): Observation;
   triageObservation(args: TriageObservationArgs): Observation;
 }

@@ -7,7 +7,9 @@
     "dev": "vite",
     "dev:mock": "VITE_MOCK=1 vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "ig-assets": "node scripts/ig-assets.mjs",
+    "build:pages": "VITE_BACKEND=public npm run build"
   },
   "dependencies": {
     "@aehrc/smart-forms-renderer": "^1.5.0",
@@ -15,6 +17,8 @@
     "@emotion/styled": "^11.14.1",
     "@mui/material": "^7.3.11",
     "@tanstack/react-query": "^5.108.1",
+    "cql-exec-fhir": "2.2.0",
+    "cql-execution": "3.3.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
@@ -23,6 +27,7 @@
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",
+    "events": "3.3.0",
     "typescript": "^5.6.3",
     "vite": "^6.0.7"
   }
