@@ -77,6 +77,7 @@ button { font: inherit; color: inherit; }
 .views { display: flex; flex-wrap: wrap; gap: 2px; padding: 8px 12px 0; background: var(--bar); border-bottom: 1px solid var(--line); }
 .views button { border: 1px solid transparent; border-bottom: none; background: transparent; padding: 6px 14px; border-radius: 4px 4px 0 0; cursor: pointer; color: var(--bar-ink); white-space: nowrap; }
 .views button[aria-selected="true"] { background: var(--panel); border-color: var(--line); font-weight: 600; margin-bottom: -1px; }
+.views .all { margin-left: auto; align-self: center; padding: 0 4px 6px; font-size: 13px; }
 .pane { padding: 18px; min-width: 0; }
 
 /* type icons */
@@ -106,11 +107,11 @@ button { font: inherit; color: inherit; }
 .ov dd ul { margin: 0; padding-left: 18px; }
 .kw { display: flex; flex-wrap: wrap; gap: 6px; }
 .kw span { background: var(--accent); color: var(--accent-ink); border-radius: 10px; padding: 1px 10px; font-size: 12px; font-weight: 500; }
-.side { border: 1px dashed var(--line); padding: 14px 16px; display: grid; gap: 12px; align-content: start; font-size: 13px; }
+.side { border: 1px dashed var(--line); padding: 14px 16px; display: grid; grid-template-columns: minmax(0,1fr); gap: 12px; align-content: start; font-size: 13px; }
 .side h3 { font-size: 13px; font-weight: 600; }
 .side .v { color: var(--muted); word-break: break-word; }
-.side .v code { font-family: var(--mono); font-size: 12px; }
-.counts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.side .v code { font-family: var(--mono); font-size: 12px; overflow-wrap: anywhere; }
+.counts { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; }
 .counts div { background: var(--bar); padding: 8px; text-align: center; border-radius: 3px; }
 .counts b { display: block; font-size: 20px; font-variant-numeric: tabular-nums; }
 .counts span { font-size: 11px; color: var(--muted); }
@@ -263,7 +264,10 @@ table.data tr.grp.d1 td { background: color-mix(in srgb, var(--bar) 55%, var(--p
 <script>
 const DATA = /*__DATA__*/null;
 const MODELS = DATA.models;
-const IG = DATA.meta.igUrl;
+const ROOT = document.querySelector('.cv');
+const MODE = (ROOT && ROOT.dataset.cv) || 'standalone';
+const IG = MODE === 'standalone' ? DATA.meta.igUrl : '';
+const TGT = MODE === 'standalone' ? ' target="_blank" rel="noopener"' : '';
 const TYPES = {
   text: ['T', 'Text'], coded: ['≡', 'Coded text (chosen from a list)'], quantity: ['Q', 'Quantity with unit'], count: ['#', 'Count'], decimal: ['#', 'Number'], ratio: ['½', 'Ratio'],
   date: ['D', 'Date'], datetime: ['DT', 'Date and time'], time: ['⏲', 'Time'], period: ['↔', 'Period (from - to)'],
@@ -305,23 +309,24 @@ function tags(n, withRef = true) {
 }
 function walk(n, fn, depth = 0, parent = null) { fn(n, depth, parent); (n.children || []).forEach(c => walk(c, fn, depth + 1, n)); }
 
-let state = { model: MODELS[0].id, view: 'overview', paths: false, example: false, step: 0 };
+let state = { model: (ROOT && ROOT.dataset.cvModel) || MODELS[0].id, view: MODE === 'profile' ? 'data' : 'overview', paths: false, example: false, step: 0 };
 try { const s = JSON.parse(localStorage.getItem('clinical-views') || '{}'); if (typeof s.paths === 'boolean') state.paths = s.paths; } catch (e) {}
 function save() { try { localStorage.setItem('clinical-views', JSON.stringify({ paths: state.paths })); } catch (e) {} }
 
-const VIEWS = Object.fromEntries(MODELS.map(m => [m.id, ['overview', 'data', 'mindmap', 'form', ...(m.steps ? ['exchange'] : [])]]));
+const VIEWS = Object.fromEntries(MODELS.map(m => [m.id, [...(MODE === 'profile' ? [] : ['overview']), 'data', 'mindmap', 'form', ...(m.steps ? ['exchange'] : [])]]));
 const VIEW_NAMES = { overview: 'Overview', data: 'Data', mindmap: 'Mind map', form: 'Form preview', exchange: 'Exchange' };
 
 function readHash() {
+  if (MODE === 'profile') return;
   let h = location.hash.slice(1);
   try { if (MODELS.some(x => x.id === decodeURIComponent(h))) h += '-overview'; } catch (e) { return; }
   const i = h.lastIndexOf('-');
   let m = i < 0 ? h : h.slice(0, i), v = i < 0 ? '' : h.slice(i + 1);
   try { m = decodeURIComponent(m); } catch (e) { return; }
   if (MODELS.some(x => x.id === m)) state.model = m;
-  if (v && VIEWS[state.model].includes(v)) state.view = v; else if (m) state.view = 'overview';
+  if (v && VIEWS[state.model].includes(v)) state.view = v; else if (m) state.view = VIEWS[state.model][0];
 }
-function writeHash() { const h = '#' + encodeURIComponent(state.model) + '-' + state.view; if (location.hash !== h) history.replaceState(null, '', h); }
+function writeHash() { if (MODE === 'profile') return; const h = '#' + encodeURIComponent(state.model) + '-' + state.view; if (location.hash !== h) history.replaceState(null, '', h); }
 
 // ---------- render shell ----------
 function render() {
@@ -341,7 +346,8 @@ function render() {
      <span class="meta">${kind} · ${esc(m.resource)}</span>
      <span class="status">${esc(cap(m.status))}${m.experimental ? ' · experimental' : ''}</span>`;
   document.getElementById('views').innerHTML = VIEWS[m.id].map(v =>
-    `<button role="tab" aria-selected="${v === state.view}" data-view="${v}">${VIEW_NAMES[v]}</button>`).join('');
+    `<button role="tab" aria-selected="${v === state.view}" data-view="${v}">${VIEW_NAMES[v]}</button>`).join('') +
+    (MODE === 'profile' ? `<a class="all" href="clinical-views.html#${encodeURIComponent(m.id)}">All clinical views</a>` : '');
   const pane = document.getElementById('pane');
   ({ overview: renderOverview, data: renderData, mindmap: renderMindmap, form: renderForm, exchange: renderExchange })[state.view](pane, m);
   writeHash();
@@ -349,17 +355,17 @@ function render() {
 
 document.getElementById('models').addEventListener('click', e => {
   const b = e.target.closest('button[data-model]'); if (!b) return;
-  state.model = b.dataset.model; if (!VIEWS[state.model].includes(state.view)) state.view = 'overview'; render();
+  state.model = b.dataset.model; if (!VIEWS[state.model].includes(state.view)) state.view = VIEWS[state.model][0]; render();
 });
 document.getElementById('models').addEventListener('change', e => {
   if (e.target.id !== 'pick' || !e.target.value) return;
-  state.model = e.target.value; if (!VIEWS[state.model].includes(state.view)) state.view = 'overview'; render();
+  state.model = e.target.value; if (!VIEWS[state.model].includes(state.view)) state.view = VIEWS[state.model][0]; render();
 });
 document.getElementById('views').addEventListener('click', e => {
   const b = e.target.closest('button[data-view]'); if (!b) return;
   state.view = b.dataset.view; render();
 });
-window.addEventListener('hashchange', () => { readHash(); render(); });
+if (MODE !== 'profile') window.addEventListener('hashchange', () => { readHash(); render(); });
 
 // ---------- overview ----------
 function renderOverview(pane, m) {
@@ -372,7 +378,7 @@ function renderOverview(pane, m) {
     return any || mand > before;
   }, false);
   count(m.root, true);
-  const usesBlock = m.uses ? `<div><h3>Built from</h3><div class="uses v">${m.uses.map(([t, p]) => `<a href="${esc(IG + p)}" target="_blank" rel="noopener">${icon('link')} ${esc(t)}</a>`).join('')}</div></div>` : '';
+  const usesBlock = m.uses ? `<div><h3>Built from</h3><div class="uses v">${m.uses.map(([t, p]) => `<a href="${esc(IG + p)}"${TGT}>${icon('link')} ${esc(t)}</a>`).join('')}</div></div>` : '';
   pane.innerHTML = `<div class="ov">
     <dl>
       <dt>Concept</dt><dd><p><b>${esc(m.concept)}</b></p></dd>
@@ -388,8 +394,8 @@ function renderOverview(pane, m) {
       <div><h3>FHIR resource</h3><div class="v">${esc(m.resource)}</div></div>
       ${m.base ? `<div><h3>Based on</h3><div class="v">${m.base.href ? `<a href="${esc(m.base.href)}" target="_blank" rel="noopener">${esc(m.base.title)}</a>` : esc(m.base.title)}</div></div>` : ''}
       <div><h3>Profile (version ${esc(m.version)})</h3><div class="v"><code>${esc(m.profile)}</code></div></div>
-      <div><h3>Specification</h3><div class="v"><a href="${esc(IG + m.igPage)}" target="_blank" rel="noopener">Open in the ${esc(DATA.meta.guideName)}</a></div></div>
-      ${m.example ? `<div><h3>Example values from</h3><div class="v">${(m.examples || [[m.example, m.examplePage]]).map(([r, pg]) => pg ? `<a href="${esc(IG + pg + '.html')}" target="_blank" rel="noopener">${esc(r)}</a>` : esc(r)).join('<br>')}</div></div>` : ''}
+      <div><h3>Specification</h3><div class="v"><a href="${esc(IG + m.igPage)}"${TGT}>Open in the ${esc(DATA.meta.guideName)}</a></div></div>
+      ${m.example ? `<div><h3>Example values from</h3><div class="v">${(m.examples || [[m.example, m.examplePage]]).map(([r, pg]) => pg ? `<a href="${esc(IG + pg + '.html')}"${TGT}>${esc(r)}</a>` : esc(r)).join('<br>')}</div></div>` : ''}
       <div><h3>Publisher</h3><div class="v">${esc(m.publisher)}</div></div>
       ${DATA.meta.languages.length ? `<div><h3>Languages</h3><div class="v">${esc(DATA.meta.languages.join(', '))}</div></div>` : ''}
       ${usesBlock}
@@ -403,7 +409,7 @@ function consHtml(n) {
   let h = '';
   if (n.values && n.values.length) h += `<ul>${n.values.map(v => `<li>${esc(v)}</li>`).join('')}</ul>`;
   if (n.target) h += `<div>Refers to: ${esc(n.target)}</div>`;
-  if (n.vs) [n.vs, ...(n.vs.also || [])].forEach(v => { h += `<div>${esc(bindingLead(v))}: ${v.page ? `<a href="${esc(IG + v.page)}" target="_blank" rel="noopener">${esc(v.title)}</a>` : esc(v.title)}${v.note ? ` (${esc(v.note)})` : ''}</div>`; });
+  if (n.vs) [n.vs, ...(n.vs.also || [])].forEach(v => { h += `<div>${esc(bindingLead(v))}: ${v.page ? `<a href="${esc(IG + v.page)}"${TGT}>${esc(v.title)}</a>` : esc(v.title)}${v.note ? ` (${esc(v.note)})` : ''}</div>`; });
   if (n.ex) h += `<div class="ex">Example: <b>${esc(n.ex)}</b></div>`;
   return h;
 }
@@ -670,9 +676,11 @@ function renderExchange(pane, m) {
   });
 }
 
-document.getElementById('title').textContent = DATA.meta.title;
-document.getElementById('intro').textContent = DATA.meta.intro || 'The data these profiles exchange: an overview, a data table, a mind map and a form preview of each.';
-document.getElementById('proto').textContent = DATA.meta.guideName + ' ' + DATA.meta.igVersion + (DATA.meta.built ? ' · built ' + DATA.meta.built : '');
+if (MODE === 'standalone') {
+  document.getElementById('title').textContent = DATA.meta.title;
+  document.getElementById('intro').textContent = DATA.meta.intro || 'The data these profiles exchange: an overview, a data table, a mind map and a form preview of each.';
+  document.getElementById('proto').textContent = DATA.meta.guideName + ' ' + DATA.meta.igVersion + (DATA.meta.built ? ' · built ' + DATA.meta.built : '');
+}
 readHash();
 render();
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (state.view === 'mindmap') render(); });

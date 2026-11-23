@@ -1,7 +1,5 @@
 WEST-A Triage Observation records the result of a WEST-A triage at the emergency department: the priority (Röd, Orange, Gul or Grön), the chief complaint, that is, the WEST-A complaint algorithm the triage nurse used, and the triage criteria found: the warning symptoms of that algorithm, which set the priority, and the needs that give yellow as the lowest priority. It refers to the [WEST-A Patient](StructureDefinition-west-a-patient.html) and the emergency department Encounter, and it points to the [WEST-A NEWS2 Observation](StructureDefinition-west-a-news2-observation.html) the priority is based on. The [triage mapping page](west-a-triage-mapping.html) explains how WEST-A sets the priority and lists every code.
 
-The [clinical view](clinical-views.html#west-a-triage-observation) shows this profile for clinicians: an overview, a data table, a mind map and a form preview.
-
 ### Mandatory and Must Support data elements
 
 The elements below must always be present (mandatory) or must be supported when the data is available (Must Support) - not all are required, but your system must populate each Must Support element when it has the data and process it on receipt. This is the human-readable summary; the [formal views](#profile) below give the exact cardinalities, types, and terminology bindings.
@@ -16,6 +14,12 @@ A status, the survey category, the SNOMED CT code for triage (`425705009` *triag
 - the performer (the triage nurse);
 - the triage criteria found, one `criterion` component each: a warning symptom, a need, or *Inga varningssymtom* (no warning symptoms);
 - the observations the priority is based on, such as NEWS2.
+
+### Clinical view
+
+The elements of this profile as clinicians see them: a data table, a mind map and a form preview.
+
+{% include clinical-view-west-a-triage-observation.html %}
 
 ### Building the JSON, step by step
 

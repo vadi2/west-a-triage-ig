@@ -32,6 +32,8 @@ pages:
     title: WEST-A Triage Mapping
   west-a-computable-guidelines.md:
     title: WEST-A Computable Guidelines
+  clinical-views.md:
+    title: Clinical Views
   changelog.md:
     title: Changelog
 

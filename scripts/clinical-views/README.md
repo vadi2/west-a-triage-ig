@@ -3,8 +3,10 @@
 Clinician-facing views of an IG's profiles: overview, data table, mind map, form preview and, for use cases, the exchange steps.
 
 ```bash
-scripts/clinical-views/generate.py --output-dir output --config scripts/clinical-views/views.json -o input/images/clinical-views.html --external-script
+scripts/clinical-views/generate.py --output-dir output --config scripts/clinical-views/views.json --ig input/images/clinical-views
 ```
+
+`--ig ASSETS` builds the views into the guide's own pages: it writes the script, the styles and one data file per profile to `ASSETS`, and Jekyll includes to `input/includes` (`--includes` to change it). `{% include clinical-views.html %}` in `input/pagecontent/clinical-views.md` gives the page with every profile; `{% include clinical-view-<profile-id>.html %}` in a profile's intro gives that profile's data table, mind map and form preview. The styles are scoped to the views and take the guide's colours from the template. Without `--ig`, `-o FILE` writes a standalone page instead.
 
 This guide is not built locally: download the `ig-output` artifact of a CI run (`gh run download <run-id> -n ig-output`) and pass its `output/` folder as `--output-dir`.
 

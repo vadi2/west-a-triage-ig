@@ -1,7 +1,5 @@
 WEST-A Blood Pressure records the blood pressure measured at triage. It derives from the FHIR core [Blood Pressure](http://hl7.org/fhir/R4/bp.html) vital signs profile, so a system that already sends FHIR vital signs only adds the patient and the visit. The [WEST-A NEWS2 Observation](StructureDefinition-west-a-news2-observation.html) scores its systolic blood pressure from it and references it in `derivedFrom`.
 
-The [clinical view](clinical-views.html#west-a-blood-pressure) shows this profile for clinicians: an overview, a data table, a mind map and a form preview.
-
 ### Mandatory and Must Support data elements
 
 The elements below must always be present (mandatory) or must be supported when the data is available (Must Support) - not all are required, but your system must populate each Must Support element when it has the data and process it on receipt. This is the human-readable summary; the [formal views](#profile) below give the exact cardinalities, types, and terminology bindings.
@@ -14,6 +12,12 @@ A status, the vital-signs category, the LOINC code `85354-9` that the core profi
 
 - the SNOMED CT code `75367002` *blodtryck*, as a second coding next to the LOINC code;
 - the encounter and the performer.
+
+### Clinical view
+
+The elements of this profile as clinicians see them: a data table, a mind map and a form preview.
+
+{% include clinical-view-west-a-blood-pressure.html %}
 
 ### Building the JSON
 

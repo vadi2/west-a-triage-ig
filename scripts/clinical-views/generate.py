@@ -2304,6 +2304,10 @@ def main():
                     help='FHIR package cache to read dependency value sets from; repeatable (default: ~/.fhir/packages)')
     ap.add_argument('--only', help='comma-separated view or profile ids to include')
     ap.add_argument('--no-auto', action='store_true', help='only the curated views, no view per profile')
+    ap.add_argument('--ig', metavar='ASSETS',
+                    help='write the views for use inside the guide: the script, styles and per-profile data into ASSETS '
+                         '(e.g. input/images/clinical-views) and Jekyll includes into --includes')
+    ap.add_argument('--includes', default='input/includes', help='where --ig writes its includes (default: input/includes)')
     ap.add_argument('--fragment', action='store_true', help='omit the html/head/body skeleton (for hosts that add their own)')
     ap.add_argument('--external-script', action='store_true',
                     help='write the script to a .js file beside the page (the IG publisher rejects inline scripts)')
@@ -2338,6 +2342,9 @@ def main():
         'igVersion': pkg.get('version') or b.ig.get('version', ''),
         'built': re.sub(r'^(\d{4})(\d\d)(\d\d).*', r'\1-\2-\3', pkg.get('date', '')),
     }
+    if args.ig:
+        write_ig(models, meta, Path(args.ig), Path(args.includes))
+        return
     html = (HERE / 'template.html').read_text(encoding='utf-8')
     html = html.replace('<title>Clinical views</title>', f"<title>{escape(meta['title'])}</title>")
     data = json.dumps({'models': models, 'meta': meta}, ensure_ascii=False).replace('<', '\\u003c')
@@ -2359,6 +2366,86 @@ def main():
     featured = ', '.join(f"{m['id']}: {sum(1 for _ in iter_leaves(m['root']))} elements" for m in models if m.get('featured'))
     size = f"{len(html) // 1024} KB" + (f" + {out.with_suffix('.js').name} {len(script) // 1024} KB" if args.external_script else '')
     print(f"wrote {out}: {len(models)} views ({featured or 'none curated'}), {size}")
+
+
+IG_VARS = """
+  --bg: transparent; --panel: #ffffff; --bar: #f2f2f2; --bar-ink: #333333; --line: #dddddd;
+  --accent: var(--navbar-bg-color, #2c5d8f); --accent-ink: #ffffff; --accent-soft: color-mix(in srgb, var(--accent) 10%, #ffffff);
+  --link: var(--link-color, #1a6fb5); --link-soft: color-mix(in srgb, var(--link) 10%, #ffffff);
+  --shadow: none; --font: inherit; --font-cond: inherit;
+"""
+IG_BASE = """
+.cv h1, .cv h2, .cv h3, .cv h4 { counter-reset: none; border: 0; padding: 0; margin: 0; font-family: inherit; line-height: 1.3; }
+.cv h1::before, .cv h2::before, .cv h3::before, .cv h4::before { content: none; }
+.cv label { font-weight: inherit; margin: 0; max-width: none; }
+.cv code { color: inherit; background: none; padding: 0; }
+.cv a { color: var(--link-color, #1a6fb5); }
+.cv [hidden] { display: none !important; }
+.cv-host { contain: inline-size; }
+.cv .side code { white-space: normal; overflow-wrap: anywhere; }
+"""
+
+
+def scope_css(css):
+    """The template's page styles, scoped to .cv and taking the guide's colours and fonts; no dark mode, since the guide has none."""
+    css = re.sub(r'/\*.*?\*/', '', re.sub(r'@import url\([^)]*\);', '', css), flags=re.S)
+    out, i = [], 0
+    while i < len(css):
+        j = css.find('{', i)
+        if j < 0:
+            break
+        head = css[i:j].strip()
+        depth, k = 1, j + 1
+        while depth:
+            depth += {'{': 1, '}': -1}.get(css[k], 0)
+            k += 1
+        body = css[j + 1:k - 1]
+        i = k
+        if head.startswith('@media'):
+            if 'prefers-color-scheme' not in head:
+                out.append(f'{head} {{\n{scope_css(body)}\n}}')
+        elif head == ':root':
+            out.append('.cv {' + body.rstrip() + IG_VARS + '}')
+        elif head.startswith(':root') or head == '.wrap':
+            continue
+        else:
+            sels = []
+            for sel in head.split(','):
+                sel = sel.strip()
+                sels.append({'*': '.cv, .cv *', 'body': '.cv'}.get(sel, f'.cv {sel}'))
+            out.append(f"{', '.join(sels)} {{{body}}}")
+    return '\n'.join(out)
+
+
+def write_ig(models, meta, assets, includes):
+    tpl = (HERE / 'template.html').read_text(encoding='utf-8')
+    css = tpl[tpl.index('<style>') + 7:tpl.index('</style>')]
+    script = tpl[tpl.rindex('<script>') + 8:tpl.rindex('</script>')].lstrip('\n')
+    script = script.replace('const DATA = /*__DATA__*/null;', 'const DATA = window.CV_DATA;')
+    loader = ("(() => { const s = document.currentScript; if (s && !document.getElementById('cv-css')) {\n"
+              "  const l = document.createElement('link'); l.id = 'cv-css'; l.rel = 'stylesheet'; l.href = s.src.replace(/[^/]*$/, 'app.css');\n"
+              "  document.head.appendChild(l); } })();\n")
+    assets.mkdir(parents=True, exist_ok=True)
+    includes.mkdir(parents=True, exist_ok=True)
+    (assets / 'app.css').write_text(scope_css(css) + IG_BASE, encoding='utf-8')
+    (assets / 'app.js').write_text(loader + '{\n' + script + '}\n', encoding='utf-8')
+    data = lambda ms: 'window.CV_DATA = ' + json.dumps({'models': ms, 'meta': meta}, ensure_ascii=False).replace('<', '\\u003c') + ';\n'
+    (assets / 'all.js').write_text(data(models), encoding='utf-8')
+    rel = assets.name
+    shell = ('<div class="sheet">\n  <div class="titlebar" id="titlebar"{hide}></div>\n'
+             '  <nav class="views" role="tablist" aria-label="View" id="views"></nav>\n  <div class="pane" id="pane"></div>\n</div>')
+    (includes / 'clinical-views.html').write_text(
+        '<div class="cv-host">\n<div class="cv" data-cv="page">\n'
+        '<nav class="models" role="tablist" aria-label="Clinical model" id="models"></nav>\n' + shell.format(hide='') + '\n</div>\n'
+        f'<script src="{rel}/all.js"></script>\n<script src="{rel}/app.js"></script>\n</div>\n', encoding='utf-8')
+    for m in models:
+        (assets / f"{m['id']}.js").write_text(data([m]), encoding='utf-8')
+        (includes / f"clinical-view-{m['id']}.html").write_text(
+            f'<div class="cv-host">\n<div class="cv" data-cv="profile" data-cv-model="{escape(m["id"])}">\n'
+            '<nav id="models" hidden></nav>\n' + shell.format(hide=' hidden') + '\n</div>\n'
+            f'<script src="{rel}/{m["id"]}.js"></script>\n<script src="{rel}/app.js"></script>\n</div>\n', encoding='utf-8')
+    print(f"wrote {assets}/ (app.js, app.css, all.js, {len(models)} profile data files) and "
+          f"{includes}/clinical-views.html + {len(models)} clinical-view-*.html includes")
 
 
 def iter_leaves(n):

@@ -6,8 +6,6 @@ While the vital signs are coming in, it can also record a provisional NEWS2: sta
 vital signs (measured) ──derivedFrom── NEWS2 (calculated) ──derivedFrom── WEST-A triage (assessed)
 ```
 
-The [clinical view](clinical-views.html#west-a-news2-observation) shows this profile for clinicians: an overview, a data table, a mind map and a form preview.
-
 ### Mandatory and Must Support data elements
 
 The elements below must always be present (mandatory) or must be supported when the data is available (Must Support) - not all are required, but your system must populate each Must Support element when it has the data and process it on receipt. This is the human-readable summary; the [formal views](#profile) below give the exact cardinalities, types, and terminology bindings.
@@ -23,6 +21,12 @@ A status (`final`, or `preliminary` for a provisional NEWS2), the survey categor
 - one score per parameter: respiration rate, oxygen saturation (scale 1 or scale 2, never both), supplemental oxygen, systolic blood pressure, pulse, consciousness (ACVPU) and temperature.
 
 When all seven parameter scores are sent, the total must be their sum. A `final`, `amended` or `corrected` NEWS2 sends all seven parameter scores or none; one that misses a parameter is `preliminary`, and its total is the sum of the scores it sends.
+
+### Clinical view
+
+The elements of this profile as clinicians see them: a data table, a mind map and a form preview.
+
+{% include clinical-view-west-a-news2-observation.html %}
 
 ### Building the JSON, step by step
 

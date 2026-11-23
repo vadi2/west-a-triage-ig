@@ -1,7 +1,5 @@
 WEST-A Consciousness records the level of consciousness on the ACVPU scale (*medvetandegrad*) assessed at triage: Alert, new Confusion, Voice, Pain or Unresponsive. FHIR has no core vital signs profile for it, so it is a plain Observation with SNOMED CT codes. The [WEST-A NEWS2 Observation](StructureDefinition-west-a-news2-observation.html) scores it (0 for alert, 3 otherwise) and references it in `derivedFrom`.
 
-The [clinical view](clinical-views.html#west-a-consciousness) shows this profile for clinicians: an overview, a data table, a mind map and a form preview.
-
 ### Mandatory and Must Support data elements
 
 The elements below must always be present (mandatory) or must be supported when the data is available (Must Support) - not all are required, but your system must populate each Must Support element when it has the data and process it on receipt. This is the human-readable summary; the [formal views](#profile) below give the exact cardinalities, types, and terminology bindings.
@@ -22,6 +20,12 @@ A status, the exam category, the SNOMED CT code `1104441000000107` for the ACVPU
 #### Each WEST-A Consciousness Must Support
 
 - the encounter and the performer.
+
+### Clinical view
+
+The elements of this profile as clinicians see them: a data table, a mind map and a form preview.
+
+{% include clinical-view-west-a-consciousness.html %}
 
 ### Building the JSON
 

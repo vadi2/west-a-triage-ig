@@ -1,7 +1,5 @@
 WEST-A Supplemental Oxygen records the oxygen flow the patient receives at triage (*tillförd syrgas*), with SNOMED CT `427081008` *flöde för tillförd syrgas* (delivered oxygen flow rate). A flow of 0 L/min means the patient breathes room air. NEWS2 gives 2 points for any supplemental oxygen; the [WEST-A NEWS2 Observation](StructureDefinition-west-a-news2-observation.html) references this observation in `derivedFrom`.
 
-The [clinical view](clinical-views.html#west-a-supplemental-oxygen) shows this profile for clinicians: an overview, a data table, a mind map and a form preview.
-
 ### Mandatory and Must Support data elements
 
 The elements below must always be present (mandatory) or must be supported when the data is available (Must Support) - not all are required, but your system must populate each Must Support element when it has the data and process it on receipt. This is the human-readable summary; the [formal views](#profile) below give the exact cardinalities, types, and terminology bindings.
@@ -13,6 +11,12 @@ A status, the therapy category, the SNOMED CT code `427081008`, the patient, the
 #### Each WEST-A Supplemental Oxygen Must Support
 
 - the encounter and the performer.
+
+### Clinical view
+
+The elements of this profile as clinicians see them: a data table, a mind map and a form preview.
+
+{% include clinical-view-west-a-supplemental-oxygen.html %}
 
 ### Building the JSON
 
