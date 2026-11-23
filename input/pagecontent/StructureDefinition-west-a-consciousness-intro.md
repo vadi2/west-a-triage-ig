@@ -21,10 +21,6 @@ A status, the exam category, the SNOMED CT code `1104441000000107` for the ACVPU
 
 - the encounter and the performer.
 
-### Clinical view
-
-The elements of this profile as clinicians see them: a data table, a mind map and a form preview.
-
 {% include clinical-view-west-a-consciousness.html %}
 
 ### Building the JSON

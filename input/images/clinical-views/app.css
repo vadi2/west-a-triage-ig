@@ -74,7 +74,7 @@
 .cv .chip.rep { background: var(--accent-soft); color: var(--accent); }
 .cv .chip.ref { background: var(--link-soft); color: var(--link); white-space: normal; overflow-wrap: anywhere; }
 .cv .ov { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 24px; }
-.cv .ov dl { margin: 0; display: grid; grid-template-columns: 150px minmax(0,1fr); border-top: 1px solid var(--line); }
+.cv .ov dl { margin: 0; display: grid; grid-template-columns: 150px minmax(0,1fr); align-content: start; border-top: 1px solid var(--line); }
 .cv .ov dt, .cv .ov dd { padding: 12px 0; border-bottom: 1px solid var(--line); margin: 0; overflow-wrap: anywhere; }
 .cv .ov dt { font-weight: 600; padding-right: 12px; }
 .cv .ov dd p { margin: 0 0 8px; max-width: 70ch; }

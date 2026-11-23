@@ -13,10 +13,6 @@ A status, the vital-signs category, the LOINC code `9279-1` that the core profil
 - the SNOMED CT code `86290005` *andningsfrekvens*, as a second coding next to the LOINC code;
 - the encounter and the performer.
 
-### Clinical view
-
-The elements of this profile as clinicians see them: a data table, a mind map and a form preview.
-
 {% include clinical-view-west-a-respiratory-rate.html %}
 
 ### Building the JSON

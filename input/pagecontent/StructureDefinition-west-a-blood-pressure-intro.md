@@ -13,10 +13,6 @@ A status, the vital-signs category, the LOINC code `85354-9` that the core profi
 - the SNOMED CT code `75367002` *blodtryck*, as a second coding next to the LOINC code;
 - the encounter and the performer.
 
-### Clinical view
-
-The elements of this profile as clinicians see them: a data table, a mind map and a form preview.
-
 {% include clinical-view-west-a-blood-pressure.html %}
 
 ### Building the JSON

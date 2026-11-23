@@ -15,10 +15,6 @@ A status, the survey category, the SNOMED CT code for triage (`425705009` *triag
 - the triage criteria found, one `criterion` component each: a warning symptom, a need, or *Inga varningssymtom* (no warning symptoms);
 - the observations the priority is based on, such as NEWS2.
 
-### Clinical view
-
-The elements of this profile as clinicians see them: a data table, a mind map and a form preview.
-
 {% include clinical-view-west-a-triage-observation.html %}
 
 ### Building the JSON, step by step

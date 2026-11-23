@@ -13,10 +13,6 @@ A status, the vital-signs category, the LOINC code `8867-4` that the core profil
 - the SNOMED CT code `364075005` *hjärtfrekvens*, as a second coding next to the LOINC code;
 - the encounter and the performer.
 
-### Clinical view
-
-The elements of this profile as clinicians see them: a data table, a mind map and a form preview.
-
 {% include clinical-view-west-a-heart-rate.html %}
 
 ### Building the JSON

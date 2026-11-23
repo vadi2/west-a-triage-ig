@@ -121,13 +121,13 @@ function renderOverview(pane, m) {
   const usesBlock = m.uses ? `<div><h3>Built from</h3><div class="uses v">${m.uses.map(([t, p]) => `<a href="${esc(IG + p)}"${TGT}>${icon('link')} ${esc(t)}</a>`).join('')}</div></div>` : '';
   pane.innerHTML = `<div class="ov">
     <dl>
-      <dt>Concept</dt><dd><p><b>${esc(m.concept)}</b></p></dd>
-      <dt>Description</dt><dd><p>${esc(m.description)}</p></dd>
-      <dt>Purpose</dt><dd><p>${esc(m.purpose)}</p></dd>
-      <dt>Use</dt><dd>${(m.use || []).map(p => `<p>${esc(p)}</p>`).join('')}</dd>
-      <dt>Misuse</dt><dd>${(m.misuse || []).map(p => `<p>${esc(p)}</p>`).join('')}</dd>
-      ${m.rules ? `<dt>Rules</dt><dd>${m.rules.map(r => `<p>${esc(r)}</p>`).join('')}</dd>` : ''}
-      <dt>Keywords</dt><dd><div class="kw">${(m.keywords || []).map(k => `<span>${esc(k)}</span>`).join('')}</div></dd>
+      ${m.concept ? `<dt>Concept</dt><dd><p><b>${esc(m.concept)}</b></p></dd>` : ''}
+      ${m.description ? `<dt>Description</dt><dd><p>${esc(m.description)}</p></dd>` : ''}
+      ${m.purpose ? `<dt>Purpose</dt><dd><p>${esc(m.purpose)}</p></dd>` : ''}
+      ${m.use && m.use.length ? `<dt>Use</dt><dd>${m.use.map(p => `<p>${esc(p)}</p>`).join('')}</dd>` : ''}
+      ${m.misuse && m.misuse.length ? `<dt>Misuse</dt><dd>${m.misuse.map(p => `<p>${esc(p)}</p>`).join('')}</dd>` : ''}
+      ${m.rules && m.rules.length ? `<dt>Rules</dt><dd>${m.rules.map(r => `<p>${esc(r)}</p>`).join('')}</dd>` : ''}
+      ${m.keywords && m.keywords.length ? `<dt>Keywords</dt><dd><div class="kw">${m.keywords.map(k => `<span>${esc(k)}</span>`).join('')}</div></dd>` : ''}
     </dl>
     <aside class="side">
       <div class="counts"><div><b>${total}</b><span>data elements</span></div><div><b>${mand}</b><span>mandatory</span></div><div><b>${ms}</b><span>must support</span></div></div>
@@ -423,5 +423,28 @@ if (MODE === 'standalone') {
 }
 readHash();
 render();
+if (MODE === 'profile') {
+  // the template's profile tabs are fixed in its layout, so add the view as one more tab once they exist
+  const toTab = () => {
+    const tabs = document.getElementById('tabs'), list = tabs && tabs.querySelector(':scope > ul'), $ = window.jQuery;
+    if (!list || !$ || !$(tabs).tabs('instance')) return;
+    const host = ROOT.closest('.cv-host');
+    const li = document.createElement('li');
+    li.innerHTML = '<a href="#tabs-clinical">Clinical View</a>';
+    list.appendChild(li);
+    const panel = document.createElement('div');
+    panel.id = 'tabs-clinical';
+    tabs.appendChild(panel);
+    panel.appendChild(ROOT);
+    host.remove();
+    $(tabs).tabs('refresh');
+    let saved = null;
+    try { saved = sessionStorage.getItem('fhir-resource-tab-index'); } catch (e) {}
+    const idx = list.children.length - 1, linked = location.hash === '#tabs-clinical' || location.hash === '#clinical-view';
+    if (saved === String(idx) || linked) $(tabs).tabs('option', 'active', idx);
+    if (linked) tabs.scrollIntoView();
+  };
+  document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', toTab) : toTab();
+}
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (state.view === 'mindmap') render(); });
 }

@@ -25,10 +25,6 @@ GET [base]/Patient?identifier=http://electronichealth.se/identifier/samordningsn
 GET [base]/Patient?identifier=https://fhir.vgregion.se/NamingSystem/LRID|19700101M081
 ```
 
-### Clinical view
-
-The elements of this profile as clinicians see them: a data table, a mind map and a form preview.
-
 {% include clinical-view-west-a-patient.html %}
 
 ### Building the JSON, step by step

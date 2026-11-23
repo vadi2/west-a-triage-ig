@@ -22,10 +22,6 @@ A status (`final`, or `preliminary` for a provisional NEWS2), the survey categor
 
 When all seven parameter scores are sent, the total must be their sum. A `final`, `amended` or `corrected` NEWS2 sends all seven parameter scores or none; one that misses a parameter is `preliminary`, and its total is the sum of the scores it sends.
 
-### Clinical view
-
-The elements of this profile as clinicians see them: a data table, a mind map and a form preview.
-
 {% include clinical-view-west-a-news2-observation.html %}
 
 ### Building the JSON, step by step

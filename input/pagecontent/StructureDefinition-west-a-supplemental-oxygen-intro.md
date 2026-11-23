@@ -12,10 +12,6 @@ A status, the therapy category, the SNOMED CT code `427081008`, the patient, the
 
 - the encounter and the performer.
 
-### Clinical view
-
-The elements of this profile as clinicians see them: a data table, a mind map and a form preview.
-
 {% include clinical-view-west-a-supplemental-oxygen.html %}
 
 ### Building the JSON
