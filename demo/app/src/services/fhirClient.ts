@@ -2,7 +2,8 @@ import type { Bundle, FhirResource, OperationOutcome, Parameters, Resource } fro
 
 /**
  * The app's FHIR client: `httpClient` for a server, `mockClient` (services/mockServer.ts) for
- * the in-browser store. runTriage in real mode uses the client of demo/lib/cds.js instead.
+ * the in-browser store, wrapped by services/backend.ts. When the server runs the guideline,
+ * runTriage uses the client of demo/lib/cds.js instead.
  */
 export interface FhirClient {
   base: string;
@@ -37,7 +38,7 @@ export function outcomeMessages(outcome: OperationOutcome | undefined): string[]
 export function httpClient(base: string): FhirClient {
   const root = base.replace(/\/$/, '');
 
-  async function call<T>(method: string, path: string, body?: unknown): Promise<T> {
+  async function call<T>(method: string, path: string, body?: unknown, extraHeaders: Record<string, string> = {}): Promise<T> {
     const label = `${method} ${path.split('?')[0]}`;
     let res: Response;
     try {
@@ -46,6 +47,7 @@ export function httpClient(base: string): FhirClient {
         headers: {
           Accept: 'application/fhir+json',
           ...(body ? { 'Content-Type': 'application/fhir+json' } : {}),
+          ...extraHeaders,
         },
         body: body ? JSON.stringify(body) : undefined,
       });
@@ -74,7 +76,9 @@ export function httpClient(base: string): FhirClient {
   return {
     base: root,
     read: (type, id) => call('GET', `${type}/${encodeURIComponent(id)}`),
-    search: (type, params) => call('GET', `${type}${query(params)}`),
+    // HAPI reuses the result of an identical search for a minute: without no-cache, what was
+    // just written would be missing from it (the guideline would score older vital signs)
+    search: (type, params) => call('GET', `${type}${query(params)}`, undefined, { 'Cache-Control': 'no-cache' }),
     create: (resource) => call('POST', resource.resourceType, resource),
     update: (resource) => call('PUT', `${resource.resourceType}/${resource.id}`, resource),
     transaction: (bundle) => call('POST', '', bundle),

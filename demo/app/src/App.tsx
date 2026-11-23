@@ -9,6 +9,7 @@ import { TriageFormScreen } from './screens/TriageFormScreen';
 import { ResultScreen } from './screens/ResultScreen';
 import { RecordScreen } from './screens/RecordScreen';
 import { ReportScreen } from './screens/ReportScreen';
+import { prepareServer } from './services/backend';
 
 export type Screen = 'patients' | 'form' | 'result' | 'record' | 'report';
 
@@ -48,6 +49,12 @@ function toHash(r: Route): string {
 export default function App() {
   const [route, setRoute] = useState<Route>(parseHash);
   const [stay, setStay] = useState<Stay | undefined>();
+
+  // The nurse the app refers to, on a server that lacks it (a fresh or purged sandbox). Writes
+  // wait for this too, and report its failure.
+  useEffect(() => {
+    prepareServer().catch(() => {});
+  }, []);
 
   useEffect(() => {
     const on = () => setRoute(parseHash());

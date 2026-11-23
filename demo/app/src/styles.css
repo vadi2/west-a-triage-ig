@@ -434,10 +434,34 @@ main:focus {
   gap: 6px;
   align-items: center;
 }
-.new-patient {
+.patients-side {
   align-self: start;
+  display: grid;
+  gap: 32px;
+}
+.new-patient,
+.backend {
   border-top: 2px solid var(--ink);
   padding-top: 12px;
+}
+.backend-now {
+  margin: 4px 0 6px;
+  font-size: 14px;
+}
+.backend summary {
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.backend .fields {
+  margin-top: 6px;
+}
+.backend label.inline {
+  display: flex;
+  margin-right: 0;
+  min-height: 32px;
 }
 .fields {
   display: grid;

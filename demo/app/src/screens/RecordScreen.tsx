@@ -7,7 +7,7 @@ import { clock, stamp } from '../components/format';
 import { client } from '../services/cds';
 import { entries } from '../services/fhirClient';
 import { acvpuLetter, PARAMETERS } from '../services/news2';
-import { patientName } from '../services/patients';
+import { patientName, readPatient } from '../services/patients';
 import { priority } from '../services/priority';
 import { NURSE } from '../services/config';
 
@@ -110,7 +110,7 @@ export function RecordScreen({ patientId, highlightEncounter, go, onRetriage }: 
     (async () => {
       try {
         const [patient, enc, obs] = await Promise.all([
-          client.read<Patient>('Patient', patientId),
+          readPatient(patientId),
           client.search<Encounter>('Encounter', { subject: `Patient/${patientId}`, _count: '50' }),
           client.search<Observation>('Observation', { subject: `Patient/${patientId}`, _sort: '-date', _count: '500' }),
         ]);

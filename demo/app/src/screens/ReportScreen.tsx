@@ -6,10 +6,11 @@ import { clock, stamp } from '../components/format';
 import { Narrative } from '../components/Narrative';
 import { Samples } from '../components/Samples';
 import { client } from '../services/cds';
-import { absoluteBase, NURSE } from '../services/config';
+import { absoluteBase } from '../services/backend';
+import { NURSE } from '../services/config';
 import { entries } from '../services/fhirClient';
 import { dischargeReport } from '../services/hdr';
-import { derivedFrom, latestTriage, nowLocal, patientName } from '../services/patients';
+import { derivedFrom, latestTriage, nowLocal, patientName, readPatient } from '../services/patients';
 import { priorityOf } from '../services/priority';
 import { sampleDischargeSummary } from '../services/samples';
 
@@ -71,7 +72,7 @@ export function ReportScreen({ patientId, encounterId, go }: Props) {
     let live = true;
     (async () => {
       try {
-        const p = await client.read<Patient>('Patient', patientId);
+        const p = await readPatient(patientId);
         let enc: Encounter | undefined;
         if (encounterId) enc = await client.read<Encounter>('Encounter', encounterId);
         else {

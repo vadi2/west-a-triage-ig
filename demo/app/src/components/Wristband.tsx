@@ -1,6 +1,7 @@
 import type { Encounter, Patient } from 'fhir/r4';
 import type { Route, Screen, Stay } from '../App';
-import { MOCK, NURSE } from '../services/config';
+import { BACKEND, useEngine } from '../services/backend';
+import { NURSE } from '../services/config';
 import { age, isTest, patientIdentifier, patientName } from '../services/patients';
 import { priority, type PriorityCode } from '../services/priority';
 import { clock } from './format';
@@ -77,7 +78,7 @@ export function Wristband({ screen, patient, encounter, recorded, stay, go }: Pr
             <strong>WEST-A triage</strong> · Akutmottagningen, VGR · nurse {NURSE.name}
           </span>
         )}
-        {MOCK && <span className="band-mock">mock server</span>}
+        <StoreBadge />
       </div>
       <nav aria-label="Steps" className="band-steps">
         {STEPS.map((s) =>
@@ -97,5 +98,17 @@ export function Wristband({ screen, patient, encounter, recorded, stay, go }: Pr
         )}
       </nav>
     </header>
+  );
+}
+
+/** Which store and which guideline engine, discreetly: the details are on the patient list. */
+function StoreBadge() {
+  const engine = useEngine();
+  const store = BACKEND.kind === 'public' ? 'public sandbox' : BACKEND.kind === 'browser' ? 'this browser' : BACKEND.label;
+  return (
+    <span className="band-mock" title={`Data on ${BACKEND.label}; the WEST-A guideline runs ${engine === 'server' ? 'on the server' : 'in this browser'}`}>
+      {store}
+      {engine && ` · CQL ${engine === 'server' ? 'on server' : 'in browser'}`}
+    </span>
   );
 }

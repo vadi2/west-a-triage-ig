@@ -1,4 +1,5 @@
-import type { Encounter, Observation, Patient } from 'fhir/r4';
+import type { Encounter, Observation, Patient, Resource } from 'fhir/r4';
+import { BACKEND, DEMO_TAG, DEMO_TAG_PARAM } from './backend';
 import { client } from './cds';
 import { profile } from './config';
 import { entries } from './fhirClient';
@@ -11,9 +12,23 @@ export const NEWS2_CODE = 'http://snomed.info/sct|1104051000000101';
 export async function findPatients(text: string): Promise<Patient[]> {
   const q = text.trim();
   const params: Record<string, string> = { _count: '40', _sort: '-_lastUpdated' };
+  // On a server shared with strangers, only the patients this app made
+  if (BACKEND.shared) params._tag = DEMO_TAG_PARAM;
   if (/^\d{6,}|^\d{8}[MK]/i.test(q)) params.identifier = q.replace(/-/g, '');
   else if (q) params.name = q;
   return entries(await client.search<Patient>('Patient', params));
+}
+
+/** Made by this app (services/backend.ts tags everything it writes). */
+export const isDemo = (r: Resource) => !!r.meta?.tag?.some((t) => t.system === DEMO_TAG.system && t.code === DEMO_TAG.code);
+
+/** A patient by id; on a shared server, only one this app made. */
+export async function readPatient(id: string): Promise<Patient> {
+  const p = await client.read<Patient>('Patient', id);
+  if (BACKEND.shared && !isDemo(p)) {
+    throw new Error(`Patient/${id} was not made by this demo. On the ${BACKEND.label} the app shows only its own synthetic patients.`);
+  }
+  return p;
 }
 
 /** The latest triage of a patient, or of one visit when encounterId is given, and how many there are. */

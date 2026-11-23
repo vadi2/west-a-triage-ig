@@ -7,7 +7,9 @@ import { Pinboard } from '../components/Pinboard';
 import { Samples } from '../components/Samples';
 import { boardNews2, client, news2Observation, triageObservation } from '../services/cds';
 import { criteriaReasons, loadCriteria, recordedCriteria, type Criteria } from '../services/criteria';
+import { ENGINE_TEXT } from '../services/backend';
 import { NURSE } from '../services/config';
+import { conformance } from '../services/conformance';
 import { uuid } from '../services/libs';
 import { nowLocal } from '../services/patients';
 import { sampleAssessmentNote } from '../services/samples';
@@ -24,7 +26,7 @@ export function ResultScreen({ stay, onRecorded, go }: Props) {
   const answers = stay.answers!;
   const [criteria, setCriteria] = useState<Criteria | undefined>();
   useEffect(() => {
-    loadCriteria(client).then(setCriteria, () => setCriteria(undefined));
+    loadCriteria(conformance).then(setCriteria, () => setCriteria(undefined));
   }, []);
   const reasons = useMemo(() => criteriaReasons(answers, criteria), [answers, criteria]);
   const proposed = priorityOf(result.proposedPriority);
@@ -74,7 +76,7 @@ export function ResultScreen({ stay, onRecorded, go }: Props) {
         proposedPriority: result.proposedPriority,
         vitalParameterPriority: result.vitalParameterPriority,
         chiefComplaint: answers.chiefComplaint,
-        criteria: recordedCriteria(answers.triageCriteria, await loadCriteria(client)),
+        criteria: recordedCriteria(answers.triageCriteria, await loadCriteria(conformance)),
         news2: { reference: news2Url },
         note: notes.join(' ') || undefined,
       });
@@ -118,7 +120,7 @@ export function ResultScreen({ stay, onRecorded, go }: Props) {
             'No proposed priority'
           )}
         </h1>
-        <p className="quiet">The most urgent of these, by the guideline on the server:</p>
+        <p className="quiet">The most urgent of these, by the {ENGINE_TEXT[result.engine ?? 'server']}:</p>
         <ul className="reasons">
           <li>
             NEWS2 <strong className="num">{n.total ?? '–'}</strong>
@@ -224,7 +226,7 @@ export function ResultScreen({ stay, onRecorded, go }: Props) {
           sources={reasons.pins}
           caption={
             <>
-              <strong>NEWS2 per parameter</strong> · from the guideline on the server, at {clock(stay.response?.authored)}
+              <strong>NEWS2 per parameter</strong> · from the {ENGINE_TEXT[result.engine ?? 'server']}, at {clock(stay.response?.authored)}
             </>
           }
           choice={
