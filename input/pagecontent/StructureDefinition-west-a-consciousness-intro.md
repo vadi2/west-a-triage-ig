@@ -8,16 +8,14 @@ The elements below must always be present (mandatory) or must be supported when 
 
 A status, the exam category, the SNOMED CT code `1104441000000107` for the ACVPU scale, the patient, the time of assessment and the level, coded from [WEST-A ACVPU](ValueSet-west-a-acvpu-vs.html):
 
-| ACVPU | SNOMED CT | Swedish | NEWS2 |
+| ACVPU | SNOMED CT | Swedish display | NEWS2 |
 |---|---|---|---|
-| A - Alert | `248234008` | vaken | 0 |
+| A - Alert | `248234008` | psykiskt klar | 0 |
 | C - new Confusion | `130987000` | akut konfusion | 3 |
 | V - Voice | `300202002` | reagerar på röst | 3 |
 | P - Pain | `450847001` | reagerar på smärta | 3 |
 | U - Unresponsive | `422768004` | reagerar inte | 3 |
 {:.grid}
-
-For A, the Swedish SNOMED CT edition has only *psykiskt klar*, which is not what clinicians say. A coding keeps that term as its `display`, as the code system requires, and `valueCodeableConcept.text` carries the word the nurse sees, *vaken*.
 
 #### Each WEST-A Consciousness Must Support
 
@@ -80,8 +78,7 @@ The complete reference instance is [alert patient, 0 points in NEWS2](Observatio
         "code": "248234008",
         "display": "psykiskt klar"
       }
-    ],
-    "text": "vaken"
+    ]
   }
 }
 ```

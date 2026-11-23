@@ -100,7 +100,6 @@ Description: "Patient alert (A on the ACVPU scale) at triage, which gives 0 poin
 * code = $sct-se#1104441000000107 "poäng enligt ACVPU-skalan (Alert Confusion Voice Pain Unresponsive)"
 * effectiveDateTime = "2026-11-19T08:38:00+01:00"
 * valueCodeableConcept = $sct-se#248234008 "psykiskt klar"
-* valueCodeableConcept.text = "vaken"
 
 Instance: example-body-temperature
 InstanceOf: WestABodyTemperature
