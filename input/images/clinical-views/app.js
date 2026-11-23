@@ -29,7 +29,6 @@ const bindingLead = v => {
   return v.when ? `When ${v.when}, ${low}` : v.on ? `${v.on} ${low}` : lead;
 };
 const ADDITIONAL = { maximum: 'Never outside', minimum: 'Must at least support', current: 'New records from', ui: 'Offered to users from', starter: 'Commonly from', component: 'Partly from' };
-const vsLink = v => v.page ? `<a href="${esc(IG + v.page)}"${TGT}>${esc(v.title)}</a>` : v.href ? `<a href="${esc(v.href)}" target="_blank" rel="noopener">${esc(v.title)}</a>` : esc(v.title);
 const STRENGTH = { required: 'Must be from', extensible: 'From this list where it has a fitting code', preferred: 'Preferably from', example: 'For example from' };
 const cap = s => s ? s[0].toUpperCase() + s.slice(1) : '';
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -150,7 +149,7 @@ function consHtml(n) {
   let h = '';
   if (n.values && n.values.length) h += `<ul>${n.values.map(v => `<li>${esc(v)}</li>`).join('')}</ul>`;
   if (n.target) h += `<div>Refers to: ${esc(n.target)}</div>`;
-  if (n.vs) [n.vs, ...(n.vs.also || [])].forEach(v => { h += `<div>${esc(bindingLead(v))}: ${vsLink(v)}${v.note ? ` (${esc(v.note)})` : ''}</div>`; });
+  if (n.vs) [n.vs, ...(n.vs.also || [])].forEach(v => { h += `<div>${esc(bindingLead(v))}: ${v.page ? `<a href="${esc(IG + v.page)}"${TGT}>${esc(v.title)}</a>` : esc(v.title)}${v.note ? ` (${esc(v.note)})` : ''}</div>`; });
   if (n.ex) h += `<div class="ex">Example: <b>${esc(n.ex)}</b></div>`;
   return h;
 }
@@ -191,7 +190,8 @@ function renderMindmap(pane, m) {
       <button class="tbtn" id="mm-out" aria-label="Zoom out">−</button>
       <button class="tbtn" id="mm-in" aria-label="Zoom in">+</button>
       <button class="tbtn" id="mm-exp">Expand all</button>
-      <button class="tbtn" id="mm-col">Collapse all</button></div>
+      <button class="tbtn" id="mm-col">Collapse all</button>
+      <span class="hint">Click a node for its details; click + or − to open or close a branch.</span></div>
     <div class="mm-box" id="mm-box"></div>
     <div class="mm-detail" id="mm-detail"><span class="muted">Select a data element to see what it holds.</span></div>`;
   const draw = () => drawMindmap(pane.querySelector('#mm-box'), m, pane.querySelector('#mm-detail'));
@@ -316,7 +316,7 @@ function showDetail(el, n) {
   el.innerHTML = `<div class="hd">${icon(n.type)} ${esc(n.label)} ${tags(n)}</div>
     ${n.desc ? `<p>${esc(n.desc)}</p>` : ''}
     ${n.values ? `<p class="muted">Allowed values: ${n.values.map(esc).join(' · ')}</p>` : ''}
-    ${n.vs ? [n.vs, ...(n.vs.also || [])].map(v => `<p class="muted">${esc(bindingLead(v))}: ${vsLink(v)}${v.note ? ` (${esc(v.note)})` : ''}</p>`).join('') : ''}
+    ${n.vs ? [n.vs, ...(n.vs.also || [])].map(v => `<p class="muted">${esc(bindingLead(v))}: ${esc(v.title)}${v.note ? ` (${esc(v.note)})` : ''}</p>`).join('') : ''}
     ${n.target ? `<p class="muted">Refers to: ${esc(n.target)}</p>` : ''}
     ${n.def ? `<p class="muted">FHIR definition: ${esc(n.def)}</p>` : ''}
     ${n.ex ? `<p class="muted">Example: <b style="color:var(--ink);font-weight:500">${esc(n.ex)}</b></p>` : ''}
@@ -371,7 +371,7 @@ function formNode(n, d) {
 }
 function renderForm(pane, m) {
   pane.innerHTML = `<div class="toolbar">
-      <button class="tbtn" id="opt-ex">${state.example ? 'Clear example data' : 'Fill with example data'}</button>
+      <button class="tbtn" id="opt-ex" aria-pressed="${state.example}">${state.example ? 'Clear example data' : 'Fill with example data'}</button>
       <span class="sp"></span><span><span class="req" style="color:var(--mand);font-weight:700">*</span> mandatory · [min..max] how many times an element may occur</span></div>
     <div class="form">${m.root.children.map(c => formNode(c, 1)).join('')}</div>`;
   pane.querySelector('#opt-ex').onclick = () => { state.example = !state.example; renderForm(pane, m); };
