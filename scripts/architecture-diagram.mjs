@@ -29,18 +29,6 @@ const bands = [
       { h: 'Computable guideline', l: ['NEWS2 and the priority in CQL,', 'as CPG PlanDefinitions'], tag: 'CPG 2.0.0, CQL', href: 'west-a-computable-guidelines.html' },
       { h: 'Examples and tests', l: ['synthetic patients, and the', 'NEWS2 chart as test cases'], tag: 'synthetic data only', href: 'artifacts.html' },
     ],
-    arrow: 'git push',
-  },
-  {
-    title: 'Open build: GitHub Actions on every push, nothing to install',
-    href: 'https://github.com/vadi2/west-a-triage-ig/actions',
-    boxes: [
-      { h: 'SUSHI', l: ['FHIR Shorthand', 'to FHIR resources'], tag: 'Apache 2.0' },
-      { h: 'IG Publisher', l: ['CQL to ELM, QA,', 'this website'], tag: 'open source' },
-      { h: 'Tests', l: ['validator, CQL cases,', 'end to end on HAPI FHIR'], tag: 'on every pull request' },
-      { h: 'Clinical views', l: ['each profile drawn', 'for clinicians'], tag: 'generated each build', href: 'clinical-views.html' },
-      { h: 'Published', l: ['build.fhir.org and', 'the FHIR package'], tag: 'free hosting', href: 'https://build.fhir.org/ig/vadi2/west-a-triage-ig/' },
-    ],
     arrow: 'the FHIR package: ELM, PlanDefinitions, Questionnaire, terminology',
   },
   {
