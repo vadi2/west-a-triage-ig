@@ -1,0 +1,126 @@
+name: Publish demo
+
+# Publishes the triage demo (demo/app) as a static site on GitHub Pages, at
+# https://vadimperetok.in/west-a-triage-ig/demo/, with a landing page at the site root
+# (demo/pages). It runs after each successful "Build IG" on main, on that run's ig-output
+# artifact, so the demo carries the CQL, PlanDefinitions and terminology of that build.
+# Run it by hand to publish the latest successful build of main again.
+#
+# The published demo keeps its data on the public HAPI FHIR sandbox by default and runs the
+# guideline in the browser (demo/README.md).
+
+on:
+  workflow_run:
+    workflows: [Build IG]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+# One deployment at a time; a newer build waits for the running one rather than cancelling it
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  build:
+    # Only builds of main in this repository, never those of pull requests
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event != 'pull_request' &&
+       github.event.workflow_run.head_repository.full_name == github.repository)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Find the IG build
+        id: run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ github.event_name }}" = workflow_run ]; then
+            id="${{ github.event.workflow_run.id }}"
+            sha="${{ github.event.workflow_run.head_sha }}"
+          else
+            read -r id sha < <(gh run list -R "${{ github.repository }}" -w build.yml -b main -s success -L 1 \
+              --json databaseId,headSha --jq '.[0] | "\(.databaseId) \(.headSha)"')
+          fi
+          [ -n "$id" ] && [ "$id" != null ] && [ -n "$sha" ]
+          echo "Build IG run $id, commit $sha" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "id=$id" >> "$GITHUB_OUTPUT"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+
+      # The demo from the same commit as the IG
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ steps.run.outputs.sha }}
+
+      - name: Download the built IG
+        uses: actions/download-artifact@v5
+        with:
+          name: ig-output
+          run-id: ${{ steps.run.outputs.id }}
+          github-token: ${{ github.token }}
+          path: ig-output
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: demo/app/package-lock.json
+
+      - name: Install the demo library's dependencies
+        working-directory: demo/lib
+        run: |
+          if jq -e '(.dependencies // {}) | length > 0' package.json > /dev/null; then
+            npm install --no-package-lock --no-audit --no-fund
+          fi
+
+      - name: Install the app's dependencies
+        working-directory: demo/app
+        run: npm ci --no-audit --no-fund
+
+      # The ELM, PlanDefinitions, ActivityDefinitions, Questionnaire and terminology of this
+      # build, in place of the copies committed with the app
+      - name: Copy the guide's resources into the app
+        working-directory: demo/app
+        run: |
+          node scripts/ig-assets.mjs ../../ig-output/output/package.tgz
+          git status --short -- src/fixtures
+
+      - name: Build the app
+        working-directory: demo/app
+        env:
+          VITE_BACKEND: public
+        run: npm run build
+
+      - name: Assemble the site
+        run: |
+          mkdir -p site
+          cp demo/pages/index.html demo/pages/404.html site/
+          cp -r demo/app/dist site/demo
+          du -sh site site/demo
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}demo/
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

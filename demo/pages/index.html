@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>WEST-A Triage IG</title>
+    <meta name="description" content="Unofficial FHIR R4 implementation guide for WEST-A triage, and a demo app that runs it." />
+    <style>
+      :root {
+        --ink: #0f1a33;
+        --felt: #c3ccd3;
+        --paper: #ffffff;
+      }
+      body {
+        margin: 0;
+        padding: 48px 16px;
+        background: var(--felt);
+        color: var(--ink);
+        font: 16px/1.5 system-ui, sans-serif;
+      }
+      main {
+        max-width: 640px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 22px;
+        margin: 0 0 8px;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 24px 0;
+        border-top: 2px solid var(--ink);
+      }
+      li {
+        padding: 14px 0;
+        border-bottom: 1px solid rgba(15, 26, 51, 0.25);
+      }
+      a {
+        color: var(--ink);
+        font-weight: 700;
+        text-underline-offset: 3px;
+      }
+      .quiet {
+        font-size: 14px;
+        font-style: italic;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>WEST-A Triage FHIR Implementation Guide</h1>
+      <p>
+        An unofficial FHIR R4 model of WEST-A, the adult emergency department triage system of Västra Götalandsregionen.
+        The guide's canonical URLs lead here, and on to their pages in the current build.
+      </p>
+      <ul>
+        <li>
+          <a href="https://build.fhir.org/ig/vadi2/west-a-triage-ig/en/">The implementation guide</a><br />
+          The current build, on build.fhir.org.
+        </li>
+        <li>
+          <a href="demo/">The triage demo</a><br />
+          A nurse's triage form that runs the guide's CQL in the browser, with synthetic patients on the public HAPI FHIR
+          sandbox or in your browser only.
+        </li>
+        <li>
+          <a href="https://github.com/vadi2/west-a-triage-ig">The source</a><br />
+          FHIR Shorthand, CQL and the demo, on GitHub.
+        </li>
+      </ul>
+      <p class="quiet">Not an official VGR publication. Synthetic data only.</p>
+    </main>
+  </body>
+</html>
