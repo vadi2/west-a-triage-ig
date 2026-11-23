@@ -1,3 +1,7 @@
+### Here be dragons
+
+This guide has not been reviewed by a health informatics professional, and it needs further development. Its profiles, codes, mappings, computable guidelines and clinical views may be wrong or incomplete. Do not use it for patient care.
+
 ### About this guide
 
 This is an unofficial, draft FHIR R4 implementation guide for the data used in **WEST-A** (West coast System for Triage - Adult), the emergency department triage system of Västra Götalandsregionen (VGR). It is not published, endorsed or maintained by VGR.
