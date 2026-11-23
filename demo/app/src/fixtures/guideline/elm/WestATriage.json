@@ -1,0 +1,8634 @@
+{
+ "library": {
+  "localId": "0",
+  "annotation": [
+   {
+    "type": "CqlToElmInfo",
+    "translatorVersion": "4.9.0",
+    "translatorOptions": "EnableAnnotations,EnableLocators,DisableListDemotion,DisableListPromotion",
+    "signatureLevel": "Overloads"
+   },
+   {
+    "type": "Annotation",
+    "t": [
+     {
+      "name": "description",
+      "value": "The parts of the WEST-A triage priority that can be calculated (WEST-A VGR 2025):\n the priority from the vital parameters (NEWS2 clinical risk, p. 6), and the proposed priority,\n which is the most urgent of that, the priority of the warning symptoms of the chief complaint\n algorithm (pp. 3-48), and yellow as the lowest priority for some needs and processes (pp. 46-48).\n The triage nurse assesses the warning symptoms and the needs, and the criteria found are passed\n as codes from the WEST-A triage criterion code system; this logic gives each its priority, and\n proposes a priority only when NEWS2 is calculated and the warning symptoms are assessed. While the\n triage is under way, it gives a provisional priority from what is known so far, a lower bound.\n The clinical assessment can raise the priority, but never lowers a red or orange patient (p. 8);\n that is the nurse's decision, so it is not calculated."
+     }
+    ],
+    "s": {
+     "r": "857",
+     "s": [
+      {
+       "value": [
+        "/*\n@description: The parts of the WEST-A triage priority that can be calculated (WEST-A VGR 2025):\n the priority from the vital parameters (NEWS2 clinical risk, p. 6), and the proposed priority,\n which is the most urgent of that, the priority of the warning symptoms of the chief complaint\n algorithm (pp. 3-48), and yellow as the lowest priority for some needs and processes (pp. 46-48).\n The triage nurse assesses the warning symptoms and the needs, and the criteria found are passed\n as codes from the WEST-A triage criterion code system; this logic gives each its priority, and\n proposes a priority only when NEWS2 is calculated and the warning symptoms are assessed. While the\n triage is under way, it gives a provisional priority from what is known so far, a lower bound.\n The clinical assessment can raise the priority, but never lowers a red or orange patient (p. 8);\n that is the nurse's decision, so it is not calculated.\n*/\n",
+        "library WestATriage version '0.1.0'"
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "identifier": {
+   "id": "WestATriage",
+   "system": "https://vadi2.github.io/west-a-triage-ig",
+   "version": "0.1.0"
+  },
+  "schemaIdentifier": {
+   "id": "urn:hl7-org:elm",
+   "version": "r1"
+  },
+  "usings": {
+   "def": [
+    {
+     "localId": "1",
+     "localIdentifier": "System",
+     "uri": "urn:hl7-org:elm-types:r1",
+     "version": "1.0.0",
+     "annotation": []
+    },
+    {
+     "localId": "206",
+     "locator": "15:1-15:26",
+     "localIdentifier": "FHIR",
+     "uri": "http://hl7.org/fhir",
+     "version": "4.0.1",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "206",
+        "s": [
+         {
+          "value": [
+           "",
+           "using "
+          ]
+         },
+         {
+          "s": [
+           {
+            "value": [
+             "FHIR"
+            ]
+           }
+          ]
+         },
+         {
+          "value": [
+           " version '4.0.1'"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "includes": {
+   "def": [
+    {
+     "localId": "208",
+     "locator": "17:1-17:54",
+     "localIdentifier": "FHIRHelpers",
+     "path": "https://vadi2.github.io/west-a-triage-ig/FHIRHelpers",
+     "version": "4.0.1",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "208",
+        "s": [
+         {
+          "value": [
+           "",
+           "include "
+          ]
+         },
+         {
+          "s": [
+           {
+            "value": [
+             "FHIRHelpers"
+            ]
+           }
+          ]
+         },
+         {
+          "value": [
+           " version ",
+           "'4.0.1'",
+           " called ",
+           "FHIRHelpers"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "localId": "210",
+     "locator": "18:1-18:47",
+     "localIdentifier": "NEWS2",
+     "path": "https://vadi2.github.io/west-a-triage-ig/WestANEWS2",
+     "version": "0.1.0",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "210",
+        "s": [
+         {
+          "value": [
+           "",
+           "include "
+          ]
+         },
+         {
+          "s": [
+           {
+            "value": [
+             "WestANEWS2"
+            ]
+           }
+          ]
+         },
+         {
+          "value": [
+           " version ",
+           "'0.1.0'",
+           " called ",
+           "NEWS2"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "parameters": {
+   "def": [
+    {
+     "localId": "231",
+     "locator": "34:1-34:45",
+     "name": "Triage Criteria",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "231",
+        "s": [
+         {
+          "value": [
+           "// The triage criteria the nurse found, codes from the WEST-A triage criterion code system: the\n// warning symptoms of the chief complaint algorithm (or \"No Warning Symptoms\" when none applies),\n// and the needs and processes. Null when not yet assessed.\n",
+           "parameter ",
+           "\"Triage Criteria\"",
+           " "
+          ]
+         },
+         {
+          "r": "232",
+          "s": [
+           {
+            "value": [
+             "List<"
+            ]
+           },
+           {
+            "r": "233",
+            "s": [
+             {
+              "value": [
+               "System",
+               ".",
+               "Code"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ">"
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "parameterTypeSpecifier": {
+      "type": "ListTypeSpecifier",
+      "localId": "232",
+      "locator": "34:29-34:45",
+      "annotation": [],
+      "elementType": {
+       "type": "NamedTypeSpecifier",
+       "localId": "233",
+       "locator": "34:34-34:44",
+       "name": "{urn:hl7-org:elm-types:r1}Code",
+       "annotation": []
+      }
+     }
+    },
+    {
+     "localId": "235",
+     "locator": "41:1-41:42",
+     "name": "Complaint Priority",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "235",
+        "s": [
+         {
+          "value": [
+           "// The priority of the most urgent warning symptom the nurse found in the chief complaint\n// algorithm, a code from the WEST-A triage priority code system: 4 (green) when the patient\n// has none of its warning symptoms, null when not yet assessed. For a client that does not\n// code the warning symptoms in \"Triage Criteria\", or for one that is not coded; the most\n// urgent of the two counts, so it never lowers the priority of a coded warning symptom.\n",
+           "parameter ",
+           "\"Complaint Priority\"",
+           " "
+          ]
+         },
+         {
+          "r": "236",
+          "s": [
+           {
+            "value": [
+             "System",
+             ".",
+             "Code"
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "parameterTypeSpecifier": {
+      "type": "NamedTypeSpecifier",
+      "localId": "236",
+      "locator": "41:32-41:42",
+      "name": "{urn:hl7-org:elm-types:r1}Code",
+      "annotation": []
+     }
+    },
+    {
+     "localId": "238",
+     "locator": "45:1-45:59",
+     "name": "Yellow As Lowest Priority",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "238",
+        "s": [
+         {
+          "value": [
+           "// Frail elderly (p. 46), likely admission (p. 47), or violence or sexual assault (p. 48), for a\n// client that does not pass them as triage criteria\n",
+           "parameter ",
+           "\"Yellow As Lowest Priority\"",
+           " "
+          ]
+         },
+         {
+          "r": "240",
+          "s": [
+           {
+            "value": [
+             "Boolean"
+            ]
+           }
+          ]
+         },
+         {
+          "r": "239",
+          "value": [
+           " default ",
+           "false"
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "default": {
+      "type": "Literal",
+      "localId": "239",
+      "locator": "45:55-45:59",
+      "valueType": "{urn:hl7-org:elm-types:r1}Boolean",
+      "value": "false",
+      "annotation": []
+     },
+     "parameterTypeSpecifier": {
+      "type": "NamedTypeSpecifier",
+      "localId": "240",
+      "locator": "45:39-45:45",
+      "name": "{urn:hl7-org:elm-types:r1}Boolean",
+      "annotation": []
+     }
+    },
+    {
+     "localId": "242",
+     "locator": "49:1-49:63",
+     "name": "Use Oxygen Saturation Scale 2",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "242",
+        "s": [
+         {
+          "value": [
+           "// NEWS2 oxygen saturation scale 2, for a patient with known respiratory failure, on a\n// physician's order (see WestANEWS2)\n",
+           "parameter ",
+           "\"Use Oxygen Saturation Scale 2\"",
+           " "
+          ]
+         },
+         {
+          "r": "244",
+          "s": [
+           {
+            "value": [
+             "Boolean"
+            ]
+           }
+          ]
+         },
+         {
+          "r": "243",
+          "value": [
+           " default ",
+           "false"
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "default": {
+      "type": "Literal",
+      "localId": "243",
+      "locator": "49:59-49:63",
+      "valueType": "{urn:hl7-org:elm-types:r1}Boolean",
+      "value": "false",
+      "annotation": []
+     },
+     "parameterTypeSpecifier": {
+      "type": "NamedTypeSpecifier",
+      "localId": "244",
+      "locator": "49:43-49:49",
+      "name": "{urn:hl7-org:elm-types:r1}Boolean",
+      "annotation": []
+     }
+    }
+   ]
+  },
+  "codeSystems": {
+   "def": [
+    {
+     "localId": "212",
+     "locator": "20:1-20:116",
+     "name": "WEST-A Triage Priority",
+     "id": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "212",
+        "s": [
+         {
+          "value": [
+           "",
+           "codesystem ",
+           "\"WEST-A Triage Priority\"",
+           ": ",
+           "'https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs'"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "localId": "226",
+     "locator": "27:1-27:118",
+     "name": "WEST-A Triage Criterion",
+     "id": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-criterion-cs",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "226",
+        "s": [
+         {
+          "value": [
+           "",
+           "codesystem ",
+           "\"WEST-A Triage Criterion\"",
+           ": ",
+           "'https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-criterion-cs'"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "codes": {
+   "def": [
+    {
+     "localId": "214",
+     "locator": "22:1-22:59",
+     "name": "Red",
+     "id": "1",
+     "display": "Red",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "214",
+        "s": [
+         {
+          "value": [
+           "",
+           "code ",
+           "\"Red\"",
+           ": ",
+           "'1'",
+           " from "
+          ]
+         },
+         {
+          "r": "215",
+          "s": [
+           {
+            "value": [
+             "\"WEST-A Triage Priority\""
+            ]
+           }
+          ]
+         },
+         {
+          "value": [
+           " display ",
+           "'Red'"
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "codeSystem": {
+      "localId": "215",
+      "locator": "22:22-22:45",
+      "name": "WEST-A Triage Priority",
+      "annotation": []
+     }
+    },
+    {
+     "localId": "217",
+     "locator": "23:1-23:65",
+     "name": "Orange",
+     "id": "2",
+     "display": "Orange",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "217",
+        "s": [
+         {
+          "value": [
+           "",
+           "code ",
+           "\"Orange\"",
+           ": ",
+           "'2'",
+           " from "
+          ]
+         },
+         {
+          "r": "218",
+          "s": [
+           {
+            "value": [
+             "\"WEST-A Triage Priority\""
+            ]
+           }
+          ]
+         },
+         {
+          "value": [
+           " display ",
+           "'Orange'"
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "codeSystem": {
+      "localId": "218",
+      "locator": "23:25-23:48",
+      "name": "WEST-A Triage Priority",
+      "annotation": []
+     }
+    },
+    {
+     "localId": "220",
+     "locator": "24:1-24:65",
+     "name": "Yellow",
+     "id": "3",
+     "display": "Yellow",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "220",
+        "s": [
+         {
+          "value": [
+           "",
+           "code ",
+           "\"Yellow\"",
+           ": ",
+           "'3'",
+           " from "
+          ]
+         },
+         {
+          "r": "221",
+          "s": [
+           {
+            "value": [
+             "\"WEST-A Triage Priority\""
+            ]
+           }
+          ]
+         },
+         {
+          "value": [
+           " display ",
+           "'Yellow'"
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "codeSystem": {
+      "localId": "221",
+      "locator": "24:25-24:48",
+      "name": "WEST-A Triage Priority",
+      "annotation": []
+     }
+    },
+    {
+     "localId": "223",
+     "locator": "25:1-25:63",
+     "name": "Green",
+     "id": "4",
+     "display": "Green",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "223",
+        "s": [
+         {
+          "value": [
+           "",
+           "code ",
+           "\"Green\"",
+           ": ",
+           "'4'",
+           " from "
+          ]
+         },
+         {
+          "r": "224",
+          "s": [
+           {
+            "value": [
+             "\"WEST-A Triage Priority\""
+            ]
+           }
+          ]
+         },
+         {
+          "value": [
+           " display ",
+           "'Green'"
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "codeSystem": {
+      "localId": "224",
+      "locator": "25:24-25:47",
+      "name": "WEST-A Triage Priority",
+      "annotation": []
+     }
+    },
+    {
+     "localId": "228",
+     "locator": "29:1-29:94",
+     "name": "No Warning Symptoms",
+     "id": "163",
+     "display": "No warning symptoms",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "228",
+        "s": [
+         {
+          "value": [
+           "",
+           "code ",
+           "\"No Warning Symptoms\"",
+           ": ",
+           "'163'",
+           " from "
+          ]
+         },
+         {
+          "r": "229",
+          "s": [
+           {
+            "value": [
+             "\"WEST-A Triage Criterion\""
+            ]
+           }
+          ]
+         },
+         {
+          "value": [
+           " display ",
+           "'No warning symptoms'"
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "codeSystem": {
+      "localId": "229",
+      "locator": "29:40-29:64",
+      "name": "WEST-A Triage Criterion",
+      "annotation": []
+     }
+    }
+   ]
+  },
+  "contexts": {
+   "def": [
+    {
+     "localId": "249",
+     "locator": "51:1-51:15",
+     "name": "Patient",
+     "annotation": []
+    }
+   ]
+  },
+  "statements": {
+   "def": [
+    {
+     "localId": "247",
+     "locator": "51:1-51:15",
+     "name": "Patient",
+     "context": "Patient",
+     "annotation": [],
+     "expression": {
+      "type": "SingletonFrom",
+      "localId": "248",
+      "annotation": [],
+      "signature": [],
+      "operand": {
+       "type": "Retrieve",
+       "localId": "246",
+       "locator": "51:1-51:15",
+       "dataType": "{http://hl7.org/fhir}Patient",
+       "templateId": "http://hl7.org/fhir/StructureDefinition/Patient",
+       "annotation": [],
+       "include": [],
+       "codeFilter": [],
+       "dateFilter": [],
+       "otherFilter": []
+      }
+     }
+    },
+    {
+     "type": "FunctionDef",
+     "localId": "250",
+     "locator": "55:1-63:5",
+     "name": "Priority Code",
+     "context": "Patient",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "250",
+        "s": [
+         {
+          "value": [
+           "// This library's code for a priority code from a client, which may lack the display or\n// carry another one; null for a code that is not a WEST-A triage priority\n",
+           "define function \"Priority Code\"(priority System.Code):\n  "
+          ]
+         },
+         {
+          "r": "255",
+          "s": [
+           {
+            "r": "255",
+            "s": [
+             {
+              "value": [
+               "if "
+              ]
+             },
+             {
+              "r": "263",
+              "s": [
+               {
+                "r": "258",
+                "s": [
+                 {
+                  "r": "257",
+                  "s": [
+                   {
+                    "value": [
+                     "priority"
+                    ]
+                   }
+                  ]
+                 },
+                 {
+                  "value": [
+                   "."
+                  ]
+                 },
+                 {
+                  "r": "258",
+                  "s": [
+                   {
+                    "value": [
+                     "system"
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               },
+               {
+                "value": [
+                 " ",
+                 "!=",
+                 " "
+                ]
+               },
+               {
+                "r": "259",
+                "s": [
+                 {
+                  "value": [
+                   "'https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs'"
+                  ]
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "r": "264",
+              "value": [
+               " then ",
+               "null",
+               "\n  else "
+              ]
+             },
+             {
+              "r": "265",
+              "s": [
+               {
+                "value": [
+                 "case "
+                ]
+               },
+               {
+                "r": "267",
+                "s": [
+                 {
+                  "r": "266",
+                  "s": [
+                   {
+                    "value": [
+                     "priority"
+                    ]
+                   }
+                  ]
+                 },
+                 {
+                  "value": [
+                   "."
+                  ]
+                 },
+                 {
+                  "r": "267",
+                  "s": [
+                   {
+                    "value": [
+                     "code"
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               },
+               {
+                "value": [
+                 "\n    "
+                ]
+               },
+               {
+                "r": "268",
+                "s": [
+                 {
+                  "value": [
+                   "when "
+                  ]
+                 },
+                 {
+                  "r": "269",
+                  "s": [
+                   {
+                    "value": [
+                     "'1'"
+                    ]
+                   }
+                  ]
+                 },
+                 {
+                  "value": [
+                   " then "
+                  ]
+                 },
+                 {
+                  "r": "271",
+                  "s": [
+                   {
+                    "value": [
+                     "\"Red\""
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               },
+               {
+                "value": [
+                 "\n    "
+                ]
+               },
+               {
+                "r": "272",
+                "s": [
+                 {
+                  "value": [
+                   "when "
+                  ]
+                 },
+                 {
+                  "r": "273",
+                  "s": [
+                   {
+                    "value": [
+                     "'2'"
+                    ]
+                   }
+                  ]
+                 },
+                 {
+                  "value": [
+                   " then "
+                  ]
+                 },
+                 {
+                  "r": "275",
+                  "s": [
+                   {
+                    "value": [
+                     "\"Orange\""
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               },
+               {
+                "value": [
+                 "\n    "
+                ]
+               },
+               {
+                "r": "276",
+                "s": [
+                 {
+                  "value": [
+                   "when "
+                  ]
+                 },
+                 {
+                  "r": "277",
+                  "s": [
+                   {
+                    "value": [
+                     "'3'"
+                    ]
+                   }
+                  ]
+                 },
+                 {
+                  "value": [
+                   " then "
+                  ]
+                 },
+                 {
+                  "r": "279",
+                  "s": [
+                   {
+                    "value": [
+                     "\"Yellow\""
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               },
+               {
+                "value": [
+                 "\n    "
+                ]
+               },
+               {
+                "r": "280",
+                "s": [
+                 {
+                  "value": [
+                   "when "
+                  ]
+                 },
+                 {
+                  "r": "281",
+                  "s": [
+                   {
+                    "value": [
+                     "'4'"
+                    ]
+                   }
+                  ]
+                 },
+                 {
+                  "value": [
+                   " then "
+                  ]
+                 },
+                 {
+                  "r": "283",
+                  "s": [
+                   {
+                    "value": [
+                     "\"Green\""
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               },
+               {
+                "r": "284",
+                "value": [
+                 "\n    else ",
+                 "null",
+                 "\n  end"
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "expression": {
+      "type": "If",
+      "localId": "255",
+      "locator": "56:3-63:5",
+      "annotation": [],
+      "condition": {
+       "type": "Not",
+       "localId": "263",
+       "locator": "56:6-56:103",
+       "annotation": [],
+       "signature": [],
+       "operand": {
+        "type": "Equal",
+        "localId": "256",
+        "locator": "56:6-56:103",
+        "annotation": [],
+        "signature": [
+         {
+          "type": "NamedTypeSpecifier",
+          "localId": "261",
+          "name": "{urn:hl7-org:elm-types:r1}String",
+          "annotation": []
+         },
+         {
+          "type": "NamedTypeSpecifier",
+          "localId": "262",
+          "name": "{urn:hl7-org:elm-types:r1}String",
+          "annotation": []
+         }
+        ],
+        "operand": [
+         {
+          "type": "Property",
+          "localId": "258",
+          "locator": "56:6-56:20",
+          "path": "system",
+          "annotation": [],
+          "source": {
+           "type": "OperandRef",
+           "localId": "257",
+           "locator": "56:6-56:13",
+           "name": "priority",
+           "annotation": []
+          }
+         },
+         {
+          "type": "Literal",
+          "localId": "259",
+          "locator": "56:25-56:103",
+          "valueType": "{urn:hl7-org:elm-types:r1}String",
+          "value": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-priority-cs",
+          "annotation": []
+         }
+        ]
+       }
+      },
+      "then": {
+       "type": "As",
+       "localId": "286",
+       "asType": "{urn:hl7-org:elm-types:r1}Code",
+       "annotation": [],
+       "signature": [],
+       "operand": {
+        "type": "Null",
+        "localId": "264",
+        "locator": "56:110-56:113",
+        "annotation": []
+       }
+      },
+      "else": {
+       "type": "Case",
+       "localId": "265",
+       "locator": "57:8-63:5",
+       "annotation": [],
+       "comparand": {
+        "type": "Property",
+        "localId": "267",
+        "locator": "57:13-57:25",
+        "path": "code",
+        "annotation": [],
+        "source": {
+         "type": "OperandRef",
+         "localId": "266",
+         "locator": "57:13-57:20",
+         "name": "priority",
+         "annotation": []
+        }
+       },
+       "caseItem": [
+        {
+         "localId": "268",
+         "locator": "58:5-58:23",
+         "annotation": [],
+         "when": {
+          "type": "Literal",
+          "localId": "269",
+          "locator": "58:10-58:12",
+          "valueType": "{urn:hl7-org:elm-types:r1}String",
+          "value": "1",
+          "annotation": []
+         },
+         "then": {
+          "type": "CodeRef",
+          "localId": "271",
+          "locator": "58:19-58:23",
+          "name": "Red",
+          "annotation": []
+         }
+        },
+        {
+         "localId": "272",
+         "locator": "59:5-59:26",
+         "annotation": [],
+         "when": {
+          "type": "Literal",
+          "localId": "273",
+          "locator": "59:10-59:12",
+          "valueType": "{urn:hl7-org:elm-types:r1}String",
+          "value": "2",
+          "annotation": []
+         },
+         "then": {
+          "type": "CodeRef",
+          "localId": "275",
+          "locator": "59:19-59:26",
+          "name": "Orange",
+          "annotation": []
+         }
+        },
+        {
+         "localId": "276",
+         "locator": "60:5-60:26",
+         "annotation": [],
+         "when": {
+          "type": "Literal",
+          "localId": "277",
+          "locator": "60:10-60:12",
+          "valueType": "{urn:hl7-org:elm-types:r1}String",
+          "value": "3",
+          "annotation": []
+         },
+         "then": {
+          "type": "CodeRef",
+          "localId": "279",
+          "locator": "60:19-60:26",
+          "name": "Yellow",
+          "annotation": []
+         }
+        },
+        {
+         "localId": "280",
+         "locator": "61:5-61:25",
+         "annotation": [],
+         "when": {
+          "type": "Literal",
+          "localId": "281",
+          "locator": "61:10-61:12",
+          "valueType": "{urn:hl7-org:elm-types:r1}String",
+          "value": "4",
+          "annotation": []
+         },
+         "then": {
+          "type": "CodeRef",
+          "localId": "283",
+          "locator": "61:19-61:25",
+          "name": "Green",
+          "annotation": []
+         }
+        }
+       ],
+       "else": {
+        "type": "As",
+        "localId": "285",
+        "asType": "{urn:hl7-org:elm-types:r1}Code",
+        "annotation": [],
+        "signature": [],
+        "operand": {
+         "type": "Null",
+         "localId": "284",
+         "locator": "62:10-62:13",
+         "annotation": []
+        }
+       }
+      }
+     },
+     "operand": [
+      {
+       "localId": "252",
+       "name": "priority",
+       "annotation": [],
+       "operandTypeSpecifier": {
+        "type": "NamedTypeSpecifier",
+        "localId": "251",
+        "locator": "55:42-55:52",
+        "name": "{urn:hl7-org:elm-types:r1}Code",
+        "annotation": []
+       }
+      }
+     ]
+    },
+    {
+     "type": "FunctionDef",
+     "localId": "287",
+     "locator": "66:1-71:3",
+     "name": "Most Urgent",
+     "context": "Patient",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "287",
+        "s": [
+         {
+          "value": [
+           "// The codes of the triage priority code system sort from most urgent (1) to least urgent (4)\n",
+           "define function \"Most Urgent\"(priorities List<System.Code>):\n  "
+          ]
+         },
+         {
+          "r": "310",
+          "s": [
+           {
+            "r": "310",
+            "s": [
+             {
+              "value": [
+               "First",
+               "(\n    "
+              ]
+             },
+             {
+              "r": "307",
+              "s": [
+               {
+                "s": [
+                 {
+                  "r": "293",
+                  "s": [
+                   {
+                    "r": "294",
+                    "s": [
+                     {
+                      "s": [
+                       {
+                        "value": [
+                         "priorities"
+                        ]
+                       }
+                      ]
+                     }
+                    ]
+                   },
+                   {
+                    "value": [
+                     " ",
+                     "P"
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               },
+               {
+                "value": [
+                 "\n      "
+                ]
+               },
+               {
+                "r": "298",
+                "s": [
+                 {
+                  "value": [
+                   "where "
+                  ]
+                 },
+                 {
+                  "r": "298",
+                  "s": [
+                   {
+                    "r": "296",
+                    "s": [
+                     {
+                      "value": [
+                       "P"
+                      ]
+                     }
+                    ]
+                   },
+                   {
+                    "value": [
+                     " is not null"
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               },
+               {
+                "value": [
+                 "\n      "
+                ]
+               },
+               {
+                "r": "301",
+                "s": [
+                 {
+                  "value": [
+                   "sort by "
+                  ]
+                 },
+                 {
+                  "r": "300",
+                  "s": [
+                   {
+                    "r": "299",
+                    "s": [
+                     {
+                      "value": [
+                       "code"
+                      ]
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "value": [
+               "\n  )"
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "expression": {
+      "type": "First",
+      "localId": "310",
+      "locator": "67:3-71:3",
+      "annotation": [],
+      "signature": [],
+      "source": {
+       "type": "Query",
+       "localId": "307",
+       "locator": "68:5-70:18",
+       "annotation": [],
+       "source": [
+        {
+         "localId": "293",
+         "locator": "68:5-68:16",
+         "alias": "P",
+         "annotation": [],
+         "expression": {
+          "type": "OperandRef",
+          "localId": "294",
+          "locator": "68:5-68:14",
+          "name": "priorities",
+          "annotation": []
+         }
+        }
+       ],
+       "let": [],
+       "relationship": [],
+       "where": {
+        "type": "Not",
+        "localId": "298",
+        "locator": "69:7-69:25",
+        "annotation": [],
+        "signature": [],
+        "operand": {
+         "type": "IsNull",
+         "localId": "297",
+         "locator": "69:13-69:25",
+         "annotation": [],
+         "signature": [],
+         "operand": {
+          "type": "AliasRef",
+          "localId": "296",
+          "locator": "69:13",
+          "name": "P",
+          "annotation": []
+         }
+        }
+       },
+       "sort": {
+        "localId": "301",
+        "locator": "70:7-70:18",
+        "annotation": [],
+        "by": [
+         {
+          "type": "ByColumn",
+          "localId": "300",
+          "locator": "70:15-70:18",
+          "direction": "asc",
+          "path": "code",
+          "annotation": []
+         }
+        ]
+       }
+      }
+     },
+     "operand": [
+      {
+       "localId": "290",
+       "name": "priorities",
+       "annotation": [],
+       "operandTypeSpecifier": {
+        "type": "ListTypeSpecifier",
+        "localId": "288",
+        "locator": "66:42-66:58",
+        "annotation": [],
+        "elementType": {
+         "type": "NamedTypeSpecifier",
+         "localId": "289",
+         "locator": "66:47-66:57",
+         "name": "{urn:hl7-org:elm-types:r1}Code",
+         "annotation": []
+        }
+       }
+      }
+     ]
+    },
+    {
+     "localId": "313",
+     "locator": "76:1-80:74",
+     "name": "Red Warning Symptom Codes",
+     "context": "Patient",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "313",
+        "s": [
+         {
+          "value": [
+           "// The codes of the WEST-A triage criterion code system by the priority they give; the\n// build's tests check them against the priority property of every concept of the code system.\n// Green criteria apply from 07:00 to 16:00 (gynecology, p. 22); the logic does not check the time.\n",
+           "define ",
+           "\"Red Warning Symptom Codes\"",
+           ":\n  "
+          ]
+         },
+         {
+          "r": "314",
+          "s": [
+           {
+            "value": [
+             "{ "
+            ]
+           },
+           {
+            "r": "315",
+            "s": [
+             {
+              "value": [
+               "'1'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "317",
+            "s": [
+             {
+              "value": [
+               "'4'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "319",
+            "s": [
+             {
+              "value": [
+               "'7'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "321",
+            "s": [
+             {
+              "value": [
+               "'11'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "323",
+            "s": [
+             {
+              "value": [
+               "'14'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "325",
+            "s": [
+             {
+              "value": [
+               "'18'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "327",
+            "s": [
+             {
+              "value": [
+               "'21'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "329",
+            "s": [
+             {
+              "value": [
+               "'23'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "331",
+            "s": [
+             {
+              "value": [
+               "'25'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "333",
+            "s": [
+             {
+              "value": [
+               "'30'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "335",
+            "s": [
+             {
+              "value": [
+               "'32'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "337",
+            "s": [
+             {
+              "value": [
+               "'35'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "339",
+            "s": [
+             {
+              "value": [
+               "'37'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "341",
+            "s": [
+             {
+              "value": [
+               "'40'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "343",
+            "s": [
+             {
+              "value": [
+               "'53'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "345",
+            "s": [
+             {
+              "value": [
+               "'72'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ",\n    "
+            ]
+           },
+           {
+            "r": "347",
+            "s": [
+             {
+              "value": [
+               "'74'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "349",
+            "s": [
+             {
+              "value": [
+               "'76'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "351",
+            "s": [
+             {
+              "value": [
+               "'80'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "353",
+            "s": [
+             {
+              "value": [
+               "'84'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "355",
+            "s": [
+             {
+              "value": [
+               "'86'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "357",
+            "s": [
+             {
+              "value": [
+               "'88'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "359",
+            "s": [
+             {
+              "value": [
+               "'90'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "361",
+            "s": [
+             {
+              "value": [
+               "'93'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "363",
+            "s": [
+             {
+              "value": [
+               "'95'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "365",
+            "s": [
+             {
+              "value": [
+               "'96'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "367",
+            "s": [
+             {
+              "value": [
+               "'97'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "369",
+            "s": [
+             {
+              "value": [
+               "'115'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "371",
+            "s": [
+             {
+              "value": [
+               "'116'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "373",
+            "s": [
+             {
+              "value": [
+               "'117'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "375",
+            "s": [
+             {
+              "value": [
+               "'118'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ",\n    "
+            ]
+           },
+           {
+            "r": "377",
+            "s": [
+             {
+              "value": [
+               "'119'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "379",
+            "s": [
+             {
+              "value": [
+               "'120'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "381",
+            "s": [
+             {
+              "value": [
+               "'121'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "383",
+            "s": [
+             {
+              "value": [
+               "'122'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "385",
+            "s": [
+             {
+              "value": [
+               "'123'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "387",
+            "s": [
+             {
+              "value": [
+               "'124'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "389",
+            "s": [
+             {
+              "value": [
+               "'125'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "391",
+            "s": [
+             {
+              "value": [
+               "'126'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "393",
+            "s": [
+             {
+              "value": [
+               "'127'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "395",
+            "s": [
+             {
+              "value": [
+               "'128'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "397",
+            "s": [
+             {
+              "value": [
+               "'129'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "399",
+            "s": [
+             {
+              "value": [
+               "'130'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "401",
+            "s": [
+             {
+              "value": [
+               "'131'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ",\n    "
+            ]
+           },
+           {
+            "r": "403",
+            "s": [
+             {
+              "value": [
+               "'132'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "405",
+            "s": [
+             {
+              "value": [
+               "'133'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "407",
+            "s": [
+             {
+              "value": [
+               "'139'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "409",
+            "s": [
+             {
+              "value": [
+               "'140'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "411",
+            "s": [
+             {
+              "value": [
+               "'141'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "413",
+            "s": [
+             {
+              "value": [
+               "'142'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "415",
+            "s": [
+             {
+              "value": [
+               "'143'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "417",
+            "s": [
+             {
+              "value": [
+               "'144'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "419",
+            "s": [
+             {
+              "value": [
+               "'145'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "421",
+            "s": [
+             {
+              "value": [
+               "'156'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             " }"
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "expression": {
+      "type": "List",
+      "localId": "314",
+      "locator": "77:3-80:74",
+      "annotation": [],
+      "element": [
+       {
+        "type": "Literal",
+        "localId": "315",
+        "locator": "77:5-77:7",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "1",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "317",
+        "locator": "77:10-77:12",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "4",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "319",
+        "locator": "77:15-77:17",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "7",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "321",
+        "locator": "77:20-77:23",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "11",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "323",
+        "locator": "77:26-77:29",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "14",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "325",
+        "locator": "77:32-77:35",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "18",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "327",
+        "locator": "77:38-77:41",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "21",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "329",
+        "locator": "77:44-77:47",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "23",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "331",
+        "locator": "77:50-77:53",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "25",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "333",
+        "locator": "77:56-77:59",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "30",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "335",
+        "locator": "77:62-77:65",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "32",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "337",
+        "locator": "77:68-77:71",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "35",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "339",
+        "locator": "77:74-77:77",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "37",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "341",
+        "locator": "77:80-77:83",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "40",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "343",
+        "locator": "77:86-77:89",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "53",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "345",
+        "locator": "77:92-77:95",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "72",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "347",
+        "locator": "78:5-78:8",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "74",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "349",
+        "locator": "78:11-78:14",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "76",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "351",
+        "locator": "78:17-78:20",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "80",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "353",
+        "locator": "78:23-78:26",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "84",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "355",
+        "locator": "78:29-78:32",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "86",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "357",
+        "locator": "78:35-78:38",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "88",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "359",
+        "locator": "78:41-78:44",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "90",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "361",
+        "locator": "78:47-78:50",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "93",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "363",
+        "locator": "78:53-78:56",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "95",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "365",
+        "locator": "78:59-78:62",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "96",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "367",
+        "locator": "78:65-78:68",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "97",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "369",
+        "locator": "78:71-78:75",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "115",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "371",
+        "locator": "78:78-78:82",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "116",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "373",
+        "locator": "78:85-78:89",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "117",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "375",
+        "locator": "78:92-78:96",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "118",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "377",
+        "locator": "79:5-79:9",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "119",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "379",
+        "locator": "79:12-79:16",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "120",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "381",
+        "locator": "79:19-79:23",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "121",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "383",
+        "locator": "79:26-79:30",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "122",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "385",
+        "locator": "79:33-79:37",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "123",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "387",
+        "locator": "79:40-79:44",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "124",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "389",
+        "locator": "79:47-79:51",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "125",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "391",
+        "locator": "79:54-79:58",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "126",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "393",
+        "locator": "79:61-79:65",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "127",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "395",
+        "locator": "79:68-79:72",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "128",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "397",
+        "locator": "79:75-79:79",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "129",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "399",
+        "locator": "79:82-79:86",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "130",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "401",
+        "locator": "79:89-79:93",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "131",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "403",
+        "locator": "80:5-80:9",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "132",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "405",
+        "locator": "80:12-80:16",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "133",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "407",
+        "locator": "80:19-80:23",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "139",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "409",
+        "locator": "80:26-80:30",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "140",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "411",
+        "locator": "80:33-80:37",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "141",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "413",
+        "locator": "80:40-80:44",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "142",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "415",
+        "locator": "80:47-80:51",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "143",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "417",
+        "locator": "80:54-80:58",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "144",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "419",
+        "locator": "80:61-80:65",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "145",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "421",
+        "locator": "80:68-80:72",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "156",
+        "annotation": []
+       }
+      ]
+     }
+    },
+    {
+     "localId": "425",
+     "locator": "82:1-85:88",
+     "name": "Orange Warning Symptom Codes",
+     "context": "Patient",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "425",
+        "s": [
+         {
+          "value": [
+           "",
+           "define ",
+           "\"Orange Warning Symptom Codes\"",
+           ":\n  "
+          ]
+         },
+         {
+          "r": "426",
+          "s": [
+           {
+            "value": [
+             "{ "
+            ]
+           },
+           {
+            "r": "427",
+            "s": [
+             {
+              "value": [
+               "'2'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "429",
+            "s": [
+             {
+              "value": [
+               "'5'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "431",
+            "s": [
+             {
+              "value": [
+               "'8'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "433",
+            "s": [
+             {
+              "value": [
+               "'10'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "435",
+            "s": [
+             {
+              "value": [
+               "'12'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "437",
+            "s": [
+             {
+              "value": [
+               "'15'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "439",
+            "s": [
+             {
+              "value": [
+               "'19'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "441",
+            "s": [
+             {
+              "value": [
+               "'22'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "443",
+            "s": [
+             {
+              "value": [
+               "'24'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "445",
+            "s": [
+             {
+              "value": [
+               "'26'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "447",
+            "s": [
+             {
+              "value": [
+               "'27'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "449",
+            "s": [
+             {
+              "value": [
+               "'31'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "451",
+            "s": [
+             {
+              "value": [
+               "'33'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "453",
+            "s": [
+             {
+              "value": [
+               "'36'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "455",
+            "s": [
+             {
+              "value": [
+               "'38'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "457",
+            "s": [
+             {
+              "value": [
+               "'39'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ",\n    "
+            ]
+           },
+           {
+            "r": "459",
+            "s": [
+             {
+              "value": [
+               "'41'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "461",
+            "s": [
+             {
+              "value": [
+               "'42'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "463",
+            "s": [
+             {
+              "value": [
+               "'54'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "465",
+            "s": [
+             {
+              "value": [
+               "'63'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "467",
+            "s": [
+             {
+              "value": [
+               "'64'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "469",
+            "s": [
+             {
+              "value": [
+               "'71'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "471",
+            "s": [
+             {
+              "value": [
+               "'73'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "473",
+            "s": [
+             {
+              "value": [
+               "'75'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "475",
+            "s": [
+             {
+              "value": [
+               "'77'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "477",
+            "s": [
+             {
+              "value": [
+               "'78'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "479",
+            "s": [
+             {
+              "value": [
+               "'81'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "481",
+            "s": [
+             {
+              "value": [
+               "'82'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "483",
+            "s": [
+             {
+              "value": [
+               "'83'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "485",
+            "s": [
+             {
+              "value": [
+               "'94'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "487",
+            "s": [
+             {
+              "value": [
+               "'98'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "489",
+            "s": [
+             {
+              "value": [
+               "'99'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ",\n    "
+            ]
+           },
+           {
+            "r": "491",
+            "s": [
+             {
+              "value": [
+               "'100'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "493",
+            "s": [
+             {
+              "value": [
+               "'101'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "495",
+            "s": [
+             {
+              "value": [
+               "'102'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "497",
+            "s": [
+             {
+              "value": [
+               "'111'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "499",
+            "s": [
+             {
+              "value": [
+               "'112'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "501",
+            "s": [
+             {
+              "value": [
+               "'113'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "503",
+            "s": [
+             {
+              "value": [
+               "'146'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "505",
+            "s": [
+             {
+              "value": [
+               "'147'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "507",
+            "s": [
+             {
+              "value": [
+               "'148'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "509",
+            "s": [
+             {
+              "value": [
+               "'149'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "511",
+            "s": [
+             {
+              "value": [
+               "'150'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "513",
+            "s": [
+             {
+              "value": [
+               "'157'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             " }"
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "expression": {
+      "type": "List",
+      "localId": "426",
+      "locator": "83:3-85:88",
+      "annotation": [],
+      "element": [
+       {
+        "type": "Literal",
+        "localId": "427",
+        "locator": "83:5-83:7",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "2",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "429",
+        "locator": "83:10-83:12",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "5",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "431",
+        "locator": "83:15-83:17",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "8",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "433",
+        "locator": "83:20-83:23",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "10",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "435",
+        "locator": "83:26-83:29",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "12",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "437",
+        "locator": "83:32-83:35",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "15",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "439",
+        "locator": "83:38-83:41",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "19",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "441",
+        "locator": "83:44-83:47",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "22",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "443",
+        "locator": "83:50-83:53",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "24",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "445",
+        "locator": "83:56-83:59",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "26",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "447",
+        "locator": "83:62-83:65",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "27",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "449",
+        "locator": "83:68-83:71",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "31",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "451",
+        "locator": "83:74-83:77",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "33",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "453",
+        "locator": "83:80-83:83",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "36",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "455",
+        "locator": "83:86-83:89",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "38",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "457",
+        "locator": "83:92-83:95",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "39",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "459",
+        "locator": "84:5-84:8",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "41",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "461",
+        "locator": "84:11-84:14",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "42",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "463",
+        "locator": "84:17-84:20",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "54",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "465",
+        "locator": "84:23-84:26",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "63",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "467",
+        "locator": "84:29-84:32",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "64",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "469",
+        "locator": "84:35-84:38",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "71",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "471",
+        "locator": "84:41-84:44",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "73",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "473",
+        "locator": "84:47-84:50",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "75",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "475",
+        "locator": "84:53-84:56",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "77",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "477",
+        "locator": "84:59-84:62",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "78",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "479",
+        "locator": "84:65-84:68",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "81",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "481",
+        "locator": "84:71-84:74",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "82",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "483",
+        "locator": "84:77-84:80",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "83",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "485",
+        "locator": "84:83-84:86",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "94",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "487",
+        "locator": "84:89-84:92",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "98",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "489",
+        "locator": "84:95-84:98",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "99",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "491",
+        "locator": "85:5-85:9",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "100",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "493",
+        "locator": "85:12-85:16",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "101",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "495",
+        "locator": "85:19-85:23",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "102",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "497",
+        "locator": "85:26-85:30",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "111",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "499",
+        "locator": "85:33-85:37",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "112",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "501",
+        "locator": "85:40-85:44",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "113",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "503",
+        "locator": "85:47-85:51",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "146",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "505",
+        "locator": "85:54-85:58",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "147",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "507",
+        "locator": "85:61-85:65",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "148",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "509",
+        "locator": "85:68-85:72",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "149",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "511",
+        "locator": "85:75-85:79",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "150",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "513",
+        "locator": "85:82-85:86",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "157",
+        "annotation": []
+       }
+      ]
+     }
+    },
+    {
+     "localId": "517",
+     "locator": "87:1-91:39",
+     "name": "Yellow Warning Symptom Codes",
+     "context": "Patient",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "517",
+        "s": [
+         {
+          "value": [
+           "",
+           "define ",
+           "\"Yellow Warning Symptom Codes\"",
+           ":\n  "
+          ]
+         },
+         {
+          "r": "518",
+          "s": [
+           {
+            "value": [
+             "{ "
+            ]
+           },
+           {
+            "r": "519",
+            "s": [
+             {
+              "value": [
+               "'3'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "521",
+            "s": [
+             {
+              "value": [
+               "'6'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "523",
+            "s": [
+             {
+              "value": [
+               "'9'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "525",
+            "s": [
+             {
+              "value": [
+               "'13'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "527",
+            "s": [
+             {
+              "value": [
+               "'16'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "529",
+            "s": [
+             {
+              "value": [
+               "'17'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "531",
+            "s": [
+             {
+              "value": [
+               "'20'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "533",
+            "s": [
+             {
+              "value": [
+               "'28'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "535",
+            "s": [
+             {
+              "value": [
+               "'29'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "537",
+            "s": [
+             {
+              "value": [
+               "'34'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "539",
+            "s": [
+             {
+              "value": [
+               "'43'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "541",
+            "s": [
+             {
+              "value": [
+               "'44'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "543",
+            "s": [
+             {
+              "value": [
+               "'45'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "545",
+            "s": [
+             {
+              "value": [
+               "'46'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "547",
+            "s": [
+             {
+              "value": [
+               "'51'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "549",
+            "s": [
+             {
+              "value": [
+               "'55'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ",\n    "
+            ]
+           },
+           {
+            "r": "551",
+            "s": [
+             {
+              "value": [
+               "'56'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "553",
+            "s": [
+             {
+              "value": [
+               "'59'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "555",
+            "s": [
+             {
+              "value": [
+               "'60'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "557",
+            "s": [
+             {
+              "value": [
+               "'61'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "559",
+            "s": [
+             {
+              "value": [
+               "'65'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "561",
+            "s": [
+             {
+              "value": [
+               "'67'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "563",
+            "s": [
+             {
+              "value": [
+               "'68'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "565",
+            "s": [
+             {
+              "value": [
+               "'79'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "567",
+            "s": [
+             {
+              "value": [
+               "'85'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "569",
+            "s": [
+             {
+              "value": [
+               "'87'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "571",
+            "s": [
+             {
+              "value": [
+               "'89'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "573",
+            "s": [
+             {
+              "value": [
+               "'91'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "575",
+            "s": [
+             {
+              "value": [
+               "'92'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "577",
+            "s": [
+             {
+              "value": [
+               "'103'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "579",
+            "s": [
+             {
+              "value": [
+               "'104'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ",\n    "
+            ]
+           },
+           {
+            "r": "581",
+            "s": [
+             {
+              "value": [
+               "'105'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "583",
+            "s": [
+             {
+              "value": [
+               "'106'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "585",
+            "s": [
+             {
+              "value": [
+               "'107'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "587",
+            "s": [
+             {
+              "value": [
+               "'108'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "589",
+            "s": [
+             {
+              "value": [
+               "'109'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "591",
+            "s": [
+             {
+              "value": [
+               "'110'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "593",
+            "s": [
+             {
+              "value": [
+               "'114'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "595",
+            "s": [
+             {
+              "value": [
+               "'134'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "597",
+            "s": [
+             {
+              "value": [
+               "'135'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "599",
+            "s": [
+             {
+              "value": [
+               "'136'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "601",
+            "s": [
+             {
+              "value": [
+               "'137'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "603",
+            "s": [
+             {
+              "value": [
+               "'138'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "605",
+            "s": [
+             {
+              "value": [
+               "'151'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ",\n    "
+            ]
+           },
+           {
+            "r": "607",
+            "s": [
+             {
+              "value": [
+               "'152'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "609",
+            "s": [
+             {
+              "value": [
+               "'153'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "611",
+            "s": [
+             {
+              "value": [
+               "'154'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "613",
+            "s": [
+             {
+              "value": [
+               "'155'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "615",
+            "s": [
+             {
+              "value": [
+               "'158'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             " }"
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "expression": {
+      "type": "List",
+      "localId": "518",
+      "locator": "88:3-91:39",
+      "annotation": [],
+      "element": [
+       {
+        "type": "Literal",
+        "localId": "519",
+        "locator": "88:5-88:7",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "3",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "521",
+        "locator": "88:10-88:12",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "6",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "523",
+        "locator": "88:15-88:17",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "9",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "525",
+        "locator": "88:20-88:23",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "13",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "527",
+        "locator": "88:26-88:29",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "16",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "529",
+        "locator": "88:32-88:35",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "17",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "531",
+        "locator": "88:38-88:41",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "20",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "533",
+        "locator": "88:44-88:47",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "28",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "535",
+        "locator": "88:50-88:53",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "29",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "537",
+        "locator": "88:56-88:59",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "34",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "539",
+        "locator": "88:62-88:65",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "43",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "541",
+        "locator": "88:68-88:71",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "44",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "543",
+        "locator": "88:74-88:77",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "45",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "545",
+        "locator": "88:80-88:83",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "46",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "547",
+        "locator": "88:86-88:89",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "51",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "549",
+        "locator": "88:92-88:95",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "55",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "551",
+        "locator": "89:5-89:8",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "56",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "553",
+        "locator": "89:11-89:14",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "59",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "555",
+        "locator": "89:17-89:20",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "60",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "557",
+        "locator": "89:23-89:26",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "61",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "559",
+        "locator": "89:29-89:32",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "65",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "561",
+        "locator": "89:35-89:38",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "67",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "563",
+        "locator": "89:41-89:44",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "68",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "565",
+        "locator": "89:47-89:50",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "79",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "567",
+        "locator": "89:53-89:56",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "85",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "569",
+        "locator": "89:59-89:62",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "87",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "571",
+        "locator": "89:65-89:68",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "89",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "573",
+        "locator": "89:71-89:74",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "91",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "575",
+        "locator": "89:77-89:80",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "92",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "577",
+        "locator": "89:83-89:87",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "103",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "579",
+        "locator": "89:90-89:94",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "104",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "581",
+        "locator": "90:5-90:9",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "105",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "583",
+        "locator": "90:12-90:16",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "106",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "585",
+        "locator": "90:19-90:23",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "107",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "587",
+        "locator": "90:26-90:30",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "108",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "589",
+        "locator": "90:33-90:37",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "109",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "591",
+        "locator": "90:40-90:44",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "110",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "593",
+        "locator": "90:47-90:51",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "114",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "595",
+        "locator": "90:54-90:58",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "134",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "597",
+        "locator": "90:61-90:65",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "135",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "599",
+        "locator": "90:68-90:72",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "136",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "601",
+        "locator": "90:75-90:79",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "137",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "603",
+        "locator": "90:82-90:86",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "138",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "605",
+        "locator": "90:89-90:93",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "151",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "607",
+        "locator": "91:5-91:9",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "152",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "609",
+        "locator": "91:12-91:16",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "153",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "611",
+        "locator": "91:19-91:23",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "154",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "613",
+        "locator": "91:26-91:30",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "155",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "615",
+        "locator": "91:33-91:37",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "158",
+        "annotation": []
+       }
+      ]
+     }
+    },
+    {
+     "localId": "619",
+     "locator": "93:1-94:70",
+     "name": "Green Warning Symptom Codes",
+     "context": "Patient",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "619",
+        "s": [
+         {
+          "value": [
+           "",
+           "define ",
+           "\"Green Warning Symptom Codes\"",
+           ":\n  "
+          ]
+         },
+         {
+          "r": "620",
+          "s": [
+           {
+            "value": [
+             "{ "
+            ]
+           },
+           {
+            "r": "621",
+            "s": [
+             {
+              "value": [
+               "'47'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "623",
+            "s": [
+             {
+              "value": [
+               "'48'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "625",
+            "s": [
+             {
+              "value": [
+               "'49'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "627",
+            "s": [
+             {
+              "value": [
+               "'50'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "629",
+            "s": [
+             {
+              "value": [
+               "'52'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "631",
+            "s": [
+             {
+              "value": [
+               "'57'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "633",
+            "s": [
+             {
+              "value": [
+               "'58'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "635",
+            "s": [
+             {
+              "value": [
+               "'62'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "637",
+            "s": [
+             {
+              "value": [
+               "'66'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "639",
+            "s": [
+             {
+              "value": [
+               "'69'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "641",
+            "s": [
+             {
+              "value": [
+               "'70'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             " }"
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "expression": {
+      "type": "List",
+      "localId": "620",
+      "locator": "94:3-94:70",
+      "annotation": [],
+      "element": [
+       {
+        "type": "Literal",
+        "localId": "621",
+        "locator": "94:5-94:8",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "47",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "623",
+        "locator": "94:11-94:14",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "48",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "625",
+        "locator": "94:17-94:20",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "49",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "627",
+        "locator": "94:23-94:26",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "50",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "629",
+        "locator": "94:29-94:32",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "52",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "631",
+        "locator": "94:35-94:38",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "57",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "633",
+        "locator": "94:41-94:44",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "58",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "635",
+        "locator": "94:47-94:50",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "62",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "637",
+        "locator": "94:53-94:56",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "66",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "639",
+        "locator": "94:59-94:62",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "69",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "641",
+        "locator": "94:65-94:68",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "70",
+        "annotation": []
+       }
+      ]
+     }
+    },
+    {
+     "localId": "645",
+     "locator": "96:1-97:32",
+     "name": "Need Codes",
+     "context": "Patient",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "645",
+        "s": [
+         {
+          "value": [
+           "",
+           "define ",
+           "\"Need Codes\"",
+           ":\n  "
+          ]
+         },
+         {
+          "r": "646",
+          "s": [
+           {
+            "value": [
+             "{ "
+            ]
+           },
+           {
+            "r": "647",
+            "s": [
+             {
+              "value": [
+               "'159'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "649",
+            "s": [
+             {
+              "value": [
+               "'160'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "651",
+            "s": [
+             {
+              "value": [
+               "'161'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ", "
+            ]
+           },
+           {
+            "r": "653",
+            "s": [
+             {
+              "value": [
+               "'162'"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             " }"
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "expression": {
+      "type": "List",
+      "localId": "646",
+      "locator": "97:3-97:32",
+      "annotation": [],
+      "element": [
+       {
+        "type": "Literal",
+        "localId": "647",
+        "locator": "97:5-97:9",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "159",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "649",
+        "locator": "97:12-97:16",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "160",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "651",
+        "locator": "97:19-97:23",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "161",
+        "annotation": []
+       },
+       {
+        "type": "Literal",
+        "localId": "653",
+        "locator": "97:26-97:30",
+        "valueType": "{urn:hl7-org:elm-types:r1}String",
+        "value": "162",
+        "annotation": []
+       }
+      ]
+     }
+    },
+    {
+     "type": "FunctionDef",
+     "localId": "655",
+     "locator": "101:1-107:11",
+     "name": "Warning Symptom Priority Of",
+     "context": "Patient",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "655",
+        "s": [
+         {
+          "value": [
+           "// The priority of a warning symptom, Green for \"No Warning Symptoms\"; null for a need, a group\n// of criteria, or a code that is not a WEST-A triage criterion\n",
+           "define function \"Warning Symptom Priority Of\"(criterion System.Code):\n  "
+          ]
+         },
+         {
+          "r": "660",
+          "s": [
+           {
+            "r": "660",
+            "s": [
+             {
+              "value": [
+               "if "
+              ]
+             },
+             {
+              "r": "668",
+              "s": [
+               {
+                "r": "663",
+                "s": [
+                 {
+                  "r": "662",
+                  "s": [
+                   {
+                    "value": [
+                     "criterion"
+                    ]
+                   }
+                  ]
+                 },
+                 {
+                  "value": [
+                   "."
+                  ]
+                 },
+                 {
+                  "r": "663",
+                  "s": [
+                   {
+                    "value": [
+                     "system"
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               },
+               {
+                "value": [
+                 " ",
+                 "!=",
+                 " "
+                ]
+               },
+               {
+                "r": "664",
+                "s": [
+                 {
+                  "value": [
+                   "'https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-criterion-cs'"
+                  ]
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "r": "669",
+              "value": [
+               " then ",
+               "null",
+               "\n  else "
+              ]
+             },
+             {
+              "r": "670",
+              "s": [
+               {
+                "value": [
+                 "if "
+                ]
+               },
+               {
+                "r": "674",
+                "s": [
+                 {
+                  "r": "672",
+                  "s": [
+                   {
+                    "r": "671",
+                    "s": [
+                     {
+                      "value": [
+                       "criterion"
+                      ]
+                     }
+                    ]
+                   },
+                   {
+                    "value": [
+                     "."
+                    ]
+                   },
+                   {
+                    "r": "672",
+                    "s": [
+                     {
+                      "value": [
+                       "code"
+                      ]
+                     }
+                    ]
+                   }
+                  ]
+                 },
+                 {
+                  "value": [
+                   " in "
+                  ]
+                 },
+                 {
+                  "r": "673",
+                  "s": [
+                   {
+                    "value": [
+                     "\"Red Warning Symptom Codes\""
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               },
+               {
+                "value": [
+                 " then "
+                ]
+               },
+               {
+                "r": "675",
+                "s": [
+                 {
+                  "value": [
+                   "\"Red\""
+                  ]
+                 }
+                ]
+               },
+               {
+                "value": [
+                 "\n  else "
+                ]
+               },
+               {
+                "r": "676",
+                "s": [
+                 {
+                  "value": [
+                   "if "
+                  ]
+                 },
+                 {
+                  "r": "680",
+                  "s": [
+                   {
+                    "r": "678",
+                    "s": [
+                     {
+                      "r": "677",
+                      "s": [
+                       {
+                        "value": [
+                         "criterion"
+                        ]
+                       }
+                      ]
+                     },
+                     {
+                      "value": [
+                       "."
+                      ]
+                     },
+                     {
+                      "r": "678",
+                      "s": [
+                       {
+                        "value": [
+                         "code"
+                        ]
+                       }
+                      ]
+                     }
+                    ]
+                   },
+                   {
+                    "value": [
+                     " in "
+                    ]
+                   },
+                   {
+                    "r": "679",
+                    "s": [
+                     {
+                      "value": [
+                       "\"Orange Warning Symptom Codes\""
+                      ]
+                     }
+                    ]
+                   }
+                  ]
+                 },
+                 {
+                  "value": [
+                   " then "
+                  ]
+                 },
+                 {
+                  "r": "681",
+                  "s": [
+                   {
+                    "value": [
+                     "\"Orange\""
+                    ]
+                   }
+                  ]
+                 },
+                 {
+                  "value": [
+                   "\n  else "
+                  ]
+                 },
+                 {
+                  "r": "682",
+                  "s": [
+                   {
+                    "value": [
+                     "if "
+                    ]
+                   },
+                   {
+                    "r": "686",
+                    "s": [
+                     {
+                      "r": "684",
+                      "s": [
+                       {
+                        "r": "683",
+                        "s": [
+                         {
+                          "value": [
+                           "criterion"
+                          ]
+                         }
+                        ]
+                       },
+                       {
+                        "value": [
+                         "."
+                        ]
+                       },
+                       {
+                        "r": "684",
+                        "s": [
+                         {
+                          "value": [
+                           "code"
+                          ]
+                         }
+                        ]
+                       }
+                      ]
+                     },
+                     {
+                      "value": [
+                       " in "
+                      ]
+                     },
+                     {
+                      "r": "685",
+                      "s": [
+                       {
+                        "value": [
+                         "\"Yellow Warning Symptom Codes\""
+                        ]
+                       }
+                      ]
+                     }
+                    ]
+                   },
+                   {
+                    "value": [
+                     " then "
+                    ]
+                   },
+                   {
+                    "r": "687",
+                    "s": [
+                     {
+                      "value": [
+                       "\"Yellow\""
+                      ]
+                     }
+                    ]
+                   },
+                   {
+                    "value": [
+                     "\n  else "
+                    ]
+                   },
+                   {
+                    "r": "688",
+                    "s": [
+                     {
+                      "value": [
+                       "if "
+                      ]
+                     },
+                     {
+                      "r": "689",
+                      "s": [
+                       {
+                        "r": "693",
+                        "s": [
+                         {
+                          "r": "691",
+                          "s": [
+                           {
+                            "r": "690",
+                            "s": [
+                             {
+                              "value": [
+                               "criterion"
+                              ]
+                             }
+                            ]
+                           },
+                           {
+                            "value": [
+                             "."
+                            ]
+                           },
+                           {
+                            "r": "691",
+                            "s": [
+                             {
+                              "value": [
+                               "code"
+                              ]
+                             }
+                            ]
+                           }
+                          ]
+                         },
+                         {
+                          "value": [
+                           " in "
+                          ]
+                         },
+                         {
+                          "r": "692",
+                          "s": [
+                           {
+                            "value": [
+                             "\"Green Warning Symptom Codes\""
+                            ]
+                           }
+                          ]
+                         }
+                        ]
+                       },
+                       {
+                        "value": [
+                         " or "
+                        ]
+                       },
+                       {
+                        "r": "694",
+                        "s": [
+                         {
+                          "r": "696",
+                          "s": [
+                           {
+                            "r": "695",
+                            "s": [
+                             {
+                              "value": [
+                               "criterion"
+                              ]
+                             }
+                            ]
+                           },
+                           {
+                            "value": [
+                             "."
+                            ]
+                           },
+                           {
+                            "r": "696",
+                            "s": [
+                             {
+                              "value": [
+                               "code"
+                              ]
+                             }
+                            ]
+                           }
+                          ]
+                         },
+                         {
+                          "value": [
+                           " ",
+                           "=",
+                           " "
+                          ]
+                         },
+                         {
+                          "r": "698",
+                          "s": [
+                           {
+                            "r": "697",
+                            "s": [
+                             {
+                              "value": [
+                               "\"No Warning Symptoms\""
+                              ]
+                             }
+                            ]
+                           },
+                           {
+                            "value": [
+                             "."
+                            ]
+                           },
+                           {
+                            "r": "698",
+                            "s": [
+                             {
+                              "value": [
+                               "code"
+                              ]
+                             }
+                            ]
+                           }
+                          ]
+                         }
+                        ]
+                       }
+                      ]
+                     },
+                     {
+                      "value": [
+                       " then "
+                      ]
+                     },
+                     {
+                      "r": "701",
+                      "s": [
+                       {
+                        "value": [
+                         "\"Green\""
+                        ]
+                       }
+                      ]
+                     },
+                     {
+                      "r": "702",
+                      "value": [
+                       "\n  else ",
+                       "null"
+                      ]
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "expression": {
+      "type": "If",
+      "localId": "660",
+      "locator": "102:3-107:11",
+      "annotation": [],
+      "condition": {
+       "type": "Not",
+       "localId": "668",
+       "locator": "102:6-102:105",
+       "annotation": [],
+       "signature": [],
+       "operand": {
+        "type": "Equal",
+        "localId": "661",
+        "locator": "102:6-102:105",
+        "annotation": [],
+        "signature": [
+         {
+          "type": "NamedTypeSpecifier",
+          "localId": "666",
+          "name": "{urn:hl7-org:elm-types:r1}String",
+          "annotation": []
+         },
+         {
+          "type": "NamedTypeSpecifier",
+          "localId": "667",
+          "name": "{urn:hl7-org:elm-types:r1}String",
+          "annotation": []
+         }
+        ],
+        "operand": [
+         {
+          "type": "Property",
+          "localId": "663",
+          "locator": "102:6-102:21",
+          "path": "system",
+          "annotation": [],
+          "source": {
+           "type": "OperandRef",
+           "localId": "662",
+           "locator": "102:6-102:14",
+           "name": "criterion",
+           "annotation": []
+          }
+         },
+         {
+          "type": "Literal",
+          "localId": "664",
+          "locator": "102:26-102:105",
+          "valueType": "{urn:hl7-org:elm-types:r1}String",
+          "value": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-criterion-cs",
+          "annotation": []
+         }
+        ]
+       }
+      },
+      "then": {
+       "type": "As",
+       "localId": "704",
+       "asType": "{urn:hl7-org:elm-types:r1}Code",
+       "annotation": [],
+       "signature": [],
+       "operand": {
+        "type": "Null",
+        "localId": "669",
+        "locator": "102:112-102:115",
+        "annotation": []
+       }
+      },
+      "else": {
+       "type": "If",
+       "localId": "670",
+       "locator": "103:8-107:11",
+       "annotation": [],
+       "condition": {
+        "type": "In",
+        "localId": "674",
+        "locator": "103:11-103:55",
+        "annotation": [],
+        "signature": [],
+        "operand": [
+         {
+          "type": "Property",
+          "localId": "672",
+          "locator": "103:11-103:24",
+          "path": "code",
+          "annotation": [],
+          "source": {
+           "type": "OperandRef",
+           "localId": "671",
+           "locator": "103:11-103:19",
+           "name": "criterion",
+           "annotation": []
+          }
+         },
+         {
+          "type": "ExpressionRef",
+          "localId": "673",
+          "locator": "103:29-103:55",
+          "name": "Red Warning Symptom Codes",
+          "annotation": []
+         }
+        ]
+       },
+       "then": {
+        "type": "CodeRef",
+        "localId": "675",
+        "locator": "103:62-103:66",
+        "name": "Red",
+        "annotation": []
+       },
+       "else": {
+        "type": "If",
+        "localId": "676",
+        "locator": "104:8-107:11",
+        "annotation": [],
+        "condition": {
+         "type": "In",
+         "localId": "680",
+         "locator": "104:11-104:58",
+         "annotation": [],
+         "signature": [],
+         "operand": [
+          {
+           "type": "Property",
+           "localId": "678",
+           "locator": "104:11-104:24",
+           "path": "code",
+           "annotation": [],
+           "source": {
+            "type": "OperandRef",
+            "localId": "677",
+            "locator": "104:11-104:19",
+            "name": "criterion",
+            "annotation": []
+           }
+          },
+          {
+           "type": "ExpressionRef",
+           "localId": "679",
+           "locator": "104:29-104:58",
+           "name": "Orange Warning Symptom Codes",
+           "annotation": []
+          }
+         ]
+        },
+        "then": {
+         "type": "CodeRef",
+         "localId": "681",
+         "locator": "104:65-104:72",
+         "name": "Orange",
+         "annotation": []
+        },
+        "else": {
+         "type": "If",
+         "localId": "682",
+         "locator": "105:8-107:11",
+         "annotation": [],
+         "condition": {
+          "type": "In",
+          "localId": "686",
+          "locator": "105:11-105:58",
+          "annotation": [],
+          "signature": [],
+          "operand": [
+           {
+            "type": "Property",
+            "localId": "684",
+            "locator": "105:11-105:24",
+            "path": "code",
+            "annotation": [],
+            "source": {
+             "type": "OperandRef",
+             "localId": "683",
+             "locator": "105:11-105:19",
+             "name": "criterion",
+             "annotation": []
+            }
+           },
+           {
+            "type": "ExpressionRef",
+            "localId": "685",
+            "locator": "105:29-105:58",
+            "name": "Yellow Warning Symptom Codes",
+            "annotation": []
+           }
+          ]
+         },
+         "then": {
+          "type": "CodeRef",
+          "localId": "687",
+          "locator": "105:65-105:72",
+          "name": "Yellow",
+          "annotation": []
+         },
+         "else": {
+          "type": "If",
+          "localId": "688",
+          "locator": "106:8-107:11",
+          "annotation": [],
+          "condition": {
+           "type": "Or",
+           "localId": "689",
+           "locator": "106:11-106:104",
+           "annotation": [],
+           "signature": [],
+           "operand": [
+            {
+             "type": "In",
+             "localId": "693",
+             "locator": "106:11-106:57",
+             "annotation": [],
+             "signature": [],
+             "operand": [
+              {
+               "type": "Property",
+               "localId": "691",
+               "locator": "106:11-106:24",
+               "path": "code",
+               "annotation": [],
+               "source": {
+                "type": "OperandRef",
+                "localId": "690",
+                "locator": "106:11-106:19",
+                "name": "criterion",
+                "annotation": []
+               }
+              },
+              {
+               "type": "ExpressionRef",
+               "localId": "692",
+               "locator": "106:29-106:57",
+               "name": "Green Warning Symptom Codes",
+               "annotation": []
+              }
+             ]
+            },
+            {
+             "type": "Equal",
+             "localId": "694",
+             "locator": "106:62-106:104",
+             "annotation": [],
+             "signature": [
+              {
+               "type": "NamedTypeSpecifier",
+               "localId": "699",
+               "name": "{urn:hl7-org:elm-types:r1}String",
+               "annotation": []
+              },
+              {
+               "type": "NamedTypeSpecifier",
+               "localId": "700",
+               "name": "{urn:hl7-org:elm-types:r1}String",
+               "annotation": []
+              }
+             ],
+             "operand": [
+              {
+               "type": "Property",
+               "localId": "696",
+               "locator": "106:62-106:75",
+               "path": "code",
+               "annotation": [],
+               "source": {
+                "type": "OperandRef",
+                "localId": "695",
+                "locator": "106:62-106:70",
+                "name": "criterion",
+                "annotation": []
+               }
+              },
+              {
+               "type": "Property",
+               "localId": "698",
+               "locator": "106:79-106:104",
+               "path": "code",
+               "annotation": [],
+               "source": {
+                "type": "CodeRef",
+                "localId": "697",
+                "locator": "106:79-106:99",
+                "name": "No Warning Symptoms",
+                "annotation": []
+               }
+              }
+             ]
+            }
+           ]
+          },
+          "then": {
+           "type": "CodeRef",
+           "localId": "701",
+           "locator": "106:111-106:117",
+           "name": "Green",
+           "annotation": []
+          },
+          "else": {
+           "type": "As",
+           "localId": "703",
+           "asType": "{urn:hl7-org:elm-types:r1}Code",
+           "annotation": [],
+           "signature": [],
+           "operand": {
+            "type": "Null",
+            "localId": "702",
+            "locator": "107:8-107:11",
+            "annotation": []
+           }
+          }
+         }
+        }
+       }
+      }
+     },
+     "operand": [
+      {
+       "localId": "657",
+       "name": "criterion",
+       "annotation": [],
+       "operandTypeSpecifier": {
+        "type": "NamedTypeSpecifier",
+        "localId": "656",
+        "locator": "101:57-101:67",
+        "name": "{urn:hl7-org:elm-types:r1}Code",
+        "annotation": []
+       }
+      }
+     ]
+    },
+    {
+     "localId": "707",
+     "locator": "110:1-111:78",
+     "name": "Warning Symptom Priority",
+     "context": "Patient",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "707",
+        "s": [
+         {
+          "value": [
+           "// The most urgent priority of the warning symptoms found; null when none was passed\n",
+           "define ",
+           "\"Warning Symptom Priority\"",
+           ":\n  "
+          ]
+         },
+         {
+          "r": "715",
+          "s": [
+           {
+            "value": [
+             "\"Most Urgent\"",
+             "("
+            ]
+           },
+           {
+            "r": "714",
+            "s": [
+             {
+              "s": [
+               {
+                "r": "708",
+                "s": [
+                 {
+                  "r": "709",
+                  "s": [
+                   {
+                    "value": [
+                     "("
+                    ]
+                   },
+                   {
+                    "r": "709",
+                    "s": [
+                     {
+                      "value": [
+                       "\"Triage Criteria\""
+                      ]
+                     }
+                    ]
+                   },
+                   {
+                    "value": [
+                     ")"
+                    ]
+                   }
+                  ]
+                 },
+                 {
+                  "value": [
+                   " ",
+                   "C"
+                  ]
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "value": [
+               " "
+              ]
+             },
+             {
+              "r": "711",
+              "s": [
+               {
+                "value": [
+                 "return "
+                ]
+               },
+               {
+                "r": "713",
+                "s": [
+                 {
+                  "value": [
+                   "\"Warning Symptom Priority Of\"",
+                   "("
+                  ]
+                 },
+                 {
+                  "r": "712",
+                  "s": [
+                   {
+                    "value": [
+                     "C"
+                    ]
+                   }
+                  ]
+                 },
+                 {
+                  "value": [
+                   ")"
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ")"
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "expression": {
+      "type": "FunctionRef",
+      "localId": "715",
+      "locator": "111:3-111:78",
+      "name": "Most Urgent",
+      "annotation": [],
+      "signature": [],
+      "operand": [
+       {
+        "type": "Query",
+        "localId": "714",
+        "locator": "111:17-111:77",
+        "annotation": [],
+        "source": [
+         {
+          "localId": "708",
+          "locator": "111:17-111:37",
+          "alias": "C",
+          "annotation": [],
+          "expression": {
+           "type": "ParameterRef",
+           "localId": "709",
+           "locator": "111:17-111:35",
+           "name": "Triage Criteria",
+           "annotation": []
+          }
+         }
+        ],
+        "let": [],
+        "relationship": [],
+        "return": {
+         "localId": "711",
+         "locator": "111:39-111:77",
+         "annotation": [],
+         "expression": {
+          "type": "FunctionRef",
+          "localId": "713",
+          "locator": "111:46-111:77",
+          "name": "Warning Symptom Priority Of",
+          "annotation": [],
+          "signature": [],
+          "operand": [
+           {
+            "type": "AliasRef",
+            "localId": "712",
+            "locator": "111:76",
+            "name": "C",
+            "annotation": []
+           }
+          ]
+         }
+        }
+       }
+      ]
+     }
+    },
+    {
+     "localId": "718",
+     "locator": "113:1-116:32",
+     "name": "Needs Found",
+     "context": "Patient",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "718",
+        "s": [
+         {
+          "value": [
+           "",
+           "define ",
+           "\"Needs Found\"",
+           ":\n  "
+          ]
+         },
+         {
+          "r": "734",
+          "s": [
+           {
+            "s": [
+             {
+              "r": "719",
+              "s": [
+               {
+                "r": "720",
+                "s": [
+                 {
+                  "value": [
+                   "("
+                  ]
+                 },
+                 {
+                  "r": "720",
+                  "s": [
+                   {
+                    "value": [
+                     "\"Triage Criteria\""
+                    ]
+                   }
+                  ]
+                 },
+                 {
+                  "value": [
+                   ")"
+                  ]
+                 }
+                ]
+               },
+               {
+                "value": [
+                 " ",
+                 "C"
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             "\n    "
+            ]
+           },
+           {
+            "r": "722",
+            "s": [
+             {
+              "value": [
+               "where "
+              ]
+             },
+             {
+              "r": "722",
+              "s": [
+               {
+                "r": "723",
+                "s": [
+                 {
+                  "r": "725",
+                  "s": [
+                   {
+                    "r": "724",
+                    "s": [
+                     {
+                      "value": [
+                       "C"
+                      ]
+                     }
+                    ]
+                   },
+                   {
+                    "value": [
+                     "."
+                    ]
+                   },
+                   {
+                    "r": "725",
+                    "s": [
+                     {
+                      "value": [
+                       "system"
+                      ]
+                     }
+                    ]
+                   }
+                  ]
+                 },
+                 {
+                  "value": [
+                   " ",
+                   "=",
+                   " "
+                  ]
+                 },
+                 {
+                  "r": "726",
+                  "s": [
+                   {
+                    "value": [
+                     "'https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-criterion-cs'"
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               },
+               {
+                "value": [
+                 "\n      and "
+                ]
+               },
+               {
+                "r": "733",
+                "s": [
+                 {
+                  "r": "731",
+                  "s": [
+                   {
+                    "r": "730",
+                    "s": [
+                     {
+                      "value": [
+                       "C"
+                      ]
+                     }
+                    ]
+                   },
+                   {
+                    "value": [
+                     "."
+                    ]
+                   },
+                   {
+                    "r": "731",
+                    "s": [
+                     {
+                      "value": [
+                       "code"
+                      ]
+                     }
+                    ]
+                   }
+                  ]
+                 },
+                 {
+                  "value": [
+                   " in "
+                  ]
+                 },
+                 {
+                  "r": "732",
+                  "s": [
+                   {
+                    "value": [
+                     "\"Need Codes\""
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "expression": {
+      "type": "Query",
+      "localId": "734",
+      "locator": "114:3-116:32",
+      "annotation": [],
+      "source": [
+       {
+        "localId": "719",
+        "locator": "114:3-114:23",
+        "alias": "C",
+        "annotation": [],
+        "expression": {
+         "type": "ParameterRef",
+         "localId": "720",
+         "locator": "114:3-114:21",
+         "name": "Triage Criteria",
+         "annotation": []
+        }
+       }
+      ],
+      "let": [],
+      "relationship": [],
+      "where": {
+       "type": "And",
+       "localId": "722",
+       "locator": "115:5-116:32",
+       "annotation": [],
+       "signature": [],
+       "operand": [
+        {
+         "type": "Equal",
+         "localId": "723",
+         "locator": "115:11-115:101",
+         "annotation": [],
+         "signature": [
+          {
+           "type": "NamedTypeSpecifier",
+           "localId": "728",
+           "name": "{urn:hl7-org:elm-types:r1}String",
+           "annotation": []
+          },
+          {
+           "type": "NamedTypeSpecifier",
+           "localId": "729",
+           "name": "{urn:hl7-org:elm-types:r1}String",
+           "annotation": []
+          }
+         ],
+         "operand": [
+          {
+           "type": "Property",
+           "localId": "725",
+           "locator": "115:11-115:18",
+           "path": "system",
+           "scope": "C",
+           "annotation": []
+          },
+          {
+           "type": "Literal",
+           "localId": "726",
+           "locator": "115:22-115:101",
+           "valueType": "{urn:hl7-org:elm-types:r1}String",
+           "value": "https://vadi2.github.io/west-a-triage-ig/CodeSystem/west-a-triage-criterion-cs",
+           "annotation": []
+          }
+         ]
+        },
+        {
+         "type": "In",
+         "localId": "733",
+         "locator": "116:11-116:32",
+         "annotation": [],
+         "signature": [],
+         "operand": [
+          {
+           "type": "Property",
+           "localId": "731",
+           "locator": "116:11-116:16",
+           "path": "code",
+           "scope": "C",
+           "annotation": []
+          },
+          {
+           "type": "ExpressionRef",
+           "localId": "732",
+           "locator": "116:21-116:32",
+           "name": "Need Codes",
+           "annotation": []
+          }
+         ]
+        }
+       ]
+      }
+     }
+    },
+    {
+     "localId": "737",
+     "locator": "120:1-121:86",
+     "name": "Assessed Complaint Priority",
+     "context": "Patient",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "737",
+        "s": [
+         {
+          "value": [
+           "// The warning symptoms are assessed when the nurse passed a warning symptom, \"No Warning\n// Symptoms\", or a Complaint Priority\n",
+           "define ",
+           "\"Assessed Complaint Priority\"",
+           ":\n  "
+          ]
+         },
+         {
+          "r": "742",
+          "s": [
+           {
+            "value": [
+             "\"Most Urgent\"",
+             "("
+            ]
+           },
+           {
+            "r": "738",
+            "s": [
+             {
+              "value": [
+               "{ "
+              ]
+             },
+             {
+              "r": "740",
+              "s": [
+               {
+                "value": [
+                 "\"Priority Code\"",
+                 "("
+                ]
+               },
+               {
+                "r": "739",
+                "s": [
+                 {
+                  "value": [
+                   "\"Complaint Priority\""
+                  ]
+                 }
+                ]
+               },
+               {
+                "value": [
+                 ")"
+                ]
+               }
+              ]
+             },
+             {
+              "value": [
+               ", "
+              ]
+             },
+             {
+              "r": "741",
+              "s": [
+               {
+                "value": [
+                 "\"Warning Symptom Priority\""
+                ]
+               }
+              ]
+             },
+             {
+              "value": [
+               " }"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ")"
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "expression": {
+      "type": "FunctionRef",
+      "localId": "742",
+      "locator": "121:3-121:86",
+      "name": "Most Urgent",
+      "annotation": [],
+      "signature": [],
+      "operand": [
+       {
+        "type": "List",
+        "localId": "738",
+        "locator": "121:17-121:85",
+        "annotation": [],
+        "element": [
+         {
+          "type": "FunctionRef",
+          "localId": "740",
+          "locator": "121:19-121:55",
+          "name": "Priority Code",
+          "annotation": [],
+          "signature": [],
+          "operand": [
+           {
+            "type": "ParameterRef",
+            "localId": "739",
+            "locator": "121:35-121:54",
+            "name": "Complaint Priority",
+            "annotation": []
+           }
+          ]
+         },
+         {
+          "type": "ExpressionRef",
+          "localId": "741",
+          "locator": "121:58-121:83",
+          "name": "Warning Symptom Priority",
+          "annotation": []
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "type": "FunctionDef",
+     "localId": "743",
+     "locator": "124:1-131:5",
+     "name": "Priority For Risk",
+     "context": "Patient",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "743",
+        "s": [
+         {
+          "value": [
+           "// WEST-A p. 6: the colour of each NEWS2 clinical risk band\n",
+           "define function \"Priority For Risk\"(risk String):\n  "
+          ]
+         },
+         {
+          "r": "748",
+          "s": [
+           {
+            "r": "748",
+            "s": [
+             {
+              "value": [
+               "case "
+              ]
+             },
+             {
+              "r": "749",
+              "s": [
+               {
+                "value": [
+                 "risk"
+                ]
+               }
+              ]
+             },
+             {
+              "value": [
+               "\n    "
+              ]
+             },
+             {
+              "r": "750",
+              "s": [
+               {
+                "value": [
+                 "when "
+                ]
+               },
+               {
+                "r": "751",
+                "s": [
+                 {
+                  "value": [
+                   "'high'"
+                  ]
+                 }
+                ]
+               },
+               {
+                "value": [
+                 " then "
+                ]
+               },
+               {
+                "r": "753",
+                "s": [
+                 {
+                  "value": [
+                   "\"Red\""
+                  ]
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "value": [
+               "\n    "
+              ]
+             },
+             {
+              "r": "754",
+              "s": [
+               {
+                "value": [
+                 "when "
+                ]
+               },
+               {
+                "r": "755",
+                "s": [
+                 {
+                  "value": [
+                   "'medium'"
+                  ]
+                 }
+                ]
+               },
+               {
+                "value": [
+                 " then "
+                ]
+               },
+               {
+                "r": "757",
+                "s": [
+                 {
+                  "value": [
+                   "\"Orange\""
+                  ]
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "value": [
+               "\n    "
+              ]
+             },
+             {
+              "r": "758",
+              "s": [
+               {
+                "value": [
+                 "when "
+                ]
+               },
+               {
+                "r": "759",
+                "s": [
+                 {
+                  "value": [
+                   "'low-medium'"
+                  ]
+                 }
+                ]
+               },
+               {
+                "value": [
+                 " then "
+                ]
+               },
+               {
+                "r": "761",
+                "s": [
+                 {
+                  "value": [
+                   "\"Yellow\""
+                  ]
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "value": [
+               "\n    "
+              ]
+             },
+             {
+              "r": "762",
+              "s": [
+               {
+                "value": [
+                 "when "
+                ]
+               },
+               {
+                "r": "763",
+                "s": [
+                 {
+                  "value": [
+                   "'low'"
+                  ]
+                 }
+                ]
+               },
+               {
+                "value": [
+                 " then "
+                ]
+               },
+               {
+                "r": "765",
+                "s": [
+                 {
+                  "value": [
+                   "\"Green\""
+                  ]
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "r": "766",
+              "value": [
+               "\n    else ",
+               "null",
+               "\n  end"
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "expression": {
+      "type": "Case",
+      "localId": "748",
+      "locator": "125:3-131:5",
+      "annotation": [],
+      "comparand": {
+       "type": "OperandRef",
+       "localId": "749",
+       "locator": "125:8-125:11",
+       "name": "risk",
+       "annotation": []
+      },
+      "caseItem": [
+       {
+        "localId": "750",
+        "locator": "126:5-126:26",
+        "annotation": [],
+        "when": {
+         "type": "Literal",
+         "localId": "751",
+         "locator": "126:10-126:15",
+         "valueType": "{urn:hl7-org:elm-types:r1}String",
+         "value": "high",
+         "annotation": []
+        },
+        "then": {
+         "type": "CodeRef",
+         "localId": "753",
+         "locator": "126:22-126:26",
+         "name": "Red",
+         "annotation": []
+        }
+       },
+       {
+        "localId": "754",
+        "locator": "127:5-127:31",
+        "annotation": [],
+        "when": {
+         "type": "Literal",
+         "localId": "755",
+         "locator": "127:10-127:17",
+         "valueType": "{urn:hl7-org:elm-types:r1}String",
+         "value": "medium",
+         "annotation": []
+        },
+        "then": {
+         "type": "CodeRef",
+         "localId": "757",
+         "locator": "127:24-127:31",
+         "name": "Orange",
+         "annotation": []
+        }
+       },
+       {
+        "localId": "758",
+        "locator": "128:5-128:35",
+        "annotation": [],
+        "when": {
+         "type": "Literal",
+         "localId": "759",
+         "locator": "128:10-128:21",
+         "valueType": "{urn:hl7-org:elm-types:r1}String",
+         "value": "low-medium",
+         "annotation": []
+        },
+        "then": {
+         "type": "CodeRef",
+         "localId": "761",
+         "locator": "128:28-128:35",
+         "name": "Yellow",
+         "annotation": []
+        }
+       },
+       {
+        "localId": "762",
+        "locator": "129:5-129:27",
+        "annotation": [],
+        "when": {
+         "type": "Literal",
+         "localId": "763",
+         "locator": "129:10-129:14",
+         "valueType": "{urn:hl7-org:elm-types:r1}String",
+         "value": "low",
+         "annotation": []
+        },
+        "then": {
+         "type": "CodeRef",
+         "localId": "765",
+         "locator": "129:21-129:27",
+         "name": "Green",
+         "annotation": []
+        }
+       }
+      ],
+      "else": {
+       "type": "As",
+       "localId": "767",
+       "asType": "{urn:hl7-org:elm-types:r1}Code",
+       "annotation": [],
+       "signature": [],
+       "operand": {
+        "type": "Null",
+        "localId": "766",
+        "locator": "130:10-130:13",
+        "annotation": []
+       }
+      }
+     },
+     "operand": [
+      {
+       "localId": "745",
+       "name": "risk",
+       "annotation": [],
+       "operandTypeSpecifier": {
+        "type": "NamedTypeSpecifier",
+        "localId": "744",
+        "locator": "124:42-124:47",
+        "name": "{urn:hl7-org:elm-types:r1}String",
+        "annotation": []
+       }
+      }
+     ]
+    },
+    {
+     "localId": "770",
+     "locator": "133:1-134:81",
+     "name": "Vital Parameter Priority",
+     "context": "Patient",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "770",
+        "s": [
+         {
+          "value": [
+           "",
+           "define ",
+           "\"Vital Parameter Priority\"",
+           ":\n  "
+          ]
+         },
+         {
+          "r": "774",
+          "s": [
+           {
+            "value": [
+             "\"Priority For Risk\"",
+             "("
+            ]
+           },
+           {
+            "r": "773",
+            "s": [
+             {
+              "r": "771",
+              "s": [
+               {
+                "value": [
+                 "NEWS2"
+                ]
+               }
+              ]
+             },
+             {
+              "value": [
+               "."
+              ]
+             },
+             {
+              "r": "773",
+              "s": [
+               {
+                "value": [
+                 "\"Clinical Risk For\"",
+                 "("
+                ]
+               },
+               {
+                "r": "772",
+                "s": [
+                 {
+                  "value": [
+                   "\"Use Oxygen Saturation Scale 2\""
+                  ]
+                 }
+                ]
+               },
+               {
+                "value": [
+                 ")"
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ")"
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "expression": {
+      "type": "FunctionRef",
+      "localId": "774",
+      "locator": "134:3-134:81",
+      "name": "Priority For Risk",
+      "annotation": [],
+      "signature": [],
+      "operand": [
+       {
+        "type": "FunctionRef",
+        "localId": "773",
+        "locator": "134:23-134:80",
+        "name": "Clinical Risk For",
+        "libraryName": "NEWS2",
+        "annotation": [],
+        "signature": [],
+        "operand": [
+         {
+          "type": "ParameterRef",
+          "localId": "772",
+          "locator": "134:49-134:79",
+          "name": "Use Oxygen Saturation Scale 2",
+          "annotation": []
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "localId": "777",
+     "locator": "138:1-139:93",
+     "name": "Provisional Vital Parameter Priority",
+     "context": "Patient",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "777",
+        "s": [
+         {
+          "value": [
+           "// The colour of the provisional NEWS2 clinical risk: a lower bound until all seven\n// parameters are measured\n",
+           "define ",
+           "\"Provisional Vital Parameter Priority\"",
+           ":\n  "
+          ]
+         },
+         {
+          "r": "781",
+          "s": [
+           {
+            "value": [
+             "\"Priority For Risk\"",
+             "("
+            ]
+           },
+           {
+            "r": "780",
+            "s": [
+             {
+              "r": "778",
+              "s": [
+               {
+                "value": [
+                 "NEWS2"
+                ]
+               }
+              ]
+             },
+             {
+              "value": [
+               "."
+              ]
+             },
+             {
+              "r": "780",
+              "s": [
+               {
+                "value": [
+                 "\"Provisional Clinical Risk For\"",
+                 "("
+                ]
+               },
+               {
+                "r": "779",
+                "s": [
+                 {
+                  "value": [
+                   "\"Use Oxygen Saturation Scale 2\""
+                  ]
+                 }
+                ]
+               },
+               {
+                "value": [
+                 ")"
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ")"
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "expression": {
+      "type": "FunctionRef",
+      "localId": "781",
+      "locator": "139:3-139:93",
+      "name": "Priority For Risk",
+      "annotation": [],
+      "signature": [],
+      "operand": [
+       {
+        "type": "FunctionRef",
+        "localId": "780",
+        "locator": "139:23-139:92",
+        "name": "Provisional Clinical Risk For",
+        "libraryName": "NEWS2",
+        "annotation": [],
+        "signature": [],
+        "operand": [
+         {
+          "type": "ParameterRef",
+          "localId": "779",
+          "locator": "139:61-139:91",
+          "name": "Use Oxygen Saturation Scale 2",
+          "annotation": []
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "localId": "784",
+     "locator": "142:1-143:80",
+     "name": "Lowest Priority From Needs",
+     "context": "Patient",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "784",
+        "s": [
+         {
+          "value": [
+           "// A need from the triage criteria, or the parameter for a client that does not code them\n",
+           "define ",
+           "\"Lowest Priority From Needs\"",
+           ":\n  "
+          ]
+         },
+         {
+          "r": "785",
+          "s": [
+           {
+            "value": [
+             "if "
+            ]
+           },
+           {
+            "r": "786",
+            "s": [
+             {
+              "r": "787",
+              "s": [
+               {
+                "value": [
+                 "\"Yellow As Lowest Priority\""
+                ]
+               }
+              ]
+             },
+             {
+              "value": [
+               " or "
+              ]
+             },
+             {
+              "r": "788",
+              "s": [
+               {
+                "value": [
+                 "exists "
+                ]
+               },
+               {
+                "r": "789",
+                "s": [
+                 {
+                  "value": [
+                   "\"Needs Found\""
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             " then "
+            ]
+           },
+           {
+            "r": "790",
+            "s": [
+             {
+              "value": [
+               "\"Yellow\""
+              ]
+             }
+            ]
+           },
+           {
+            "r": "791",
+            "value": [
+             " else ",
+             "null"
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "expression": {
+      "type": "If",
+      "localId": "785",
+      "locator": "143:3-143:80",
+      "annotation": [],
+      "condition": {
+       "type": "Or",
+       "localId": "786",
+       "locator": "143:6-143:56",
+       "annotation": [],
+       "signature": [],
+       "operand": [
+        {
+         "type": "ParameterRef",
+         "localId": "787",
+         "locator": "143:6-143:32",
+         "name": "Yellow As Lowest Priority",
+         "annotation": []
+        },
+        {
+         "type": "Exists",
+         "localId": "788",
+         "locator": "143:37-143:56",
+         "annotation": [],
+         "signature": [],
+         "operand": {
+          "type": "ExpressionRef",
+          "localId": "789",
+          "locator": "143:44-143:56",
+          "name": "Needs Found",
+          "annotation": []
+         }
+        }
+       ]
+      },
+      "then": {
+       "type": "CodeRef",
+       "localId": "790",
+       "locator": "143:63-143:70",
+       "name": "Yellow",
+       "annotation": []
+      },
+      "else": {
+       "type": "As",
+       "localId": "792",
+       "asType": "{urn:hl7-org:elm-types:r1}Code",
+       "annotation": [],
+       "signature": [],
+       "operand": {
+        "type": "Null",
+        "localId": "791",
+        "locator": "143:77-143:80",
+        "annotation": []
+       }
+      }
+     }
+    },
+    {
+     "localId": "795",
+     "locator": "147:1-149:113",
+     "name": "Proposed Priority",
+     "context": "Patient",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "795",
+        "s": [
+         {
+          "value": [
+           "// Proposed only when NEWS2 is calculated and the warning symptoms are assessed: without\n// either, the logic cannot know that nothing more urgent applies\n",
+           "define ",
+           "\"Proposed Priority\"",
+           ":\n  "
+          ]
+         },
+         {
+          "r": "796",
+          "s": [
+           {
+            "value": [
+             "if "
+            ]
+           },
+           {
+            "r": "797",
+            "s": [
+             {
+              "r": "799",
+              "s": [
+               {
+                "r": "798",
+                "s": [
+                 {
+                  "value": [
+                   "\"Vital Parameter Priority\""
+                  ]
+                 }
+                ]
+               },
+               {
+                "value": [
+                 " is null"
+                ]
+               }
+              ]
+             },
+             {
+              "value": [
+               " or "
+              ]
+             },
+             {
+              "r": "801",
+              "s": [
+               {
+                "r": "800",
+                "s": [
+                 {
+                  "value": [
+                   "\"Assessed Complaint Priority\""
+                  ]
+                 }
+                ]
+               },
+               {
+                "value": [
+                 " is null"
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "r": "802",
+            "value": [
+             " then ",
+             "null",
+             "\n  else "
+            ]
+           },
+           {
+            "r": "807",
+            "s": [
+             {
+              "value": [
+               "\"Most Urgent\"",
+               "("
+              ]
+             },
+             {
+              "r": "803",
+              "s": [
+               {
+                "value": [
+                 "{ "
+                ]
+               },
+               {
+                "r": "804",
+                "s": [
+                 {
+                  "value": [
+                   "\"Vital Parameter Priority\""
+                  ]
+                 }
+                ]
+               },
+               {
+                "value": [
+                 ", "
+                ]
+               },
+               {
+                "r": "805",
+                "s": [
+                 {
+                  "value": [
+                   "\"Assessed Complaint Priority\""
+                  ]
+                 }
+                ]
+               },
+               {
+                "value": [
+                 ", "
+                ]
+               },
+               {
+                "r": "806",
+                "s": [
+                 {
+                  "value": [
+                   "\"Lowest Priority From Needs\""
+                  ]
+                 }
+                ]
+               },
+               {
+                "value": [
+                 " }"
+                ]
+               }
+              ]
+             },
+             {
+              "value": [
+               ")"
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "expression": {
+      "type": "If",
+      "localId": "796",
+      "locator": "148:3-149:113",
+      "annotation": [],
+      "condition": {
+       "type": "Or",
+       "localId": "797",
+       "locator": "148:6-148:80",
+       "annotation": [],
+       "signature": [],
+       "operand": [
+        {
+         "type": "IsNull",
+         "localId": "799",
+         "locator": "148:6-148:39",
+         "annotation": [],
+         "signature": [],
+         "operand": {
+          "type": "ExpressionRef",
+          "localId": "798",
+          "locator": "148:6-148:31",
+          "name": "Vital Parameter Priority",
+          "annotation": []
+         }
+        },
+        {
+         "type": "IsNull",
+         "localId": "801",
+         "locator": "148:44-148:80",
+         "annotation": [],
+         "signature": [],
+         "operand": {
+          "type": "ExpressionRef",
+          "localId": "800",
+          "locator": "148:44-148:72",
+          "name": "Assessed Complaint Priority",
+          "annotation": []
+         }
+        }
+       ]
+      },
+      "then": {
+       "type": "As",
+       "localId": "808",
+       "asType": "{urn:hl7-org:elm-types:r1}Code",
+       "annotation": [],
+       "signature": [],
+       "operand": {
+        "type": "Null",
+        "localId": "802",
+        "locator": "148:87-148:90",
+        "annotation": []
+       }
+      },
+      "else": {
+       "type": "FunctionRef",
+       "localId": "807",
+       "locator": "149:8-149:113",
+       "name": "Most Urgent",
+       "annotation": [],
+       "signature": [],
+       "operand": [
+        {
+         "type": "List",
+         "localId": "803",
+         "locator": "149:22-149:112",
+         "annotation": [],
+         "element": [
+          {
+           "type": "ExpressionRef",
+           "localId": "804",
+           "locator": "149:24-149:49",
+           "name": "Vital Parameter Priority",
+           "annotation": []
+          },
+          {
+           "type": "ExpressionRef",
+           "localId": "805",
+           "locator": "149:52-149:80",
+           "name": "Assessed Complaint Priority",
+           "annotation": []
+          },
+          {
+           "type": "ExpressionRef",
+           "localId": "806",
+           "locator": "149:83-149:110",
+           "name": "Lowest Priority From Needs",
+           "annotation": []
+          }
+         ]
+        }
+       ]
+      }
+     }
+    },
+    {
+     "localId": "811",
+     "locator": "151:1-152:29",
+     "name": "Proposed Priority Is Red",
+     "context": "Patient",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "811",
+        "s": [
+         {
+          "value": [
+           "",
+           "define ",
+           "\"Proposed Priority Is Red\"",
+           ":\n  "
+          ]
+         },
+         {
+          "r": "812",
+          "s": [
+           {
+            "r": "813",
+            "s": [
+             {
+              "value": [
+               "\"Proposed Priority\""
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             " ",
+             "~",
+             " "
+            ]
+           },
+           {
+            "r": "814",
+            "s": [
+             {
+              "value": [
+               "\"Red\""
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "expression": {
+      "type": "Equivalent",
+      "localId": "812",
+      "locator": "152:3-152:29",
+      "annotation": [],
+      "signature": [
+       {
+        "type": "NamedTypeSpecifier",
+        "localId": "815",
+        "name": "{urn:hl7-org:elm-types:r1}Code",
+        "annotation": []
+       },
+       {
+        "type": "NamedTypeSpecifier",
+        "localId": "816",
+        "name": "{urn:hl7-org:elm-types:r1}Code",
+        "annotation": []
+       }
+      ],
+      "operand": [
+       {
+        "type": "ExpressionRef",
+        "localId": "813",
+        "locator": "152:3-152:21",
+        "name": "Proposed Priority",
+        "annotation": []
+       },
+       {
+        "type": "CodeRef",
+        "localId": "814",
+        "locator": "152:25-152:29",
+        "name": "Red",
+        "annotation": []
+       }
+      ]
+     }
+    },
+    {
+     "localId": "819",
+     "locator": "154:1-155:32",
+     "name": "Proposed Priority Is Orange",
+     "context": "Patient",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "819",
+        "s": [
+         {
+          "value": [
+           "",
+           "define ",
+           "\"Proposed Priority Is Orange\"",
+           ":\n  "
+          ]
+         },
+         {
+          "r": "820",
+          "s": [
+           {
+            "r": "821",
+            "s": [
+             {
+              "value": [
+               "\"Proposed Priority\""
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             " ",
+             "~",
+             " "
+            ]
+           },
+           {
+            "r": "822",
+            "s": [
+             {
+              "value": [
+               "\"Orange\""
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "expression": {
+      "type": "Equivalent",
+      "localId": "820",
+      "locator": "155:3-155:32",
+      "annotation": [],
+      "signature": [
+       {
+        "type": "NamedTypeSpecifier",
+        "localId": "823",
+        "name": "{urn:hl7-org:elm-types:r1}Code",
+        "annotation": []
+       },
+       {
+        "type": "NamedTypeSpecifier",
+        "localId": "824",
+        "name": "{urn:hl7-org:elm-types:r1}Code",
+        "annotation": []
+       }
+      ],
+      "operand": [
+       {
+        "type": "ExpressionRef",
+        "localId": "821",
+        "locator": "155:3-155:21",
+        "name": "Proposed Priority",
+        "annotation": []
+       },
+       {
+        "type": "CodeRef",
+        "localId": "822",
+        "locator": "155:25-155:32",
+        "name": "Orange",
+        "annotation": []
+       }
+      ]
+     }
+    },
+    {
+     "localId": "827",
+     "locator": "157:1-158:32",
+     "name": "Proposed Priority Is Yellow",
+     "context": "Patient",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "827",
+        "s": [
+         {
+          "value": [
+           "",
+           "define ",
+           "\"Proposed Priority Is Yellow\"",
+           ":\n  "
+          ]
+         },
+         {
+          "r": "828",
+          "s": [
+           {
+            "r": "829",
+            "s": [
+             {
+              "value": [
+               "\"Proposed Priority\""
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             " ",
+             "~",
+             " "
+            ]
+           },
+           {
+            "r": "830",
+            "s": [
+             {
+              "value": [
+               "\"Yellow\""
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "expression": {
+      "type": "Equivalent",
+      "localId": "828",
+      "locator": "158:3-158:32",
+      "annotation": [],
+      "signature": [
+       {
+        "type": "NamedTypeSpecifier",
+        "localId": "831",
+        "name": "{urn:hl7-org:elm-types:r1}Code",
+        "annotation": []
+       },
+       {
+        "type": "NamedTypeSpecifier",
+        "localId": "832",
+        "name": "{urn:hl7-org:elm-types:r1}Code",
+        "annotation": []
+       }
+      ],
+      "operand": [
+       {
+        "type": "ExpressionRef",
+        "localId": "829",
+        "locator": "158:3-158:21",
+        "name": "Proposed Priority",
+        "annotation": []
+       },
+       {
+        "type": "CodeRef",
+        "localId": "830",
+        "locator": "158:25-158:32",
+        "name": "Yellow",
+        "annotation": []
+       }
+      ]
+     }
+    },
+    {
+     "localId": "835",
+     "locator": "160:1-161:31",
+     "name": "Proposed Priority Is Green",
+     "context": "Patient",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "835",
+        "s": [
+         {
+          "value": [
+           "",
+           "define ",
+           "\"Proposed Priority Is Green\"",
+           ":\n  "
+          ]
+         },
+         {
+          "r": "836",
+          "s": [
+           {
+            "r": "837",
+            "s": [
+             {
+              "value": [
+               "\"Proposed Priority\""
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             " ",
+             "~",
+             " "
+            ]
+           },
+           {
+            "r": "838",
+            "s": [
+             {
+              "value": [
+               "\"Green\""
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "expression": {
+      "type": "Equivalent",
+      "localId": "836",
+      "locator": "161:3-161:31",
+      "annotation": [],
+      "signature": [
+       {
+        "type": "NamedTypeSpecifier",
+        "localId": "839",
+        "name": "{urn:hl7-org:elm-types:r1}Code",
+        "annotation": []
+       },
+       {
+        "type": "NamedTypeSpecifier",
+        "localId": "840",
+        "name": "{urn:hl7-org:elm-types:r1}Code",
+        "annotation": []
+       }
+      ],
+      "operand": [
+       {
+        "type": "ExpressionRef",
+        "localId": "837",
+        "locator": "161:3-161:21",
+        "name": "Proposed Priority",
+        "annotation": []
+       },
+       {
+        "type": "CodeRef",
+        "localId": "838",
+        "locator": "161:25-161:31",
+        "name": "Green",
+        "annotation": []
+       }
+      ]
+     }
+    },
+    {
+     "localId": "843",
+     "locator": "163:1-164:33",
+     "name": "Has Proposed Priority",
+     "context": "Patient",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "843",
+        "s": [
+         {
+          "value": [
+           "",
+           "define ",
+           "\"Has Proposed Priority\"",
+           ":\n  "
+          ]
+         },
+         {
+          "r": "846",
+          "s": [
+           {
+            "r": "844",
+            "s": [
+             {
+              "value": [
+               "\"Proposed Priority\""
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             " is not null"
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "expression": {
+      "type": "Not",
+      "localId": "846",
+      "locator": "164:3-164:33",
+      "annotation": [],
+      "signature": [],
+      "operand": {
+       "type": "IsNull",
+       "localId": "845",
+       "locator": "164:3-164:33",
+       "annotation": [],
+       "signature": [],
+       "operand": {
+        "type": "ExpressionRef",
+        "localId": "844",
+        "locator": "164:3-164:21",
+        "name": "Proposed Priority",
+        "annotation": []
+       }
+      }
+     }
+    },
+    {
+     "localId": "849",
+     "locator": "172:1-173:120",
+     "name": "Provisional Proposed Priority",
+     "context": "Patient",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "849",
+        "s": [
+         {
+          "value": [
+           "// While the triage is under way: the most urgent of what is known so far, the colour of the\n// provisional NEWS2, the warning symptoms found and the Complaint Priority, and yellow for the\n// needs; null only when nothing is known. Every part can only become more urgent as the vital\n// signs and the warning symptoms come in, so this is a lower bound: it is never more urgent\n// than the Proposed Priority that follows, and it is the Proposed Priority once that is proposed.\n// Green means only that nothing more urgent is known yet.\n",
+           "define ",
+           "\"Provisional Proposed Priority\"",
+           ":\n  "
+          ]
+         },
+         {
+          "r": "854",
+          "s": [
+           {
+            "value": [
+             "\"Most Urgent\"",
+             "("
+            ]
+           },
+           {
+            "r": "850",
+            "s": [
+             {
+              "value": [
+               "{ "
+              ]
+             },
+             {
+              "r": "851",
+              "s": [
+               {
+                "value": [
+                 "\"Provisional Vital Parameter Priority\""
+                ]
+               }
+              ]
+             },
+             {
+              "value": [
+               ", "
+              ]
+             },
+             {
+              "r": "852",
+              "s": [
+               {
+                "value": [
+                 "\"Assessed Complaint Priority\""
+                ]
+               }
+              ]
+             },
+             {
+              "value": [
+               ", "
+              ]
+             },
+             {
+              "r": "853",
+              "s": [
+               {
+                "value": [
+                 "\"Lowest Priority From Needs\""
+                ]
+               }
+              ]
+             },
+             {
+              "value": [
+               " }"
+              ]
+             }
+            ]
+           },
+           {
+            "value": [
+             ")"
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "expression": {
+      "type": "FunctionRef",
+      "localId": "854",
+      "locator": "173:3-173:120",
+      "name": "Most Urgent",
+      "annotation": [],
+      "signature": [],
+      "operand": [
+       {
+        "type": "List",
+        "localId": "850",
+        "locator": "173:17-173:119",
+        "annotation": [],
+        "element": [
+         {
+          "type": "ExpressionRef",
+          "localId": "851",
+          "locator": "173:19-173:56",
+          "name": "Provisional Vital Parameter Priority",
+          "annotation": []
+         },
+         {
+          "type": "ExpressionRef",
+          "localId": "852",
+          "locator": "173:59-173:87",
+          "name": "Assessed Complaint Priority",
+          "annotation": []
+         },
+         {
+          "type": "ExpressionRef",
+          "localId": "853",
+          "locator": "173:90-173:117",
+          "name": "Lowest Priority From Needs",
+          "annotation": []
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "localId": "857",
+     "locator": "176:1-178:65",
+     "name": "Proposed Priority Summary",
+     "context": "Patient",
+     "accessLevel": "Public",
+     "annotation": [
+      {
+       "type": "Annotation",
+       "t": [],
+       "s": {
+        "r": "857",
+        "s": [
+         {
+          "value": [
+           "// The description of the task that proposes the triage priority\n",
+           "define ",
+           "\"Proposed Priority Summary\"",
+           ":\n  "
+          ]
+         },
+         {
+          "r": "858",
+          "s": [
+           {
+            "value": [
+             "if "
+            ]
+           },
+           {
+            "r": "860",
+            "s": [
+             {
+              "r": "859",
+              "s": [
+               {
+                "value": [
+                 "\"Proposed Priority\""
+                ]
+               }
+              ]
+             },
+             {
+              "value": [
+               " is null"
+              ]
+             }
+            ]
+           },
+           {
+            "r": "861",
+            "value": [
+             " then ",
+             "null",
+             "\n  else "
+            ]
+           },
+           {
+            "r": "869",
+            "s": [
+             {
+              "r": "863",
+              "s": [
+               {
+                "value": [
+                 "'Proposed WEST-A priority: '"
+                ]
+               }
+              ]
+             },
+             {
+              "value": [
+               " + "
+              ]
+             },
+             {
+              "r": "866",
+              "s": [
+               {
+                "r": "865",
+                "s": [
+                 {
+                  "value": [
+                   "\"Proposed Priority\""
+                  ]
+                 }
+                ]
+               },
+               {
+                "value": [
+                 "."
+                ]
+               },
+               {
+                "r": "866",
+                "s": [
+                 {
+                  "value": [
+                   "display"
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     ],
+     "expression": {
+      "type": "If",
+      "localId": "858",
+      "locator": "177:3-178:65",
+      "annotation": [],
+      "condition": {
+       "type": "IsNull",
+       "localId": "860",
+       "locator": "177:6-177:32",
+       "annotation": [],
+       "signature": [],
+       "operand": {
+        "type": "ExpressionRef",
+        "localId": "859",
+        "locator": "177:6-177:24",
+        "name": "Proposed Priority",
+        "annotation": []
+       }
+      },
+      "then": {
+       "type": "As",
+       "localId": "870",
+       "asType": "{urn:hl7-org:elm-types:r1}String",
+       "annotation": [],
+       "signature": [],
+       "operand": {
+        "type": "Null",
+        "localId": "861",
+        "locator": "177:39-177:42",
+        "annotation": []
+       }
+      },
+      "else": {
+       "type": "Concatenate",
+       "localId": "869",
+       "locator": "178:8-178:65",
+       "annotation": [],
+       "signature": [],
+       "operand": [
+        {
+         "type": "Literal",
+         "localId": "863",
+         "locator": "178:8-178:35",
+         "valueType": "{urn:hl7-org:elm-types:r1}String",
+         "value": "Proposed WEST-A priority: ",
+         "annotation": []
+        },
+        {
+         "type": "Property",
+         "localId": "866",
+         "locator": "178:39-178:65",
+         "path": "display",
+         "annotation": [],
+         "source": {
+          "type": "ExpressionRef",
+          "localId": "865",
+          "locator": "178:39-178:57",
+          "name": "Proposed Priority",
+          "annotation": []
+         }
+        }
+       ]
+      }
+     }
+    }
+   ]
+  }
+ }
+}
