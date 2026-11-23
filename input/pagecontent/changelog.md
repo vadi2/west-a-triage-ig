@@ -3,6 +3,7 @@
 #### Added
 
 - [WEST-A ACVPU](ValueSet-west-a-acvpu-vs.html) value set for the levels of consciousness, coded in SNOMED CT
+- [WEST-A Architecture](west-a-architecture.html) page, a diagram of how open sources, standards, open source tools and free public services make up the guide and its demo, and a Demo link in the menu to the [live demo](https://vadimperetok.in/west-a-triage-ig/demo/)
 - [WEST-A Blood Pressure](StructureDefinition-west-a-blood-pressure.html) profile, based on the FHIR core blood pressure profile
 - [WEST-A Body Temperature](StructureDefinition-west-a-body-temperature.html) profile, based on the FHIR core body temperature profile
 - [WEST-A chief complaint](CodeSystem-west-a-chief-complaint-cs.html) code system and [value set](ValueSet-west-a-chief-complaint-vs.html) for the 31 WEST-A complaint algorithms

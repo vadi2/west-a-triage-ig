@@ -34,6 +34,8 @@ pages:
     title: WEST-A Computable Guidelines
   clinical-views.md:
     title: Clinical Views
+  west-a-architecture.md:
+    title: WEST-A Architecture
   changelog.md:
     title: Changelog
 
@@ -44,8 +46,10 @@ menu:
     Triage: west-a-triage-mapping.html
   Computable guidelines: west-a-computable-guidelines.html
   Clinical views: clinical-views.html
+  Architecture: west-a-architecture.html
   Artifacts: artifacts.html
   Changelog: changelog.html
+  Demo: https://vadimperetok.in/west-a-triage-ig/demo/
 parameters:
   path-expansion-params: '../../expansion-params.json'  # SNOMED CT Swedish edition
   path-binary: input/cql  # the CQL sources of the Library resources
