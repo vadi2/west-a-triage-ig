@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>WEST-A Triage IG</title>
+    <script>
+      // A canonical URL of the guide, such as /west-a-triage-ig/StructureDefinition/west-a-patient,
+      // goes to its page in the current build; anything else to the guide's home page.
+      (function () {
+        var ig = 'https://build.fhir.org/ig/vadi2/west-a-triage-ig/en/';
+        var m = window.location.pathname.match(/\/west-a-triage-ig\/([A-Z][A-Za-z]+)\/([A-Za-z0-9.-]+)\/?$/);
+        window.location.replace(m ? ig + m[1] + '-' + m[2] + '.html' : ig);
+      })();
+    </script>
+  </head>
+  <body>
+    <p>Moving to <a href="https://build.fhir.org/ig/vadi2/west-a-triage-ig/en/">the WEST-A Triage implementation guide</a>…</p>
+  </body>
+</html>
