@@ -29,29 +29,29 @@
 <a href="https://hl7.org/fhir/R4/" target="_blank"><g><rect class="box ln" x="577.6" y="50" width="171.2" height="82" rx="6"/><text class="h" x="587.6" y="70">HL7 standards</text><text class="s" x="587.6" y="88">FHIR R4, CQL, CPG, SDC,</text><text class="s" x="587.6" y="103">CRMI, Europe HDR</text><text class="tag" x="587.6" y="122">open standards</text></g></a>
 <a href="https://fhir.vgregion.se/ig/base/" target="_blank"><g><rect class="box ln" x="760.8" y="50" width="171.2" height="82" rx="6"/><text class="h" x="770.8" y="70">Swedish profiles</text><text class="s" x="770.8" y="88">HL7 Sweden SE Base,</text><text class="s" x="770.8" y="103">VGR Base</text><text class="tag" x="770.8" y="122">public FHIR packages</text></g></a>
 <line class="ar" x1="480" y1="148" x2="480" y2="182" marker-end="url(#westa-arrow)"/>
-<text class="al" x="492" y="170">modelled in</text>
+<text class="al" x="492" y="170">turned into</text>
 <rect class="band" x="16" y="188" width="928" height="136" rx="10"/>
 <circle class="num" cx="38" cy="210" r="11"/><text class="numt" x="38" y="214">2</text>
-<a href="https://github.com/vadi2/west-a-triage-ig" target="_blank"><text class="bt" x="58" y="215">The guide, as code: one public GitHub repository</text></a>
+<a href="https://github.com/vadi2/west-a-triage-ig" target="_blank"><text class="bt" x="58" y="215">The guide</text></a>
 <a href="artifacts.html"><g><rect class="box ln" x="28.0" y="230" width="217.0" height="82" rx="6"/><text class="h" x="38.0" y="250">Profiles and codes</text><text class="s" x="38.0" y="268">patient, vital signs, NEWS2,</text><text class="s" x="38.0" y="283">triage, Swedish code systems</text><text class="tag" x="38.0" y="302">FHIR Shorthand</text></g></a>
 <a href="Questionnaire-west-a-triage-questionnaire.html"><g><rect class="box ln" x="257.0" y="230" width="217.0" height="82" rx="6"/><text class="h" x="267.0" y="250">Triage form</text><text class="s" x="267.0" y="268">a Questionnaire that extracts</text><text class="s" x="267.0" y="283">its own Observations</text><text class="tag" x="267.0" y="302">SDC 4.0.0</text></g></a>
-<a href="west-a-computable-guidelines.html"><g><rect class="box ln" x="486.0" y="230" width="217.0" height="82" rx="6"/><text class="h" x="496.0" y="250">Computable guideline</text><text class="s" x="496.0" y="268">NEWS2 and the priority in CQL,</text><text class="s" x="496.0" y="283">as CPG PlanDefinitions</text><text class="tag" x="496.0" y="302">CPG 2.0.0, CQL</text></g></a>
+<a href="west-a-computable-guidelines.html"><g><rect class="box ln" x="486.0" y="230" width="217.0" height="82" rx="6"/><text class="h" x="496.0" y="250">Triage logic</text><text class="s" x="496.0" y="268">NEWS2 and the priority in CQL,</text><text class="s" x="496.0" y="283">as CPG PlanDefinitions</text><text class="tag" x="496.0" y="302">CPG 2.0.0, CQL</text></g></a>
 <a href="artifacts.html"><g><rect class="box ln" x="715.0" y="230" width="217.0" height="82" rx="6"/><text class="h" x="725.0" y="250">Examples and tests</text><text class="s" x="725.0" y="268">synthetic patients, and the</text><text class="s" x="725.0" y="283">NEWS2 chart as test cases</text><text class="tag" x="725.0" y="302">synthetic data only</text></g></a>
 <line class="ar" x1="480" y1="328" x2="480" y2="362" marker-end="url(#westa-arrow)"/>
-<text class="al" x="492" y="350">the FHIR package: ELM, PlanDefinitions, Questionnaire, terminology</text>
+<text class="al" x="492" y="350">used by</text>
 <rect class="band" x="16" y="368" width="928" height="136" rx="10"/>
 <circle class="num" cx="38" cy="390" r="11"/><text class="numt" x="38" y="394">3</text>
-<text class="bt" x="58" y="395">The demo: static files on GitHub Pages, all of it runs in the browser</text>
+<text class="bt" x="58" y="395">The demo, in your browser</text>
 <a href="https://vadimperetok.in/west-a-triage-ig/demo/" target="_blank"><text class="try" x="928" y="395">Try it →</text></a>
-<a href="https://github.com/aehrc/smart-forms" target="_blank"><g><rect class="box ln" x="28.0" y="410" width="217.0" height="82" rx="6"/><text class="h" x="38.0" y="430">Smart Forms renderer</text><text class="s" x="38.0" y="448">CSIRO AEHRC, draws the</text><text class="s" x="38.0" y="463">triage form from the guide</text><text class="tag" x="38.0" y="482">Apache 2.0</text></g></a>
-<a href="https://github.com/aehrc/smart-forms" target="_blank"><g><rect class="box ln" x="257.0" y="410" width="217.0" height="82" rx="6"/><text class="h" x="267.0" y="430">Template extraction</text><text class="s" x="267.0" y="448">the answers become</text><text class="s" x="267.0" y="463">vital sign Observations</text><text class="tag" x="267.0" y="482">Apache 2.0</text></g></a>
+<a href="https://github.com/aehrc/smart-forms" target="_blank"><g><rect class="box ln" x="28.0" y="410" width="217.0" height="82" rx="6"/><text class="h" x="38.0" y="430">Smart Forms</text><text class="s" x="38.0" y="448">CSIRO AEHRC, draws the</text><text class="s" x="38.0" y="463">triage form from the guide</text><text class="tag" x="38.0" y="482">Apache 2.0</text></g></a>
+<a href="https://github.com/aehrc/smart-forms" target="_blank"><g><rect class="box ln" x="257.0" y="410" width="217.0" height="82" rx="6"/><text class="h" x="267.0" y="430">Form to data</text><text class="s" x="267.0" y="448">the answers become</text><text class="s" x="267.0" y="463">vital sign Observations</text><text class="tag" x="267.0" y="482">Apache 2.0</text></g></a>
 <a href="https://github.com/cqframework/cql-execution" target="_blank"><g><rect class="box ln" x="486.0" y="410" width="217.0" height="82" rx="6"/><text class="h" x="496.0" y="430">CQL engine</text><text class="s" x="496.0" y="448">cql-execution runs the guide's</text><text class="s" x="496.0" y="463">own ELM, as $apply would</text><text class="tag" x="496.0" y="482">Apache 2.0</text></g></a>
 <a href="https://hl7.eu/fhir/hdr/" target="_blank"><g><rect class="box ln" x="715.0" y="410" width="217.0" height="82" rx="6"/><text class="h" x="725.0" y="430">Discharge report</text><text class="s" x="725.0" y="448">HL7 Europe Hospital</text><text class="s" x="725.0" y="463">Discharge Report, for EHDS</text><text class="tag" x="725.0" y="482">HDR 1.0.0</text></g></a>
 <line class="ar" x1="480" y1="508" x2="480" y2="542" marker-end="url(#westa-arrow)" marker-start="url(#westa-arrow-up)"/>
-<text class="al" x="492" y="530">plain FHIR REST, synthetic data only</text>
+<text class="al" x="492" y="530">saved and read with FHIR</text>
 <rect class="band" x="16" y="548" width="928" height="104" rx="10"/>
 <circle class="num" cx="38" cy="570" r="11"/><text class="numt" x="38" y="574">4</text>
-<a href="https://hapi.fhir.org/" target="_blank"><text class="bt" x="58" y="575">The data: the public HAPI FHIR sandbox</text></a>
+<a href="https://hapi.fhir.org/" target="_blank"><text class="bt" x="58" y="575">Where the data lives</text></a>
 <rect class="box" x="28" y="590" width="904" height="50" rx="6"/>
 <text class="h" x="40" y="611">hapi.fhir.org/baseR4</text>
 <text class="tag" x="920" y="611" text-anchor="end">HAPI FHIR, Apache 2.0</text>
