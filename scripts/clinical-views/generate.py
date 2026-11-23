@@ -2441,7 +2441,9 @@ def write_ig(models, meta, assets, includes):
     for m in models:
         (assets / f"{m['id']}.js").write_text(data([m]), encoding='utf-8')
         (includes / f"clinical-view-{m['id']}.html").write_text(
-            f'<div class="cv-host">\n<div class="cv" data-cv="profile" data-cv-model="{escape(m["id"])}">\n'
+            '<div class="cv-host">\n<h3 id="clinical-view">Clinical view</h3>\n'
+            '<p>The elements of this profile as clinicians see them: a data table, a mind map and a form preview.</p>\n'
+            f'<div class="cv" data-cv="profile" data-cv-model="{escape(m["id"])}">\n'
             '<nav id="models" hidden></nav>\n' + shell.format(hide=' hidden') + '\n</div>\n'
             f'<script src="{rel}/{m["id"]}.js"></script>\n<script src="{rel}/app.js"></script>\n</div>\n', encoding='utf-8')
     print(f"wrote {assets}/ (app.js, app.css, all.js, {len(models)} profile data files) and "
