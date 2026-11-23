@@ -6,7 +6,7 @@ This guide has not been reviewed by a health informatics professional, and it ne
 
 This is an unofficial, draft FHIR R4 implementation guide for the data used in **WEST-A** (West coast System for Triage - Adult), the emergency department triage system of Västra Götalandsregionen (VGR). It is not published, endorsed or maintained by VGR.
 
-The source is the WEST-A triage manual without referral support, VGR version 2025:02:01. WEST-A and its content belong to VGR; this guide only refers to it.
+The source is the [WEST-A triage manual](https://mellanarkiv-offentlig.vgregion.se/alfresco/s/archive/stream/public/v1/source/available/sofia/su1226-506079272-668/surrogate/WEST%20A%202025%20%C3%96stra.pdf) without referral support, VGR version 2025:02:01 (the Östra/SU edition, from VGR's public document archive). WEST-A and its content belong to VGR; this guide only refers to it.
 
 ### Scope
 

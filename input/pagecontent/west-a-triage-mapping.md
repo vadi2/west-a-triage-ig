@@ -6,7 +6,7 @@
 
 ### Overview
 
-This page maps a WEST-A triage to FHIR R4: the vital parameters measured at triage, the NEWS2 score calculated from them, and the result of the triage, which is the priority (colour), the chief complaint and the triage criteria found. The source is the WEST-A triage manual for adults, VGR version 2025:02:01. Page numbers refer to the WEST-A PDF.
+This page maps a WEST-A triage to FHIR R4: the vital parameters measured at triage, the NEWS2 score calculated from them, and the result of the triage, which is the priority (colour), the chief complaint and the triage criteria found. The source is the [WEST-A triage manual](https://mellanarkiv-offentlig.vgregion.se/alfresco/s/archive/stream/public/v1/source/available/sofia/su1226-506079272-668/surrogate/WEST%20A%202025%20%C3%96stra.pdf) for adults, VGR version 2025:02:01. Page numbers refer to that PDF.
 
 A triage is recorded in three layers, each referencing the one below it in `derivedFrom`:
 

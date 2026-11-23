@@ -8,7 +8,7 @@
 
 ### Overview
 
-This page maps the patient administrative data that WEST-A uses to FHIR R4. The source is the WEST-A triage manual for adults, VGR version 2025:02:01. WEST-A has no registration form of its own. The administrative data comes from two places:
+This page maps the patient administrative data that WEST-A uses to FHIR R4. The source is the [WEST-A triage manual](https://mellanarkiv-offentlig.vgregion.se/alfresco/s/archive/stream/public/v1/source/available/sofia/su1226-506079272-668/surrogate/WEST%20A%202025%20%C3%96stra.pdf) for adults, VGR version 2025:02:01. WEST-A has no registration form of its own. The administrative data comes from two places:
 
 - the SBAR handover (page 49), which asks for the patient's name, age and, if available, personnummer;
 - the triage rules, which depend on the patient's age (pages 4, 43, 44 and 46) and sex (pages 3, 21-22 and 41).
