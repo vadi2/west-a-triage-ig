@@ -14,6 +14,7 @@ import { uuid } from '../services/libs';
 import { nowLocal } from '../services/patients';
 import { sampleAssessmentNote } from '../services/samples';
 import { allowed, mostUrgent, priority, priorityCoding, priorityOf, RISK_PRIORITY, RISK_TEXT, type PriorityCode } from '../services/priority';
+import { EverythingLink, ResourceRef } from '../components/ResourceRef';
 
 interface Props {
   stay: Stay;
@@ -175,7 +176,8 @@ export function ResultScreen({ stay, onRecorded, go }: Props) {
           <div className="recorded" role="status">
             <p>
               Recorded <strong>{priority(recorded.priority)!.name}</strong> at {clock(recorded.triage.effectiveDateTime)}: NEWS2{' '}
-              <span className="num">Observation/{recorded.news2.id}</span>, triage <span className="num">Observation/{recorded.triage.id}</span>.
+              <ResourceRef type="Observation" id={recorded.news2.id} />, triage <ResourceRef type="Observation" id={recorded.triage.id} />.{' '}
+              <EverythingLink patientId={stay.patient.id} />
             </p>
             <div className="row">
               <button type="button" className="primary" onClick={() => go({ screen: 'record', patientId: stay.patient.id, encounterId: stay.encounter.id })}>
