@@ -26,6 +26,8 @@ The [computable guidelines](west-a-computable-guidelines.html) calculate NEWS2 a
 
 The [clinical views](clinical-views.html) show every profile for clinicians: an overview, a data table, a mind map and a form preview.
 
+The [demo](https://vadimperetok.in/west-a-triage-ig/demo/) puts it all to work: a nurse fills in the triage form, the guide's CQL proposes NEWS2 and a priority, and the stay ends in a discharge report, with synthetic data on the public HAPI FHIR sandbox. The [architecture](west-a-architecture.html) page shows how open standards, open source and free public services make up the guide and the demo.
+
 The rest of the clinical part of WEST-A - coded warning symptoms, ONEWS2, pain, GCS, mNIHSS and FRESH - is not modelled yet.
 
 ### Conventions
