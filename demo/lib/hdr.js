@@ -163,9 +163,10 @@ const VITAL_NAMES = [
   { profile: 'west-a-body-temperature', codes: ['386725007', '8310-5'], sv: 'Kroppstemperatur', en: 'Body temperature' },
 ];
 
-// The ACVPU levels (WEST-A ACVPU value set, SNOMED CT), for codings without a display
+// The ACVPU levels (WEST-A ACVPU value set, SNOMED CT) in the narrative language, in the words
+// clinicians use: for A, the Swedish edition has only "psykiskt klar"
 const ACVPU = {
-  '248234008': { sv: 'psykiskt klar', en: 'Alert' },
+  '248234008': { sv: 'vaken', en: 'Alert' },
   '130987000': { sv: 'akut konfusion', en: 'New confusion' },
   '300202002': { sv: 'reagerar på röst', en: 'Responds to voice' },
   '450847001': { sv: 'reagerar på smärta', en: 'Responds to pain' },
@@ -560,14 +561,10 @@ function quantity(q) {
   return `${q.value ?? ''} ${q.unit ?? q.code ?? ''}`.trim();
 }
 
-// Readable name of an observation or component code in the narrative language
-// Value of a coded observation; the ACVPU levels in the narrative language when there is no text
+// Value of a coded observation: its text, else the ACVPU level in the narrative language
 function codedValue(cc, { L }) {
   const acvpu = ACVPU[cc.coding?.find((c) => c.system === SCT && ACVPU[c.code])?.code];
-  if (acvpu && !cc.text) {
-    if (L === LABELS.sv) return cc.coding.find((c) => c.system === SCT && c.display)?.display ?? acvpu.sv;
-    return acvpu.en;
-  }
+  if (acvpu && !cc.text) return L === LABELS.sv ? acvpu.sv : acvpu.en;
   return display(cc);
 }
 
