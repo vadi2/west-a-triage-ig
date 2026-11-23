@@ -99,7 +99,6 @@
 .cv .toolbar .sp { flex: 1; }
 .cv .tbtn { border: 1px solid var(--line); background: var(--panel); padding: 4px 10px; border-radius: 3px; cursor: pointer; font-size: 13px; }
 .cv .tbtn:hover { background: var(--bar); }
-.cv .tbtn[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 .cv .tbl-wrap { overflow-x: auto; border: 1px solid var(--line); }
 .cv table.data { width: 100%; border-collapse: collapse; min-width: 760px; }
 .cv table.data th { text-align: left; font: 600 12px var(--font-cond); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); background: var(--bar); padding: 8px 12px; border-bottom: 1px solid var(--line); }
@@ -118,7 +117,6 @@
 .cv .cons .ex { color: var(--ink); }
 .cv .cons .ex b { font-weight: 500; }
 .cv .mm-tools { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 10px; }
-.cv .mm-tools .hint { color: var(--muted); font-size: 13px; margin-left: 8px; }
 .cv .mm-box { border: 1px solid var(--line); background: var(--panel); overflow: auto; height: 720px; max-height: 75vh; position: relative; }
 .cv .mm-box svg { display: block; }
 .cv .mm-node { cursor: pointer; }

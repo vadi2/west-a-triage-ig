@@ -126,7 +126,6 @@ button { font: inherit; color: inherit; }
 .toolbar .sp { flex: 1; }
 .tbtn { border: 1px solid var(--line); background: var(--panel); padding: 4px 10px; border-radius: 3px; cursor: pointer; font-size: 13px; }
 .tbtn:hover { background: var(--bar); }
-.tbtn[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 .tbl-wrap { overflow-x: auto; border: 1px solid var(--line); }
 table.data { width: 100%; border-collapse: collapse; min-width: 760px; }
 table.data th { text-align: left; font: 600 12px var(--font-cond); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); background: var(--bar); padding: 8px 12px; border-bottom: 1px solid var(--line); }
@@ -147,7 +146,6 @@ table.data tr.grp.d1 td { background: color-mix(in srgb, var(--bar) 55%, var(--p
 
 /* mind map */
 .mm-tools { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 10px; }
-.mm-tools .hint { color: var(--muted); font-size: 13px; margin-left: 8px; }
 .mm-box { border: 1px solid var(--line); background: var(--panel); overflow: auto; height: 720px; max-height: 75vh; position: relative; }
 .mm-box svg { display: block; }
 .mm-node { cursor: pointer; }
@@ -450,8 +448,7 @@ function renderMindmap(pane, m) {
       <button class="tbtn" id="mm-out" aria-label="Zoom out">−</button>
       <button class="tbtn" id="mm-in" aria-label="Zoom in">+</button>
       <button class="tbtn" id="mm-exp">Expand all</button>
-      <button class="tbtn" id="mm-col">Collapse all</button>
-      <span class="hint">Click a node for its details; click + or − to open or close a branch.</span></div>
+      <button class="tbtn" id="mm-col">Collapse all</button></div>
     <div class="mm-box" id="mm-box"></div>
     <div class="mm-detail" id="mm-detail"><span class="muted">Select a data element to see what it holds.</span></div>`;
   const draw = () => drawMindmap(pane.querySelector('#mm-box'), m, pane.querySelector('#mm-detail'));
@@ -631,7 +628,7 @@ function formNode(n, d) {
 }
 function renderForm(pane, m) {
   pane.innerHTML = `<div class="toolbar">
-      <button class="tbtn" id="opt-ex" aria-pressed="${state.example}">${state.example ? 'Clear example data' : 'Fill with example data'}</button>
+      <button class="tbtn" id="opt-ex">${state.example ? 'Clear example data' : 'Fill with example data'}</button>
       <span class="sp"></span><span><span class="req" style="color:var(--mand);font-weight:700">*</span> mandatory · [min..max] how many times an element may occur</span></div>
     <div class="form">${m.root.children.map(c => formNode(c, 1)).join('')}</div>`;
   pane.querySelector('#opt-ex').onclick = () => { state.example = !state.example; renderForm(pane, m); };

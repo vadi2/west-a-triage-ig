@@ -190,8 +190,7 @@ function renderMindmap(pane, m) {
       <button class="tbtn" id="mm-out" aria-label="Zoom out">−</button>
       <button class="tbtn" id="mm-in" aria-label="Zoom in">+</button>
       <button class="tbtn" id="mm-exp">Expand all</button>
-      <button class="tbtn" id="mm-col">Collapse all</button>
-      <span class="hint">Click a node for its details; click + or − to open or close a branch.</span></div>
+      <button class="tbtn" id="mm-col">Collapse all</button></div>
     <div class="mm-box" id="mm-box"></div>
     <div class="mm-detail" id="mm-detail"><span class="muted">Select a data element to see what it holds.</span></div>`;
   const draw = () => drawMindmap(pane.querySelector('#mm-box'), m, pane.querySelector('#mm-detail'));
@@ -371,7 +370,7 @@ function formNode(n, d) {
 }
 function renderForm(pane, m) {
   pane.innerHTML = `<div class="toolbar">
-      <button class="tbtn" id="opt-ex" aria-pressed="${state.example}">${state.example ? 'Clear example data' : 'Fill with example data'}</button>
+      <button class="tbtn" id="opt-ex">${state.example ? 'Clear example data' : 'Fill with example data'}</button>
       <span class="sp"></span><span><span class="req" style="color:var(--mand);font-weight:700">*</span> mandatory · [min..max] how many times an element may occur</span></div>
     <div class="form">${m.root.children.map(c => formNode(c, 1)).join('')}</div>`;
   pane.querySelector('#opt-ex').onclick = () => { state.example = !state.example; renderForm(pane, m); };
