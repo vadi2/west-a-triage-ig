@@ -26,6 +26,7 @@ import { clock } from '../components/format';
 import { nowLocal } from '../services/patients';
 import { scenarioResponse, TRIAGE_SCENARIOS, type TriageScenario } from '../services/samples';
 import { withAnswerOptions } from '../services/terminology';
+import { ResourceRef } from '../components/ResourceRef';
 
 type StepState = 'waiting' | 'running' | 'done' | 'failed';
 const STEP_NAMES = [
@@ -54,6 +55,9 @@ export function TriageFormScreen({ stay, onDone }: { stay: Stay; onDone: (s: Sta
   // Bumped once a filled-in form has rendered, see fillScenario
   const [filled, setFilled] = useState(0);
   const engine = useEngine();
+  // This triage is scored on the vital signs measured from now on, not on those of an earlier
+  // triage of the patient (to the whole second before: the observations keep whole seconds)
+  const [measuredSince] = useState(() => new Date(Math.floor(Date.now() / 1000) * 1000 - 1000).toISOString());
 
   useEffect(() => {
     let live = true;
@@ -178,6 +182,7 @@ export function TriageFormScreen({ stay, onDone }: { stay: Stay; onDone: (s: Sta
         complaintPriority: a.complaintPriority ?? null,
         scale2: a.scale2,
         triageCriteria: a.triageCriteria,
+        measuredSince,
       });
       // A preliminary NEWS2 of the scores known so far; none again when no vital sign changed
       let n2 = partial?.news2;
@@ -247,6 +252,7 @@ export function TriageFormScreen({ stay, onDone }: { stay: Stay; onDone: (s: Sta
         complaintPriority: a.complaintPriority ?? null,
         scale2: a.scale2,
         triageCriteria: a.triageCriteria,
+        measuredSince,
       });
       mark(i++, 'done');
 
@@ -429,7 +435,7 @@ function PartialSaved({ partial }: { partial: SavedSoFar }) {
       <p className="quiet">
         {partial.news2 ? (
           <>
-            Recorded as a preliminary NEWS2, <span className="num">Observation/{partial.news2.id}</span>.{' '}
+            Recorded as a preliminary NEWS2, <ResourceRef type="Observation" id={partial.news2.id} />.{' '}
           </>
         ) : null}
         Fill in the rest and save the triage for the final NEWS2 and the proposed priority.

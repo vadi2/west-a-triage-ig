@@ -236,6 +236,18 @@ function walk(carePlan: CarePlan) {
 
 /* ------------------------------------------------------------------ runTriage */
 
+// The time of an observation as WestANEWS2's "Effective Time": the date-time or instant, or
+// the end (else the start) of the period
+const effective = (o: Observation) =>
+  o.effectiveDateTime ?? o.effectiveInstant ?? o.effectivePeriod?.end ?? o.effectivePeriod?.start;
+
+/** Whether an observation was measured at or after the given time (always, without one). */
+function measuredSince(o: Observation, since: string | undefined): boolean {
+  if (!since) return true;
+  const t = Date.parse(effective(o) ?? '');
+  return !Number.isNaN(t) && t >= Date.parse(since);
+}
+
 /**
  * runTriage of demo/lib/cds.js, in the browser: the same parameters, the same result.
  * Reads the patient and the vital sign Observations from the store (a vanished patient fails
@@ -251,7 +263,7 @@ export async function runTriageInBrowser(client: FhirClient, p: TriageParams): P
   const bundle: Bundle = {
     resourceType: 'Bundle',
     type: 'collection',
-    entry: [patient, ...entries(found)].map((resource) => ({ resource })),
+    entry: [patient, ...entries(found).filter((o) => measuredSince(o, p.measuredSince))].map((resource) => ({ resource })),
   };
   const now = new Date();
   const [n, t] = await Promise.all([

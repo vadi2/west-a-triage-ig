@@ -28,6 +28,12 @@ export interface TriageParams {
   scale2?: boolean;
   /** Codes or Codings of the WEST-A triage criterion code system. */
   triageCriteria?: CodeInput[];
+  /**
+   * Only the vital signs measured at or after this time (ISO 8601), so that one triage is
+   * scored on its own measurements, not on those of an earlier triage of the same patient.
+   * The guideline in the browser applies it; $apply on a server takes the latest of each.
+   */
+  measuredSince?: string;
 }
 
 /**
