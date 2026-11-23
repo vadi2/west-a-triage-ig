@@ -10,13 +10,13 @@ const DEMO = 'https://vadimperetok.in/west-a-triage-ig/demo/';
 
 const bands = [
   {
-    title: 'Open sources: what the guide is made of',
+    title: 'What it builds on',
     boxes: [
       { h: 'WEST-A manual', l: ["VGR's triage manual,", 'version 2025:02:01'], tag: 'public document', href: MANUAL },
-      { h: 'NEWS2', l: ['Royal College of', "Physicians' score chart"], tag: 'published score' },
-      { h: 'Terminology', l: ['SNOMED CT (Swedish),', 'LOINC, UCUM'], tag: 'free to use in Sweden' },
-      { h: 'HL7 standards', l: ['FHIR R4, CQL, CPG, SDC,', 'CRMI, Europe HDR'], tag: 'open standards' },
-      { h: 'Swedish profiles', l: ['HL7 Sweden SE Base,', 'VGR Base'], tag: 'public FHIR packages' },
+      { h: 'NEWS2', l: ['Royal College of', "Physicians' score chart"], tag: 'published score', href: 'https://www.rcp.ac.uk/resources/national-early-warning-score-news-2/' },
+      { h: 'Terminology', l: ['SNOMED CT (Swedish),', 'LOINC, UCUM'], tag: 'free to use in Sweden', href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/e-halsa/snomed-ct/' },
+      { h: 'HL7 standards', l: ['FHIR R4, CQL, CPG, SDC,', 'CRMI, Europe HDR'], tag: 'open standards', href: 'https://hl7.org/fhir/R4/' },
+      { h: 'Swedish profiles', l: ['HL7 Sweden SE Base,', 'VGR Base'], tag: 'public FHIR packages', href: 'https://fhir.vgregion.se/ig/base/' },
     ],
     arrow: 'modelled in',
   },
