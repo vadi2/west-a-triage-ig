@@ -17,6 +17,8 @@ All of it maps to one resource: [WEST-A Patient](StructureDefinition-west-a-pati
 
 Page numbers refer to the WEST-A PDF.
 
+The [clinical view](clinical-views.html#west-a-patient) shows WEST-A Patient for clinicians: an overview, a data table, a mind map and a form preview.
+
 ### Patient identity
 
 <table class="grid mapping">

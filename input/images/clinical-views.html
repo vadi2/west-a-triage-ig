@@ -9,7 +9,7 @@
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700');
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600');
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500');
-/* Layout: CKM-style workbench - model tabs, view tabs, one working canvas per view */
+/* Layout: model tabs, view tabs, one working canvas per view */
 :root {
   --bg: #eef2f6;
   --panel: #ffffff;
@@ -130,6 +130,7 @@ button { font: inherit; color: inherit; }
 .toolbar .sp { flex: 1; }
 .tbtn { border: 1px solid var(--line); background: var(--panel); padding: 4px 10px; border-radius: 3px; cursor: pointer; font-size: 13px; }
 .tbtn:hover { background: var(--bar); }
+.tbtn[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 .tbl-wrap { overflow-x: auto; border: 1px solid var(--line); }
 table.data { width: 100%; border-collapse: collapse; min-width: 760px; }
 table.data th { text-align: left; font: 600 12px var(--font-cond); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); background: var(--bar); padding: 8px 12px; border-bottom: 1px solid var(--line); }
@@ -228,7 +229,6 @@ table.data tr.grp.d1 td { background: color-mix(in srgb, var(--bar) 55%, var(--p
 .stflow code { font-family: var(--mono); font-size: 12px; background: var(--bar); padding: 0 4px; border-radius: 2px; }
 .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 8px 12px; font-size: 13px; margin-top: 12px; max-width: 70ch; }
 
-.foot { margin-top: 16px; color: var(--muted); font-size: 12.5px; max-width: 90ch; }
 
 @media (max-width: 860px) {
   .ov { grid-template-columns: minmax(0,1fr); }
@@ -265,7 +265,6 @@ table.data tr.grp.d1 td { background: color-mix(in srgb, var(--bar) 55%, var(--p
     <nav class="views" role="tablist" aria-label="View" id="views"></nav>
     <div class="pane" id="pane"></div>
   </div>
-  <p class="foot" id="foot">Generated from this guide's FHIR profiles. Element names are written for clinicians; the FHIR path under each name is available with "Show FHIR paths". Only elements that systems must support are listed, plus a few optional ones clinicians expect to see. Allowed values come from the guide's value sets and example values from its example resources.</p>
 </div>
 
 <script src="clinical-views.js"></script>

@@ -4,7 +4,7 @@
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700');
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600');
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500');
-/* Layout: CKM-style workbench - model tabs, view tabs, one working canvas per view */
+/* Layout: model tabs, view tabs, one working canvas per view */
 :root {
   --bg: #eef2f6;
   --panel: #ffffff;
@@ -125,6 +125,7 @@ button { font: inherit; color: inherit; }
 .toolbar .sp { flex: 1; }
 .tbtn { border: 1px solid var(--line); background: var(--panel); padding: 4px 10px; border-radius: 3px; cursor: pointer; font-size: 13px; }
 .tbtn:hover { background: var(--bar); }
+.tbtn[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 .tbl-wrap { overflow-x: auto; border: 1px solid var(--line); }
 table.data { width: 100%; border-collapse: collapse; min-width: 760px; }
 table.data th { text-align: left; font: 600 12px var(--font-cond); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); background: var(--bar); padding: 8px 12px; border-bottom: 1px solid var(--line); }
@@ -223,7 +224,6 @@ table.data tr.grp.d1 td { background: color-mix(in srgb, var(--bar) 55%, var(--p
 .stflow code { font-family: var(--mono); font-size: 12px; background: var(--bar); padding: 0 4px; border-radius: 2px; }
 .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 8px 12px; font-size: 13px; margin-top: 12px; max-width: 70ch; }
 
-.foot { margin-top: 16px; color: var(--muted); font-size: 12.5px; max-width: 90ch; }
 
 @media (max-width: 860px) {
   .ov { grid-template-columns: minmax(0,1fr); }
@@ -258,7 +258,6 @@ table.data tr.grp.d1 td { background: color-mix(in srgb, var(--bar) 55%, var(--p
     <nav class="views" role="tablist" aria-label="View" id="views"></nav>
     <div class="pane" id="pane"></div>
   </div>
-  <p class="foot" id="foot">Generated from this guide's FHIR profiles. Element names are written for clinicians; the FHIR path under each name is available with "Show FHIR paths". Only elements that systems must support are listed, plus a few optional ones clinicians expect to see. Allowed values come from the guide's value sets and example values from its example resources.</p>
 </div>
 
 <script>
@@ -306,7 +305,7 @@ function tags(n, withRef = true) {
 }
 function walk(n, fn, depth = 0, parent = null) { fn(n, depth, parent); (n.children || []).forEach(c => walk(c, fn, depth + 1, n)); }
 
-let state = { model: MODELS[0].id, view: 'overview', paths: false, example: true, step: 0 };
+let state = { model: MODELS[0].id, view: 'overview', paths: false, example: false, step: 0 };
 try { const s = JSON.parse(localStorage.getItem('clinical-views') || '{}'); if (typeof s.paths === 'boolean') state.paths = s.paths; } catch (e) {}
 function save() { try { localStorage.setItem('clinical-views', JSON.stringify({ paths: state.paths })); } catch (e) {} }
 
@@ -336,7 +335,7 @@ function render() {
       ${Object.keys(byType).sort().map(t => `<optgroup label="${esc(t)}">${byType[t].map(x =>
         `<option value="${esc(x.id)}"${x.id === m.id ? ' selected' : ''}>${esc(x.title)}</option>`).join('')}</optgroup>`).join('')}
     </select></label>` : '');
-  const kind = m.kind === 'template' ? 'Template - combines several profiles' : 'Profile';
+  const kind = m.kind === 'use-case' ? 'Use case - combines several profiles' : 'Profile';
   document.getElementById('titlebar').innerHTML =
     `<h2><span class="ti group" style="width:26px;height:22px;font-size:12px">${esc(m.icon)}</span>${esc(m.title)}</h2>
      <span class="meta">${kind} · ${esc(m.resource)}</span>
@@ -387,6 +386,7 @@ function renderOverview(pane, m) {
     <aside class="side">
       <div class="counts"><div><b>${total}</b><span>data elements</span></div><div><b>${mand}</b><span>mandatory</span></div><div><b>${ms}</b><span>must support</span></div></div>
       <div><h3>FHIR resource</h3><div class="v">${esc(m.resource)}</div></div>
+      ${m.base ? `<div><h3>Based on</h3><div class="v">${m.base.href ? `<a href="${esc(m.base.href)}" target="_blank" rel="noopener">${esc(m.base.title)}</a>` : esc(m.base.title)}</div></div>` : ''}
       <div><h3>Profile (version ${esc(m.version)})</h3><div class="v"><code>${esc(m.profile)}</code></div></div>
       <div><h3>Specification</h3><div class="v"><a href="${esc(IG + m.igPage)}" target="_blank" rel="noopener">Open in the ${esc(DATA.meta.guideName)}</a></div></div>
       ${m.example ? `<div><h3>Example values from</h3><div class="v">${(m.examples || [[m.example, m.examplePage]]).map(([r, pg]) => pg ? `<a href="${esc(IG + pg + '.html')}" target="_blank" rel="noopener">${esc(r)}</a>` : esc(r)).join('<br>')}</div></div>` : ''}
@@ -625,10 +625,10 @@ function formNode(n, d) {
 }
 function renderForm(pane, m) {
   pane.innerHTML = `<div class="toolbar">
-      <label><input type="checkbox" id="opt-ex" ${state.example ? 'checked' : ''}> Fill with example data</label>
+      <button class="tbtn" id="opt-ex" aria-pressed="${state.example}">${state.example ? 'Clear example data' : 'Fill with example data'}</button>
       <span class="sp"></span><span><span class="req" style="color:var(--mand);font-weight:700">*</span> mandatory · [min..max] how many times an element may occur</span></div>
     <div class="form">${m.root.children.map(c => formNode(c, 1)).join('')}</div>`;
-  pane.querySelector('#opt-ex').onchange = e => { state.example = e.target.checked; renderForm(pane, m); };
+  pane.querySelector('#opt-ex').onclick = () => { state.example = !state.example; renderForm(pane, m); };
   pane.querySelector('.form').addEventListener('click', e => {
     const h = e.target.closest('.fh'); if (!h) return;
     const fs = h.parentElement; const closed = fs.classList.toggle('closed');
@@ -671,7 +671,7 @@ function renderExchange(pane, m) {
 }
 
 document.getElementById('title').textContent = DATA.meta.title;
-document.getElementById('intro').textContent = DATA.meta.intro || 'The data these profiles exchange, shown the way the openEHR Clinical Knowledge Manager shows archetypes and templates: an overview, a data table, a mind map and a form preview.';
+document.getElementById('intro').textContent = DATA.meta.intro || 'The data these profiles exchange: an overview, a data table, a mind map and a form preview of each.';
 document.getElementById('proto').textContent = DATA.meta.guideName + ' ' + DATA.meta.igVersion + (DATA.meta.built ? ' · built ' + DATA.meta.built : '');
 readHash();
 render();

@@ -1,5 +1,7 @@
 WEST-A Patient identifies the adult patient who is triaged with WEST-A at the emergency department. It derives from the [VGR Base Patient](https://fhir.vgregion.se/ig/base/StructureDefinition-VGRBasePatient.html), so every WEST-A Patient is also a valid VGR Base and SE Base patient. It holds the patient administrative data that WEST-A uses: name, identifier, date of birth (for the age rules) and gender (for the sex-specific complaint pages). The [mapping page](west-a-patient-mapping.html) shows where each element comes from in WEST-A. A patient is usually already known to the hospital's patient administration system, so search for an existing Patient by identifier before you create a new one.
 
+The [clinical view](clinical-views.html#west-a-patient) shows this profile for clinicians: an overview, a data table, a mind map and a form preview.
+
 ### Mandatory and Must Support data elements
 
 The elements below must always be present (mandatory) or must be supported when the data is available (Must Support) - not all are required, but your system must populate each Must Support element when it has the data and process it on receipt. This is the human-readable summary; the [formal views](#profile) below give the exact cardinalities, types, and terminology bindings.

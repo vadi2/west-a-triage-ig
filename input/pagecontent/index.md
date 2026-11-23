@@ -20,6 +20,8 @@ and a **triage**, in three layers:
 
 The [computable guidelines](west-a-computable-guidelines.html) calculate NEWS2 and propose a triage priority in CQL, as HL7 Clinical Practice Guidelines (CPG on FHIR) PlanDefinitions, tested against the NEWS2 chart and this guide's examples in every build.
 
+The [clinical views](clinical-views.html) show every profile for clinicians: an overview, a data table, a mind map and a form preview.
+
 The rest of the clinical part of WEST-A - coded warning symptoms, ONEWS2, pain, GCS, mNIHSS and FRESH - is not modelled yet.
 
 ### Conventions

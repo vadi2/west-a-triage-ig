@@ -6,6 +6,8 @@ While the vital signs are coming in, it can also record a provisional NEWS2: sta
 vital signs (measured) ──derivedFrom── NEWS2 (calculated) ──derivedFrom── WEST-A triage (assessed)
 ```
 
+The [clinical view](clinical-views.html#west-a-news2-observation) shows this profile for clinicians: an overview, a data table, a mind map and a form preview.
+
 ### Mandatory and Must Support data elements
 
 The elements below must always be present (mandatory) or must be supported when the data is available (Must Support) - not all are required, but your system must populate each Must Support element when it has the data and process it on receipt. This is the human-readable summary; the [formal views](#profile) below give the exact cardinalities, types, and terminology bindings.

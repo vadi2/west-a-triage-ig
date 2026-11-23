@@ -1,6 +1,6 @@
 # Clinical views
 
-Clinician-facing views of an IG's profiles, styled on the openEHR CKM: overview, data table, mind map, form preview and, for use cases, the exchange steps.
+Clinician-facing views of an IG's profiles: overview, data table, mind map, form preview and, for use cases, the exchange steps.
 
 ```bash
 scripts/clinical-views/generate.py --output-dir output --config scripts/clinical-views/views.json -o input/images/clinical-views.html --external-script
@@ -31,4 +31,4 @@ All keys are optional.
 
 Per-profile settings: `labels`, `descriptions` (element id to text), `show`, `hide`, `expand`, `flatten`, `collapsed`, `attach`, `types`, `values`, `example`. A `types` value is one of `text`, `coded`, `id`, `quantity`, `count`, `decimal`, `ratio`, `date`, `datetime`, `time`, `period`, `bool` or `link`.
 
-A view has `id`, `title`, `sub`, `icon`, `kind` (`archetype` for one profile, `template` for a use case), `profile`, overview text (`concept`, `description`, `purpose`, `use`, `misuse`, `keywords`), optional `sections` to group elements, `coverage` (more profiles whose elements must all be placed), `profiles` overrides (merged into the shared settings) and `steps` for the exchange view. The UZ Core guide's [`views.json`](https://github.com/uzinfocom-org/digital-health-ig/blob/clinical-views/scripts/clinical-views/views.json) has worked examples of both kinds.
+A view has `id`, `title`, `sub`, `icon`, `kind` (`profile` for one profile, `use-case` for a use case), `profile`, overview text (`concept`, `description`, `purpose`, `use`, `misuse`, `keywords`), optional `sections` to group elements, `coverage` (more profiles whose elements must all be placed), `profiles` overrides (merged into the shared settings) and `steps` for the exchange view. The UZ Core guide's [`views.json`](https://github.com/uzinfocom-org/digital-health-ig/blob/clinical-views/scripts/clinical-views/views.json) has worked examples of both kinds.

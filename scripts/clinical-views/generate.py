@@ -362,6 +362,25 @@ class Build:
             self.cache[('sd', url)] = normalize(sd) if sd.get('resourceType') == 'StructureDefinition' else None
         return self.cache.get(('sd', url))
 
+    def base_of(self, sd):
+        """The profile a profile derives from, with its page in the package that defines it; None for a base resource."""
+        url = sd.get('baseDefinition') or ''
+        if not url or url == f"http://hl7.org/fhir/StructureDefinition/{sd.get('type')}":
+            return None
+        base = self.sd_by_url(url) or {}
+        title = base.get('title') or base.get('name') or url.rstrip('/').split('/')[-1]
+        f = self.packages().get(url)
+        internals = f.parent / 'other' / 'spec.internals' if f else None
+        href = None
+        if internals and internals.exists():
+            spec = json.loads(internals.read_text(encoding='utf-8-sig'))
+            paths = spec.get('paths', {})
+            page = paths.get(url) or paths.get(f"{url}|{base.get('version')}")
+            if page:
+                web = json.loads((f.parent / 'package.json').read_text(encoding='utf-8-sig')).get('url') or spec.get('webUrl', '')
+                href = web.rstrip('/') + '/' + page
+        return {'title': title, 'href': href}
+
     def system_title(self, url):
         cs = load(self.packages()[url]) if url in self.packages() else {}
         return cs.get('title') or cs.get('name') or SYSTEM_NAMES.get(url, url)
@@ -2225,13 +2244,14 @@ def build_view(b, view, shared=None):
         'experimental': sd.get('experimental', False),
         'publisher': sd.get('publisher', ''),
         'igPage': view.get('igPage') or f"StructureDefinition-{sd['id']}.html",
+        'base': b.base_of(sd),
         'example': main.example_ref,
         'examplePage': b.example_page(main.example_ref),
         'root': {'label': view.get('rootLabel', view['title']), 'type': 'group', 'card': '1..1', 'children': sections},
     })
     if view.get('steps'):
         model['steps'] = view['steps']
-    if view['kind'] == 'template':
+    if view['kind'] == 'use-case':
         model['uses'] = [[b.short(profiles[pid].sd.get('title', pid)), f'StructureDefinition-{pid}.html'] for pid in profiles]
         refs = list(dict.fromkeys(r for r in [main.example_ref] + [p.example_ref for p in profiles.values()] if r))
         if len(refs) > 1:
@@ -2270,7 +2290,7 @@ def build_view(b, view, shared=None):
 
 def auto_view(b, sd):
     typ = sd.get('type') or sd['snapshot']['element'][0]['path'].split('.')[0]
-    return {'id': sd['id'], 'title': b.short(sd.get('title') or sd['name']), 'sub': typ, 'kind': 'archetype',
+    return {'id': sd['id'], 'title': b.short(sd.get('title') or sd['name']), 'sub': typ, 'kind': 'profile',
             'icon': ''.join(c for c in typ if c.isupper())[:2] if sum(c.isupper() for c in typ) > 1 else typ[:2],
             'profile': sd['id'], 'concept': b.short(sd.get('title') or sd['name'])}
 
@@ -2291,9 +2311,9 @@ def main():
 
     cfg = load(Path(args.config)) if args.config else {}
     b = Build(args.output_dir, cfg.get('titlePrefix', ''), args.packages)
-    views = [dict(v, featured=True, kind=v.get('kind', 'archetype')) for v in cfg.get('views', [])]
+    views = [dict(v, featured=True, kind=v.get('kind', 'profile')) for v in cfg.get('views', [])]
     if not args.no_auto and cfg.get('autoProfiles', True):
-        curated = {v['id'] for v in views} | {v['profile'] for v in views if v.get('kind') != 'template'}
+        curated = {v['id'] for v in views} | {v['profile'] for v in views if v.get('kind') != 'use-case'}
         for sd in sorted(b.sds.values(), key=lambda x: (x.get('type', ''), x.get('title') or x.get('name', ''))):
             if (sd.get('derivation') == 'constraint' and sd.get('kind') == 'resource' and not sd.get('abstract')
                     and sd['id'] not in curated and 'snapshot' in sd):
