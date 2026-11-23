@@ -1,6 +1,6 @@
-### Here be dragons
-
-This guide has not been reviewed by a health informatics professional, and it needs further development. Its profiles, codes, mappings, computable guidelines and clinical views may be wrong or incomplete. Do not use it for patient care.
+<div class="dragon">
+<p><b>Here be dragons.</b> This guide has not been reviewed by a health informatics professional, and it needs further development. Its profiles, codes, mappings, computable guidelines and clinical views may be wrong or incomplete. Do not use it for patient care.</p>
+</div>
 
 ### About this guide
 
