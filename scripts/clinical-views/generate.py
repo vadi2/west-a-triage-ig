@@ -2430,6 +2430,8 @@ def scope_css(css):
 
 
 def write_ig(models, meta, assets, includes, pagecontent):
+    # the build date would change the committed files on every rebuild
+    meta = {k: v for k, v in meta.items() if k != 'built'}
     tpl = (HERE / 'template.html').read_text(encoding='utf-8')
     css = tpl[tpl.index('<style>') + 7:tpl.index('</style>')]
     script = tpl[tpl.rindex('<script>') + 8:tpl.rindex('</script>')].lstrip('\n')
