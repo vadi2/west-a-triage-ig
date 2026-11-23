@@ -1,0 +1,8 @@
+{
+  "title": "WEST-A clinical views",
+  "guideName": "WEST-A guide",
+  "titlePrefix": "WEST-A ",
+  "intro": "The data that WEST-A triage exchanges, shown the way the openEHR Clinical Knowledge Manager shows archetypes and templates: an overview, a data table, a mind map and a form preview.",
+  "languages": ["Swedish", "English"],
+  "igUrl": ""
+}

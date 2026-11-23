@@ -41,6 +41,7 @@ menu:
     Patient: west-a-patient-mapping.html
     Triage: west-a-triage-mapping.html
   Computable guidelines: west-a-computable-guidelines.html
+  Clinical views: clinical-views.html
   Artifacts: artifacts.html
   Changelog: changelog.html
 parameters:
