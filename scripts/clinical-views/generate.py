@@ -255,6 +255,7 @@ class Build:
         self.package_dirs = [Path(d).expanduser() for d in package_dirs or ['~/.fhir/packages']]
         self.prefix = prefix
         self.sds, self.by_url, self.cache, self._pkg, self._examples, self._canon = {}, {}, {}, None, None, None
+        self._internals = {}
         self._dep_pkgs, self._dep_examples = [], None
         self.copies = {}  # id of a working copy of an example -> the example, for Bundle lookups
         self._describing = set()
@@ -369,17 +370,22 @@ class Build:
             return None
         base = self.sd_by_url(url) or {}
         title = base.get('title') or base.get('name') or url.rstrip('/').split('/')[-1]
+        return {'title': title, 'href': self.web_page(url, base.get('version'))}
+
+    def web_page(self, url, version=None):
+        """The published page of a resource from a dependency package, from its spec.internals; None when unknown."""
         f = self.packages().get(url)
-        internals = f.parent / 'other' / 'spec.internals' if f else None
-        href = None
-        if internals and internals.exists():
-            spec = json.loads(internals.read_text(encoding='utf-8-sig'))
-            paths = spec.get('paths', {})
-            page = paths.get(url) or paths.get(f"{url}|{base.get('version')}")
-            if page:
-                web = json.loads((f.parent / 'package.json').read_text(encoding='utf-8-sig')).get('url') or spec.get('webUrl', '')
-                href = web.rstrip('/') + '/' + page
-        return {'title': title, 'href': href}
+        if not f:
+            return None
+        if f.parent not in self._internals:
+            internals = f.parent / 'other' / 'spec.internals'
+            spec = json.loads(internals.read_text(encoding='utf-8-sig')) if internals.exists() else {}
+            pkg = f.parent / 'package.json'
+            web = (json.loads(pkg.read_text(encoding='utf-8-sig')).get('url') if pkg.exists() else None) or spec.get('webUrl', '')
+            self._internals[f.parent] = (spec.get('paths', {}), web.rstrip('/'))
+        paths, web = self._internals[f.parent]
+        page = paths.get(url) or paths.get(f"{url}|{version}")
+        return f"{web}/{page}" if page and web else None
 
     def system_title(self, url):
         cs = load(self.packages()[url]) if url in self.packages() else {}
@@ -1225,7 +1231,7 @@ class Profile:
             t = {}
             codes = {**self.add_binding(t, b2, on2), **codes}
             n['values'] = n.get('values', []) + t['values']
-            n['vs'].setdefault('also', []).append({k: t['vs'][k] for k in ('title', 'strength', 'page', 'on') if k in t['vs']})
+            n['vs'].setdefault('also', []).append({k: t['vs'][k] for k in ('title', 'strength', 'page', 'href', 'on') if k in t['vs']})
         systems = self.b.vs_systems(binding['valueSet'].split('|')[0]) if binding.get('valueSet') else []
         exs = self.example_values(eid, codes, systems)
         if exs:
@@ -1463,6 +1469,8 @@ class Profile:
         n['vs'] = {'title': title, 'strength': strength, 'url': url}
         if url in self.b.local_vs:
             n['vs']['page'] = f"ValueSet-{self.b.local_vs[url]}.html"
+        elif self.b.web_page(url):
+            n['vs']['href'] = self.b.web_page(url)
         also = [self.additional_binding(a) for a in additional_bindings(binding) if a.get('valueSet')]
         if also:
             n['vs']['also'] = also
@@ -1520,6 +1528,8 @@ class Profile:
             out['note'] = note
         if url in self.b.local_vs:
             out['page'] = f"ValueSet-{self.b.local_vs[url]}.html"
+        elif self.b.web_page(url) or (implicit and self.b.web_page(implicit)):
+            out['href'] = self.b.web_page(url) or self.b.web_page(implicit)
         when = []
         for u in a.get('usage', []):
             path = (u.get('code') or {}).get('code', '')
