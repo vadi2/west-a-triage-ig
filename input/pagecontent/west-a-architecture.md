@@ -8,10 +8,9 @@ This guide and its [demo](https://vadimperetok.in/west-a-triage-ig/demo/) are pu
 - open source tools;
 - free public services.
 
-The project's own part is the model, the CQL logic and the app that ties them together. Nothing runs on a server of its own, and there is nothing to install.
+The project's own part is the model, the CQL logic and the app that ties them together. Nothing runs on a server of its own.
 
 - **No server of its own.** The demo is static files on GitHub Pages. Its data is kept on the public HAPI FHIR sandbox.
-- **Nothing to install.** Every build, test and publish runs in GitHub Actions.
 - **One source of truth.** The demo runs the CQL that this guide publishes, as the IG Publisher translated it, so the guideline is written once.
 - **Open throughout.** Every part is an open standard, open source software or a free public service (see [every part](#parts)).
 
@@ -46,7 +45,7 @@ The demo is for showing how the parts fit. It uses synthetic data only, and anyo
 <tr><td>FHIR R4, CQL, <a href="https://hl7.org/fhir/uv/cpg/">CPG on FHIR</a> 2.0.0, <a href="https://hl7.org/fhir/uv/sdc/">SDC</a> 4.0.0, CRMI 2.0.0, <a href="https://hl7.eu/fhir/hdr/">HL7 Europe HDR</a> 1.0.0</td><td>The model, the guideline, the form, the discharge report</td><td>HL7 standards, free to use</td></tr>
 <tr><td><a href="http://hl7.se/fhir/ig/base/">HL7 Sweden SE Base</a> 1.1.0, <a href="https://fhir.vgregion.se/ig/base/">VGR Base</a> 1.0.0</td><td>The base profiles and identifier systems</td><td>Published FHIR packages</td></tr>
 <tr><td>SUSHI, the HL7 IG Publisher, the FHIR validator</td><td>Build, CQL to ELM translation, QA, this website</td><td>Open source</td></tr>
-<tr><td>GitHub Actions, <a href="https://build.fhir.org/ig/vadi2/west-a-triage-ig/">build.fhir.org</a>, GitHub Pages</td><td>Builds, tests and hosting</td><td>Free for public repositories</td></tr>
+<tr><td><a href="https://build.fhir.org/ig/vadi2/west-a-triage-ig/">build.fhir.org</a>, GitHub Pages</td><td>Hosting the guide and the demo</td><td>Free public hosting</td></tr>
 <tr><td><a href="https://github.com/aehrc/smart-forms">Smart Forms renderer and SDC template extraction</a>, CSIRO AEHRC</td><td>Showing the form, extracting the Observations</td><td>Open source, Apache 2.0</td></tr>
 <tr><td><a href="https://github.com/cqframework/cql-execution">cql-execution</a> and <a href="https://github.com/cqframework/cql-exec-fhir">cql-exec-fhir</a>, CQF</td><td>Running the guide's CQL in the browser</td><td>Open source, Apache 2.0</td></tr>
 <tr><td><a href="https://hapifhir.io">HAPI FHIR</a> and its <a href="https://hapi.fhir.org">public sandbox</a></td><td>Storing the demo's data; CQL on the server in the end-to-end test</td><td>Open source, Apache 2.0, and a free public server</td></tr>
