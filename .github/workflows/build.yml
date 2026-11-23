@@ -271,6 +271,66 @@ jobs:
             .github/tests/invalid/
           retention-days: 14
 
+  # The clinical views (scripts/clinical-views) are generated from the built IG and
+  # committed, since build.fhir.org builds from the repository. On main, regenerate them
+  # from this build and commit them when they changed. A push made with the workflow
+  # token starts no new workflow run.
+  clinical-views:
+    needs: build
+    if: ${{ !cancelled() && needs.build.outputs.package == 'true' && github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Download built IG
+        uses: actions/download-artifact@v5
+        with:
+          name: ig-output
+
+      - name: Restore the FHIR package cache
+        uses: actions/cache/restore@v6
+        with:
+          path: ${{ env.FHIR_PACKAGES }}
+          key: fhir-packages-${{ needs.build.outputs.month }}-
+          restore-keys: fhir-packages-${{ needs.build.outputs.month }}-
+
+      # Without its dependency packages the generator would commit views that lack
+      # their base profiles and value sets
+      - name: Check the dependency packages
+        run: |
+          python3 - <<'PY'
+          import json, pathlib, sys
+          ig = json.loads(next(pathlib.Path('output').glob('ImplementationGuide-*.json')).read_text())
+          deps = [f"{d['packageId']}#{d['version']}" for d in ig.get('dependsOn', [])]
+          deps.append(f"hl7.fhir.r4.core#{ig['fhirVersion'][0]}")
+          missing = [d for d in deps if not (pathlib.Path.home() / '.fhir/packages' / d).is_dir()]
+          if missing:
+              sys.exit(f"::error::missing FHIR packages: {', '.join(missing)}")
+          PY
+
+      - name: Regenerate the clinical views
+        run: python3 scripts/clinical-views/generate.py --output-dir output --config scripts/clinical-views/views.json --ig input/images/clinical-views
+
+      - name: Commit the changed views
+        run: |
+          git add input/images/clinical-views input/includes input/pagecontent
+          if git diff --cached --quiet; then
+            echo "The clinical views are up to date" | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          git diff --cached --stat | tee -a "$GITHUB_STEP_SUMMARY"
+          git fetch --depth=1 origin main
+          if [ "$(git rev-parse FETCH_HEAD)" != "$GITHUB_SHA" ]; then
+            echo "::notice::main has a newer commit, whose run regenerates the views"
+            exit 0
+          fi
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -q -m "Regenerate clinical views"
+          git push origin HEAD:main
+
   cql:
     needs: build
     if: ${{ !cancelled() && needs.build.outputs.package == 'true' }}

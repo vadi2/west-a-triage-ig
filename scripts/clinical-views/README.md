@@ -8,7 +8,9 @@ scripts/clinical-views/generate.py --output-dir output --config scripts/clinical
 
 `--ig ASSETS` builds the views into the guide's own pages: it writes the script, the styles and one data file per profile to `ASSETS`, and Jekyll includes to `input/includes` (`--includes` to change it). `{% include clinical-views.html %}` in `input/pagecontent/clinical-views.md` gives the page with every profile; `{% include clinical-view-<profile-id>.html %}` in a profile's intro adds that profile's data table, mind map and form preview as a Clinical View tab next to the template's Formal Views tabs (the template fixes those tabs in its layout, so the script adds the tab when the page loads; without it the view stays in the intro). The styles are scoped to the views and take the guide's colours from the template. Without `--ig`, `-o FILE` writes a standalone page instead.
 
-This guide is not built locally: download the `ig-output` artifact of a CI run (`gh run download <run-id> -n ig-output`) and pass its `output/` folder as `--output-dir`.
+On `main`, the `clinical-views` job of `.github/workflows/build.yml` reruns this with `--ig` on every build and commits the views when they changed, so they follow the profiles without a manual step. `--ig` also removes the files of profiles that are gone and adds the include to the intro of a new profile (creating the intro if there is none).
+
+To run it by hand, download the `ig-output` artifact of a CI run (`gh run download <run-id> -n ig-output`), since this guide is not built locally, and pass its `output/` folder as `--output-dir`.
 
 `--config` is optional; leave it out for another IG to get the default view of every profile. Pass `--packages DIR` (repeatable) when the dependency packages are not in `~/.fhir/packages`, e.g. a private package cache.
 

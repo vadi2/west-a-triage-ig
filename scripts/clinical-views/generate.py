@@ -2318,6 +2318,8 @@ def main():
                     help='write the views for use inside the guide: the script, styles and per-profile data into ASSETS '
                          '(e.g. input/images/clinical-views) and Jekyll includes into --includes')
     ap.add_argument('--includes', default='input/includes', help='where --ig writes its includes (default: input/includes)')
+    ap.add_argument('--pagecontent', default='input/pagecontent',
+                    help="where --ig adds each profile's clinical view to its intro (default: input/pagecontent)")
     ap.add_argument('--fragment', action='store_true', help='omit the html/head/body skeleton (for hosts that add their own)')
     ap.add_argument('--external-script', action='store_true',
                     help='write the script to a .js file beside the page (the IG publisher rejects inline scripts)')
@@ -2353,7 +2355,7 @@ def main():
         'built': re.sub(r'^(\d{4})(\d\d)(\d\d).*', r'\1-\2-\3', pkg.get('date', '')),
     }
     if args.ig:
-        write_ig(models, meta, Path(args.ig), Path(args.includes))
+        write_ig(models, meta, Path(args.ig), Path(args.includes), Path(args.pagecontent))
         return
     html = (HERE / 'template.html').read_text(encoding='utf-8')
     html = html.replace('<title>Clinical views</title>', f"<title>{escape(meta['title'])}</title>")
@@ -2427,7 +2429,7 @@ def scope_css(css):
     return '\n'.join(out)
 
 
-def write_ig(models, meta, assets, includes):
+def write_ig(models, meta, assets, includes, pagecontent):
     tpl = (HERE / 'template.html').read_text(encoding='utf-8')
     css = tpl[tpl.index('<style>') + 7:tpl.index('</style>')]
     script = tpl[tpl.rindex('<script>') + 8:tpl.rindex('</script>')].lstrip('\n')
@@ -2458,6 +2460,24 @@ def write_ig(models, meta, assets, includes):
             f'<script src="{rel}/{m["id"]}.js"></script>\n<script src="{rel}/app.js"></script>\n</div>\n', encoding='utf-8')
     print(f"wrote {assets}/ (app.js, app.css, all.js, {len(models)} profile data files) and "
           f"{includes}/clinical-views.html + {len(models)} clinical-view-*.html includes")
+    keep = {'app.js', 'all.js'} | {f"{m['id']}.js" for m in models}
+    for f in assets.glob('*.js'):
+        if f.name not in keep:
+            f.unlink()
+            print(f"removed {f}")
+    keep = {f"clinical-view-{m['id']}.html" for m in models}
+    for f in includes.glob('clinical-view-*.html'):
+        if f.name not in keep:
+            f.unlink()
+            print(f"removed {f}")
+    for m in models:
+        if m.get('igPage') != f"StructureDefinition-{m['id']}.html":
+            continue
+        intro, line = pagecontent / f"StructureDefinition-{m['id']}-intro.md", f"{{% include clinical-view-{m['id']}.html %}}"
+        text = intro.read_text(encoding='utf-8') if intro.exists() else ''
+        if line not in text:
+            intro.write_text(text + ('\n' if text and not text.endswith('\n') else '') + ('\n' if text else '') + line + '\n', encoding='utf-8')
+            print(f"added the clinical view to {intro}")
 
 
 def iter_leaves(n):
