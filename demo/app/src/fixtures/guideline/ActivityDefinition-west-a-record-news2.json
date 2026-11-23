@@ -1,0 +1,73 @@
+{
+ "resourceType": "ActivityDefinition",
+ "id": "west-a-record-news2",
+ "meta": {
+  "profile": [
+   "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-recordinferenceactivity"
+  ]
+ },
+ "url": "https://vadi2.github.io/west-a-triage-ig/ActivityDefinition/west-a-record-news2",
+ "version": "0.1.0",
+ "name": "WestARecordNEWS2",
+ "title": "WEST-A Record NEWS2",
+ "status": "draft",
+ "experimental": true,
+ "subjectCodeableConcept": {
+  "coding": [
+   {
+    "system": "http://hl7.org/fhir/resource-types",
+    "code": "Patient"
+   }
+  ]
+ },
+ "date": "2026-11-23T12:22:24+00:00",
+ "publisher": "WEST-A FHIR modelling (unofficial draft)",
+ "contact": [
+  {
+   "name": "WEST-A FHIR modelling (unofficial draft)",
+   "telecom": [
+    {
+     "system": "url",
+     "value": "https://github.com/vadi2/west-a-triage-ig"
+    }
+   ]
+  }
+ ],
+ "description": "Proposes a task to record a WEST-A NEWS2 Observation. The description of the task gives the total and the clinical risk; the CDS service records the Observation from the parameter scores and the total that the WEST-A NEWS2 logic calculates, with the vital sign observations in derivedFrom.",
+ "jurisdiction": [
+  {
+   "coding": [
+    {
+     "system": "urn:iso:std:iso:3166",
+     "code": "SE",
+     "display": "Sweden"
+    }
+   ]
+  }
+ ],
+ "purpose": "Source: the WEST-A triage manual for adults without referral support (WEST A utan hänvisningsstöd), Västra Götalandsregionen, version 2025:02:01",
+ "library": [
+  "https://vadi2.github.io/west-a-triage-ig/Library/WestANEWS2"
+ ],
+ "kind": "Task",
+ "profile": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-recordinferencetask",
+ "code": {
+  "coding": [
+   {
+    "system": "http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-activity-type-cs",
+    "code": "record-inference"
+   }
+  ]
+ },
+ "intent": "proposal",
+ "doNotPerform": false,
+ "dynamicValue": [
+  {
+   "path": "description",
+   "expression": {
+    "language": "text/cql-identifier",
+    "expression": "NEWS2 Summary"
+   }
+  }
+ ]
+}
