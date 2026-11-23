@@ -1,6 +1,6 @@
 import type { Encounter, Patient } from 'fhir/r4';
 import type { Route, Screen, Stay } from '../App';
-import { BACKEND, useEngine } from '../services/backend';
+import { BACKEND } from '../services/backend';
 import { NURSE } from '../services/config';
 import { age, isTest, patientIdentifier, patientName } from '../services/patients';
 import { priority, type PriorityCode } from '../services/priority';
@@ -101,14 +101,12 @@ export function Wristband({ screen, patient, encounter, recorded, stay, go }: Pr
   );
 }
 
-/** Which store and which guideline engine, discreetly: the details are on the patient list. */
+/** Where the data lives, discreetly: the details are on the patient list. */
 function StoreBadge() {
-  const engine = useEngine();
   const store = BACKEND.kind === 'public' ? 'public sandbox' : BACKEND.kind === 'browser' ? 'this browser' : BACKEND.label;
   return (
-    <span className="band-mock" title={`Data on ${BACKEND.label}; the WEST-A guideline runs ${engine === 'server' ? 'on the server' : 'in this browser'}`}>
+    <span className="band-mock" title={`Data on ${BACKEND.label}`}>
       {store}
-      {engine && ` · CQL ${engine === 'server' ? 'on server' : 'in browser'}`}
     </span>
   );
 }

@@ -10,6 +10,7 @@ import { acvpuLetter, PARAMETERS } from '../services/news2';
 import { patientName, readPatient } from '../services/patients';
 import { priority } from '../services/priority';
 import { NURSE } from '../services/config';
+import { EverythingLink, ResourceRef } from '../components/ResourceRef';
 
 interface Props {
   patientId: string;
@@ -137,7 +138,10 @@ export function RecordScreen({ patientId, highlightEncounter, go, onRetriage }: 
     <div className="record">
       <header className="record-head">
         <h1>{patientName(data.patient)}: triage record</h1>
-        <p className="quiet">Each NEWS2 hangs from the vital signs it was calculated from (Observation.derivedFrom).</p>
+        <p className="quiet">
+          Each NEWS2 hangs from the vital signs it was calculated from (Observation.derivedFrom).{' '}
+          <EverythingLink patientId={data.patient.id} />
+        </p>
       </header>
       {news2s.length > 0 && <News2Strip news2s={news2s} triageOf={triageOf} />}
       {data.encounters.length === 0 && <p className="quiet">No visits yet.</p>}
@@ -209,7 +213,7 @@ export function RecordScreen({ patientId, highlightEncounter, go, onRetriage }: 
                   <div className="event-body">
                     <p>
                       <strong>Triage</strong> · {t.component?.[0]?.valueCodeableConcept?.coding?.[0]?.display ?? 'no chief complaint'} ·{' '}
-                      {performer(t)} · <span className="num">Observation/{t.id}</span>
+                      {performer(t)} · <ResourceRef type="Observation" id={t.id} />
                     </p>
                     {criteriaOf(t).length > 0 && (
                       <p className="event-criteria">
@@ -238,7 +242,7 @@ export function RecordScreen({ patientId, highlightEncounter, go, onRetriage }: 
                     <li key={o.id}>
                       {has(o, NEWS2) ? 'NEWS2' : vitalName(o)} <span className="num">{has(o, NEWS2) ? o.valueInteger : vitalValue(o)}</span>{' '}
                       <span className="num prov-ref">
-                        {clock(o.effectiveDateTime)} · Observation/{o.id}
+                        {clock(o.effectiveDateTime)} · <ResourceRef type="Observation" id={o.id} className="" />
                       </span>
                     </li>
                   ))}
@@ -265,7 +269,7 @@ function Provenance({ n2, byId }: { n2: Observation; byId: Map<string, Observati
           {n2.valueInteger ?? '–'}
         </strong>{' '}
         at {clock(n2.effectiveDateTime)} ·{' '}
-        <span className="num">Observation/{n2.id}</span> · from
+        <ResourceRef type="Observation" id={n2.id} /> · from
       </p>
       <ul className="prov-vitals">
         {(n2.derivedFrom ?? []).map((r) => {
@@ -279,7 +283,7 @@ function Provenance({ n2, byId }: { n2: Observation; byId: Map<string, Observati
                   <span className="num">{vitalValue(v)}</span>
                   <span className="num prov-pts">{points(n2, v) !== undefined ? `${points(n2, v)} p` : ''}</span>
                   <span className="num prov-ref">
-                    {clock(v.effectiveDateTime)} · Observation/{v.id}
+                    {clock(v.effectiveDateTime)} · <ResourceRef type="Observation" id={v.id} className="" />
                   </span>
                 </>
               ) : (

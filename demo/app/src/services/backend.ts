@@ -230,3 +230,18 @@ export function absoluteBase(): string {
   const base = BACKEND.kind === 'browser' ? 'fhir' : BACKEND.base;
   return new URL(base, document.baseURI).toString().replace(/\/$/, '');
 }
+
+/**
+ * Where a resource can be opened in a browser tab: its URL on the FHIR server, or undefined
+ * for the store in this browser, which has no URL.
+ */
+export function resourceUrl(type: string, id: string): string | undefined {
+  if (BACKEND.kind === 'browser') return undefined;
+  return `${absoluteBase()}/${type}/${encodeURIComponent(id)}`;
+}
+
+/** Everything the server holds about a patient (Patient/$everything), or undefined in this browser. */
+export function everythingUrl(patientId: string): string | undefined {
+  const patient = resourceUrl('Patient', patientId);
+  return patient && `${patient}/$everything?_count=500`;
+}
