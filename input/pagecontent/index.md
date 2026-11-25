@@ -10,7 +10,7 @@ The source is the [WEST-A triage manual](https://mellanarkiv-offentlig.vgregion.
 
 ### Scope
 
-The guide follows the data of one triage, from the form the nurse fills in to the report written when the patient leaves, and each step uses a FHIR standard rather than code of its own:
+The guide follows the data of one triage, from the form the nurse fills in to the report written when the patient leaves, and each step uses an open FHIR standard:
 
 1. **Questionnaire** - the nurse records the vital signs and the triage assessment, the chief complaint and the warning symptoms found, in the [WEST-A Triage Questionnaire](Questionnaire-west-a-triage-questionnaire.html) ([example answers](QuestionnaireResponse-example-triage-questionnaire-response.html)).
 1. **Vital signs** - HL7 Structured Data Capture (SDC) template-based extraction turns the answers into one Observation per NEWS2 parameter: [respiratory rate](StructureDefinition-west-a-respiratory-rate.html), [oxygen saturation](StructureDefinition-west-a-oxygen-saturation.html), [supplemental oxygen](StructureDefinition-west-a-supplemental-oxygen.html), [blood pressure](StructureDefinition-west-a-blood-pressure.html), [heart rate](StructureDefinition-west-a-heart-rate.html), [consciousness (ACVPU)](StructureDefinition-west-a-consciousness.html) and [body temperature](StructureDefinition-west-a-body-temperature.html), based on the FHIR core vital signs profiles. The extraction templates are in the Questionnaire, so the guide, not the app, decides what is recorded.
