@@ -10,23 +10,18 @@ The source is the [WEST-A triage manual](https://mellanarkiv-offentlig.vgregion.
 
 ### Scope
 
-The guide covers the **patient administrative data** that WEST-A uses:
+The guide follows the data of one triage, from the form the nurse fills in to the report written when the patient leaves, and each step uses a FHIR standard rather than code of its own:
 
-- [WEST-A Patient](StructureDefinition-west-a-patient.html) - the patient being triaged;
-- [WEST-A Patient Mapping](west-a-patient-mapping.html) - where each element comes from in WEST-A, what is out of scope, and the open questions.
+1. **Questionnaire** - the nurse records the vital signs and the triage assessment, the chief complaint and the warning symptoms found, in the [WEST-A Triage Questionnaire](Questionnaire-west-a-triage-questionnaire.html) ([example answers](QuestionnaireResponse-example-triage-questionnaire-response.html)).
+1. **Vital signs** - HL7 Structured Data Capture (SDC) template-based extraction turns the answers into one Observation per NEWS2 parameter: [respiratory rate](StructureDefinition-west-a-respiratory-rate.html), [oxygen saturation](StructureDefinition-west-a-oxygen-saturation.html), [supplemental oxygen](StructureDefinition-west-a-supplemental-oxygen.html), [blood pressure](StructureDefinition-west-a-blood-pressure.html), [heart rate](StructureDefinition-west-a-heart-rate.html), [consciousness (ACVPU)](StructureDefinition-west-a-consciousness.html) and [body temperature](StructureDefinition-west-a-body-temperature.html), based on the FHIR core vital signs profiles. The extraction templates are in the Questionnaire, so the guide, not the app, decides what is recorded.
+1. **NEWS2 and triage** - the [WEST-A Triage](PlanDefinition-west-a-triage.html) PlanDefinition, an HL7 Clinical Practice Guidelines (CPG on FHIR) computable guideline, runs the [WEST-A NEWS2 Logic](Library-WestANEWS2.html) and [WEST-A Triage Logic](Library-WestATriage.html) CQL on the vital signs. It calculates the [NEWS2 score](StructureDefinition-west-a-news2-observation.html) and proposes the [triage result](StructureDefinition-west-a-triage-observation.html), the priority (Röd, Orange, Gul, Grön) with the chief complaint, which the nurse confirms or changes. The [computable guidelines](west-a-computable-guidelines.html) page describes the logic, which every build tests against the NEWS2 chart and this guide's examples.
+1. **Discharge report** - when the patient leaves, the stay becomes an [HL7 Europe Hospital Discharge Report](https://hl7.eu/fhir/hdr/), a FHIR document for the European Health Data Space, with the vital signs, NEWS2 and triage result. The [demo](https://vadimperetok.in/west-a-triage-ig/demo/) builds it, and this guide does not profile it.
 
-and a **triage**, in three layers:
+Every step is about the [WEST-A Patient](StructureDefinition-west-a-patient.html), the patient administrative data that WEST-A uses.
 
-- the **vital signs** measured at triage, one Observation per NEWS2 parameter: [respiratory rate](StructureDefinition-west-a-respiratory-rate.html), [oxygen saturation](StructureDefinition-west-a-oxygen-saturation.html), [supplemental oxygen](StructureDefinition-west-a-supplemental-oxygen.html), [blood pressure](StructureDefinition-west-a-blood-pressure.html), [heart rate](StructureDefinition-west-a-heart-rate.html), [consciousness (ACVPU)](StructureDefinition-west-a-consciousness.html) and [body temperature](StructureDefinition-west-a-body-temperature.html), based on the FHIR core vital signs profiles;
-- the **NEWS2 score** calculated from them: [WEST-A NEWS2 Observation](StructureDefinition-west-a-news2-observation.html);
-- the **triage result**, the priority (Röd, Orange, Gul, Grön) and the chief complaint, based on NEWS2: [WEST-A Triage Observation](StructureDefinition-west-a-triage-observation.html);
-- [WEST-A Triage Mapping](west-a-triage-mapping.html) - how WEST-A sets the priority, every code, and the open questions.
+Two pages map WEST-A to these resources, each with what is out of scope and the open questions: the [WEST-A Patient Mapping](west-a-patient-mapping.html), where each patient element comes from, and the [WEST-A Triage Mapping](west-a-triage-mapping.html), how WEST-A sets the priority and every code. The [clinical views](clinical-views.html) show every profile for clinicians: an overview, a data table, a mind map and a form preview.
 
-The [computable guidelines](west-a-computable-guidelines.html) calculate NEWS2 and propose a triage priority in CQL, as HL7 Clinical Practice Guidelines (CPG on FHIR) PlanDefinitions, tested against the NEWS2 chart and this guide's examples in every build.
-
-The [clinical views](clinical-views.html) show every profile for clinicians: an overview, a data table, a mind map and a form preview.
-
-The [demo](https://vadimperetok.in/west-a-triage-ig/demo/) puts it all to work: a nurse fills in the triage form, the guide's CQL proposes NEWS2 and a priority, and the stay ends in a discharge report, with synthetic data on the public HAPI FHIR sandbox. The [architecture](west-a-architecture.html) page shows how open standards, open source and free public services make up the guide and the demo.
+The [demo](https://vadimperetok.in/west-a-triage-ig/demo/) runs these steps end to end with synthetic data on the public HAPI FHIR sandbox, and the [architecture](west-a-architecture.html) page shows how open standards, open source and free public services make up the guide and the demo.
 
 The rest of the clinical part of WEST-A - coded warning symptoms, ONEWS2, pain, GCS, mNIHSS and FRESH - is not modelled yet.
 
