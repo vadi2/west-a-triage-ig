@@ -128,8 +128,8 @@ export function scenarioResponse(s: TriageScenario): QuestionnaireResponse {
       {
         linkId: 'triage-criteria',
         item: [
-          ...(symptoms.length ? [{ linkId: `triage-criteria-${s.complaint.code}`, answer: symptoms.map((valueCoding) => ({ valueCoding })) }] : []),
           ...(none.length ? [{ linkId: 'triage-criteria-none', answer: none.map((valueCoding) => ({ valueCoding })) }] : []),
+          ...(symptoms.length ? [{ linkId: `triage-criteria-${s.complaint.code}`, answer: symptoms.map((valueCoding) => ({ valueCoding })) }] : []),
           ...(needs.length ? [{ linkId: 'triage-criteria-needs', answer: needs.map((valueCoding) => ({ valueCoding })) }] : []),
         ],
       },

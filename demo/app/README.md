@@ -94,11 +94,13 @@ published.
 **Triage criteria.** Every answer of an item whose linkId starts with `triage-criteria` is a
 criterion (`src/services/answers.ts`). They go to `runTriage` and onto the triage
 Observation (with the Swedish displays of the code system), and the board shows them as
-pins in the priority row: one per priority of the warning symptoms, *override* for
-`complaint-priority`, *lowest for need* for a need (159–162). The form refuses
-*Inga varningssymtom* (163) together with a warning symptom, and a systolic pressure
-without the diastolic one. When the nurse used the override, the triage note says so
-("Manuell sökorsaksprioritet: Röd"), so the record explains the priority.
+pins in the priority row: one per priority of the warning symptoms, *not on the list* for
+`complaint-priority`, the priority of a warning symptom the list does not offer, *lowest for
+need* for a need (159–162). Ticking *Inga varningssymtom* (163) hides the warning symptoms,
+and the form still refuses it together with a warning symptom, and a systolic pressure
+without the diastolic one. When the nurse gave a warning symptom not on the list, the triage
+note names it with its priority ("Varningssymtom utanför listan: …, Röd"), so the record
+explains the priority.
 
 ## Provisional NEWS2 and priority
 

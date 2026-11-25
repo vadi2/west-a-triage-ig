@@ -130,11 +130,13 @@ published demo never lags the guide even when the committed copies do.
 | `assessment` | group | Triage assessment |
 | `chief-complaint` | coding | From the WEST-A chief complaint value set |
 | `triage-criteria` | group | Triage criteria, enabled once `chief-complaint` is answered |
-| `triage-criteria-<n>` | coding, repeats | Warning symptoms of chief complaint `<n>`, enabled only when `chief-complaint` is `<n>`; codes from the WEST-A triage criterion value set (none for complaints 2, 14, 18, 19, 25) |
+| `triage-criteria-none` | coding, repeats | `163` *Inga varningssymtom*, offered first for every complaint; while it is ticked, the warning symptoms and `uncoded-warning-symptom` are hidden |
+| `triage-criteria-<n>` | coding, repeats | Warning symptoms of chief complaint `<n>`, enabled only when `chief-complaint` is `<n>` and `triage-criteria-none` is not ticked; codes from the WEST-A triage criterion value set (none for complaints 2, 14, 18, 19, 25) |
 | `triage-criteria-11`, `triage-criteria-30` | group | Gynaecology and trauma: one repeating coding item per heading of the manual, `triage-criteria-11-aaa` … `-aaf` and `triage-criteria-30-aag` … `-aaj` |
-| `triage-criteria-none` | coding, repeats | `163` *Inga varningssymtom*, offered for every complaint |
+| `uncoded-warning-symptom` | boolean | A warning symptom that the list does not offer, enabled while `triage-criteria-none` is not ticked |
+| `uncoded-warning-symptom-text` | string | That warning symptom, enabled when `uncoded-warning-symptom` is ticked |
+| `complaint-priority` | coding | Its priority, from the WEST-A triage priority value set, enabled when `uncoded-warning-symptom` is ticked |
 | `triage-criteria-needs` | coding, repeats | Needs and processes `159`-`162` (frail elderly, likely admission, sexual assault, intimate partner violence), offered for every complaint: each gives yellow as the lowest priority (pp. 46-48) |
-| `complaint-priority` | coding | Optional manual override: priority of the warning symptoms, from the WEST-A triage priority value set |
 | `oxygen-scale-2` | boolean | NEWS2 SpO2 scale 2, on a physician's order |
 
 The QuestionnaireResponse carries `subject` (Patient), `encounter` (Encounter), `author`

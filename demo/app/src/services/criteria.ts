@@ -73,14 +73,20 @@ export interface CriteriaReasons {
   /** Each warning symptom with the priority it gives. */
   symptoms: { name: string; priority?: PriorityCode }[];
   needs: string[];
-  /** The nurse's manual override of the warning symptom priority, if any. */
+  /** The priority of a warning symptom not on the list, if any. */
   override?: PriorityCode;
-  /** Warning symptoms assessed: a symptom, "no warning symptoms", or an override. */
+  /** That warning symptom, as the nurse describes it. */
+  uncoded?: string;
+  /** Warning symptoms assessed: a symptom, "no warning symptoms", or one not on the list. */
   assessed: boolean;
 }
 
 export function criteriaReasons(
-  answers: { triageCriteria: { code?: string; display?: string }[]; complaintPriority?: { system?: string; code?: string } },
+  answers: {
+    triageCriteria: { code?: string; display?: string }[];
+    uncodedWarningSymptom?: string;
+    complaintPriority?: { system?: string; code?: string };
+  },
   criteria: Criteria | undefined,
 ): CriteriaReasons {
   const symptoms: CriteriaReasons['symptoms'] = [];
@@ -99,7 +105,7 @@ export function criteriaReasons(
   for (const [priority, n] of [...byPriority].sort()) {
     pins.push({ priority, label: noneOnly ? 'no warning symptom' : n > 1 ? `${n} warning symptoms` : 'warning symptom' });
   }
-  if (override) pins.push({ priority: override, label: 'override' });
+  if (override) pins.push({ priority: override, label: 'not on the list' });
   if (needs.length) pins.push({ priority: '3', label: 'lowest for need' });
-  return { pins, symptoms, needs, override, assessed: symptoms.some((s) => s.priority) || !!override };
+  return { pins, symptoms, needs, override, uncoded: answers.uncodedWarningSymptom, assessed: symptoms.some((s) => s.priority) || !!override };
 }

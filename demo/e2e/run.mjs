@@ -71,6 +71,8 @@ const ANSWERS = {
   consciousness: { valueCoding: { system: SCT, version: SCT_SE, code: '248234008', display: 'psykiskt klar' } },
   temperature: { valueDecimal: 37.5 },
   'chief-complaint': { valueCoding: { system: CHIEF_COMPLAINT_SYSTEM, code: '4', display: 'Bröstsmärta' } },
+  'uncoded-warning-symptom': { valueBoolean: true },
+  'uncoded-warning-symptom-text': { valueString: 'Bröstsmärta sedan en vecka, nu besvärsfri' },
   'complaint-priority': { valueCoding: priorityCoding('4') },
   'oxygen-scale-2': { valueBoolean: false },
 };

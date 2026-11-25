@@ -64,7 +64,9 @@ export function ResultScreen({ stay, onRecorded, go }: Props) {
       const news2Url = uuid();
       // The note is part of the Swedish triage Observation (language 'sv')
       const notes = [
-        reasons.override ? `Manuell sökorsaksprioritet: ${priority(reasons.override)!.name}.` : '',
+        reasons.override
+          ? `Varningssymtom utanför listan${reasons.uncoded ? `: ${reasons.uncoded}` : ''}, ${priority(reasons.override)!.name}.`
+          : '',
         selected !== proposed && proposed
           ? `Klinisk bedömning: ${priority(selected)!.name}, föreslagen ${priority(proposed)!.name}.`
           : '',
@@ -151,7 +153,7 @@ export function ResultScreen({ stay, onRecorded, go }: Props) {
           ))}
           {reasons.override && (
             <li>
-              Warning symptom priority set by hand → <strong>{priority(reasons.override)!.name}</strong>
+              {complaint}: {reasons.uncoded ?? 'warning symptom'} (not on the list) → <strong>{priority(reasons.override)!.name}</strong>
             </li>
           )}
           {needs.length > 0 && (

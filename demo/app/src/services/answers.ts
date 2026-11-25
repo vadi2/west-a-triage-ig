@@ -15,7 +15,9 @@ export interface TriageAnswers {
    * symptoms, "No warning symptoms" (163) and the needs and processes (159-162), which
    * give yellow as the lowest priority. */
   triageCriteria: Coding[];
-  /** Optional manual override of the warning symptom priority. */
+  /** A warning symptom that the triage criteria do not offer, as the nurse describes it. */
+  uncodedWarningSymptom?: string;
+  /** The priority of that warning symptom. */
   complaintPriority?: Coding;
   scale2: boolean;
 }
@@ -56,6 +58,7 @@ export function readAnswers(qr: QuestionnaireResponse | undefined): TriageAnswer
     temperature: num(a('temperature')),
     chiefComplaint: a('chief-complaint')?.valueCoding,
     triageCriteria: collectCriteria(qr?.item),
+    uncodedWarningSymptom: a('uncoded-warning-symptom-text')?.valueString?.trim() || undefined,
     complaintPriority: a('complaint-priority')?.valueCoding,
     scale2: a('oxygen-scale-2')?.valueBoolean === true,
   };
